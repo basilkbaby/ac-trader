@@ -13,200 +13,269 @@ type JobTab = 'pending' | 'active' | 'completed';
   imports: [CommonModule, RouterLink],
   template: `
     <div class="jobs-page">
-      <div class="jobs-header">
-        <h1>Jobs</h1>
-        <div class="jobs-summary">
-          <div class="summary-chip chip-pending">{{ counts().pending }} new</div>
-          <div class="summary-chip chip-active">{{ counts().active }} active</div>
-          <div class="summary-chip chip-done">{{ counts().completed }} completed</div>
+
+      <!-- Title row -->
+      <div class="jobs-titlerow">
+        <div>
+          <h1>Jobs</h1>
+          <p class="jobs-sub">{{ counts().pending }} new · {{ counts().active }} active · {{ counts().completed }} completed</p>
         </div>
       </div>
 
+      <!-- Metrics bar -->
+      <div class="metrics-bar">
+        <div class="metric">
+          <span class="metric-val warn">{{ counts().pending }}</span>
+          <span class="metric-lbl">New requests</span>
+        </div>
+        <div class="metric-div"></div>
+        <div class="metric">
+          <span class="metric-val">{{ counts().active }}</span>
+          <span class="metric-lbl">Active jobs</span>
+        </div>
+        <div class="metric-div"></div>
+        <div class="metric">
+          <span class="metric-val">{{ counts().completed }}</span>
+          <span class="metric-lbl">Completed</span>
+        </div>
+        <div class="metric-div"></div>
+        <div class="metric">
+          <span class="metric-val">{{ counts().pending + counts().active + counts().completed }}</span>
+          <span class="metric-lbl">Total</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
       <div class="jobs-tabs">
-        <button class="job-tab" [class.active]="tab() === 'pending'"   (click)="tab.set('pending')">
-          New requests @if (counts().pending) { <span class="tab-badge">{{ counts().pending }}</span> }
+        <button class="job-tab" [class.active]="tab() === 'pending'" (click)="tab.set('pending')">
+          New requests
+          @if (counts().pending) { <span class="tab-badge">{{ counts().pending }}</span> }
         </button>
         <button class="job-tab" [class.active]="tab() === 'active'"    (click)="tab.set('active')">Active</button>
         <button class="job-tab" [class.active]="tab() === 'completed'" (click)="tab.set('completed')">Completed</button>
       </div>
 
-      <div class="jobs-list">
+      <!-- Job list -->
+      <div class="jobs-card">
         @if (visibleJobs().length === 0) {
           <div class="jobs-empty">No {{ tab() }} jobs right now.</div>
         }
         @for (job of visibleJobs(); track job.id) {
-          <div class="job-card">
-            <div class="job-card-header">
-              <div class="job-type-badge">{{ job.jobType }}</div>
-              <span class="job-ref">{{ job.bookingRef }}</span>
-              <span class="job-date">Requested {{ job.createdAt | date:'d MMM' }}</span>
-            </div>
+          <div class="job-row" [class.expanded]="expanded() === job.id">
 
-            <div class="job-card-body">
-              <div class="job-customer">
-                <div class="job-customer-avatar">{{ initials(job.customerName) }}</div>
-                <div class="job-customer-info">
-                  <strong>{{ job.customerName }}</strong>
-                  <span>{{ job.address }}</span>
-                  <span>{{ job.postcode }}</span>
-                </div>
+            <!-- Main row -->
+            <div class="job-row-main" (click)="toggle(job.id)">
+              <div class="job-date-badge">
+                <span class="jdb-day">{{ job.preferredDate | date:'d' }}</span>
+                <span class="jdb-mon">{{ job.preferredDate | date:'MMM' }}</span>
               </div>
 
-              <div class="job-meta-grid">
-                <div class="job-meta-item">
-                  <span class="job-meta-label">Job type</span>
-                  <span>{{ job.jobType }}</span>
+              <div class="job-row-info">
+                <div class="job-row-top">
+                  <span class="job-type">{{ job.jobType }}</span>
+                  <span class="job-ref">{{ job.bookingRef }}</span>
                 </div>
-                <div class="job-meta-item">
-                  <span class="job-meta-label">Property</span>
+                <div class="job-row-sub">
+                  <span class="job-customer-name">{{ job.customerName }}</span>
+                  <span class="sep">·</span>
+                  <span>{{ job.postcode }}</span>
+                  <span class="sep">·</span>
                   <span>{{ propertyLabel(job.propertyType) }}, {{ job.roomSizeM2 }}m²</span>
                 </div>
-                <div class="job-meta-item">
-                  <span class="job-meta-label">Preferred date</span>
-                  <span>{{ job.preferredDate | date:'EEE d MMM yyyy' }}</span>
-                </div>
-                <div class="job-meta-item">
-                  <span class="job-meta-label">Quote range</span>
-                  <span class="job-quote">{{ job.quoteRange }}</span>
-                </div>
               </div>
 
-              @if (job.notes) {
-                <div class="job-notes">
-                  <span class="job-notes-label">Customer notes:</span> {{ job.notes }}
-                </div>
-              }
+              <div class="job-row-right">
+                <span class="job-price">{{ job.quoteRange }}</span>
+                <span class="jstatus" [class]="'js-' + job.status">{{ statusLabel(job.status) }}</span>
+              </div>
+
+              <span class="job-chevron" [class.open]="expanded() === job.id">›</span>
             </div>
 
-            <div class="job-card-footer">
-              @if (job.status === 'pending') {
-                <button class="btn-primary btn-sm" (click)="accept(job.id)">Accept job</button>
-                <button class="btn-secondary btn-sm" (click)="decline(job.id)">Decline</button>
-              }
-              @if (job.status === 'accepted') {
-                <button class="btn-primary btn-sm" (click)="markActive(job.id)">Mark as started</button>
-                <button class="btn-secondary btn-sm" (click)="contactCustomer(job)">Contact customer</button>
-              }
-              @if (job.status === 'active') {
-                <button class="btn-primary btn-sm" (click)="markComplete(job.id)">Mark as complete</button>
-                <button class="btn-secondary btn-sm" (click)="contactCustomer(job)">Contact customer</button>
-              }
-              @if (job.status === 'completed') {
-                <span class="job-completed-label">✓ Completed {{ job.preferredDate | date:'d MMM' }}</span>
-                <a routerLink="/dashboard/invoices" class="btn-secondary btn-sm">📄 Create invoice</a>
-              }
-            </div>
+            <!-- Expanded detail -->
+            @if (expanded() === job.id) {
+              <div class="job-detail">
+                <div class="job-detail-grid">
+                  <div class="jd-item">
+                    <span class="jd-label">Customer</span>
+                    <span>{{ job.customerName }}</span>
+                  </div>
+                  <div class="jd-item">
+                    <span class="jd-label">Phone</span>
+                    <a [href]="'tel:' + job.customerPhone" class="jd-phone">{{ job.customerPhone }}</a>
+                  </div>
+                  <div class="jd-item">
+                    <span class="jd-label">Address</span>
+                    <span>{{ job.address }}, {{ job.postcode }}</span>
+                  </div>
+                  <div class="jd-item">
+                    <span class="jd-label">Preferred date</span>
+                    <span>{{ job.preferredDate | date:'EEEE d MMM yyyy' }}</span>
+                  </div>
+                  <div class="jd-item">
+                    <span class="jd-label">Quote range</span>
+                    <span class="jd-price">{{ job.quoteRange }}</span>
+                  </div>
+                  <div class="jd-item">
+                    <span class="jd-label">Requested</span>
+                    <span>{{ job.createdAt | date:'d MMM yyyy' }}</span>
+                  </div>
+                </div>
+
+                @if (job.notes) {
+                  <div class="job-notes">
+                    <span class="job-notes-lbl">Customer notes</span>
+                    {{ job.notes }}
+                  </div>
+                }
+
+                <div class="job-actions">
+                  @if (job.status === 'pending') {
+                    <button class="btn-primary btn-sm" (click)="accept(job.id)">Accept job</button>
+                    <button class="btn-secondary btn-sm" (click)="decline(job.id)">Decline</button>
+                  }
+                  @if (job.status === 'accepted') {
+                    <button class="btn-primary btn-sm" (click)="markActive(job.id)">Mark as started</button>
+                    <button class="btn-secondary btn-sm" (click)="contactCustomer(job)">📞 Call customer</button>
+                  }
+                  @if (job.status === 'active') {
+                    <button class="btn-primary btn-sm" (click)="markComplete(job.id)">Mark as complete</button>
+                    <button class="btn-secondary btn-sm" (click)="contactCustomer(job)">📞 Call customer</button>
+                  }
+                  @if (job.status === 'completed') {
+                    <span class="job-done-lbl">✓ Completed</span>
+                    <a routerLink="/dashboard/invoices" class="btn-secondary btn-sm">📄 Create invoice</a>
+                  }
+                </div>
+              </div>
+            }
+
           </div>
         }
       </div>
+
     </div>
   `,
   styles: [`
-    .jobs-page { max-width: 800px; }
+    .jobs-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 860px; }
 
-    .jobs-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .jobs-header h1 { font-size: 1.4rem; margin: 0; }
-    .jobs-summary { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .summary-chip {
-      font-size: 0.75rem; font-weight: 700;
-      padding: 0.2rem 0.6rem; border-radius: 999px;
-      text-transform: uppercase; letter-spacing: 0.04em;
+    /* Title */
+    .jobs-titlerow h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.15rem; }
+    .jobs-sub { font-size: 0.78rem; color: #9ca3af; margin: 0; }
+
+    /* Metrics bar - same as overview */
+    .metrics-bar {
+      display: flex; align-items: center;
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
     }
-    .chip-pending  { background: #fef3c7; color: #92400e; }
-    .chip-active   { background: #dbeafe; color: #1e40af; }
-    .chip-done     { background: #d1fae5; color: #065f46; }
+    .metric { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.85rem 1.1rem; }
+    .metric-val { font-size: 1.25rem; font-weight: 700; color: #111827; line-height: 1; }
+    .metric-val.warn { color: #d97706; }
+    .metric-lbl { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.04em; }
+    .metric-div { width: 1px; background: #f3f4f6; align-self: stretch; }
 
+    /* Tabs */
     .jobs-tabs {
-      display: flex;
-      border-bottom: 2px solid #e5e7eb;
-      margin-bottom: 1.5rem;
-      gap: 0;
+      display: flex; border-bottom: 2px solid #e5e7eb; gap: 0;
     }
     .job-tab {
-      padding: 0.6rem 1.25rem;
-      border: none; background: none;
-      font-size: 0.88rem; font-weight: 500;
-      color: #6b7280; cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border: none; background: none;
+      font-size: 0.85rem; font-weight: 500; color: #6b7280; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      display: flex; align-items: center; gap: 0.4rem; transition: all 0.12s;
     }
+    .job-tab:hover { color: #374151; }
     .job-tab.active { color: #1e3a5f; border-bottom-color: #1e3a5f; }
     .tab-badge {
       background: #1e3a5f; color: white;
-      font-size: 0.7rem; font-weight: 700;
-      padding: 0.1rem 0.4rem; border-radius: 999px;
+      font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 999px;
     }
 
-    .jobs-list { display: flex; flex-direction: column; gap: 1rem; }
-    .jobs-empty { color: #9ca3af; font-size: 0.9rem; padding: 2rem 0; text-align: center; }
-
-    .job-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      overflow: hidden;
+    /* Jobs card container */
+    .jobs-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
     }
-    .job-card-header {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.75rem 1.25rem;
-      background: #f9fafb;
-      border-bottom: 1px solid #f3f4f6;
-      flex-wrap: wrap;
-    }
-    .job-type-badge {
-      background: #1e3a5f; color: white;
-      font-size: 0.75rem; font-weight: 600;
-      padding: 0.2rem 0.6rem; border-radius: 999px;
-    }
-    .job-ref { font-size: 0.8rem; color: #9ca3af; }
-    .job-date { font-size: 0.78rem; color: #9ca3af; margin-left: auto; }
+    .jobs-empty { padding: 2.5rem 1rem; text-align: center; font-size: 0.85rem; color: #9ca3af; }
 
-    .job-card-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    /* Job row */
+    .job-row { border-bottom: 1px solid #f3f4f6; }
+    .job-row:last-child { border-bottom: none; }
 
-    .job-customer { display: flex; gap: 0.75rem; align-items: flex-start; }
-    .job-customer-avatar {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: #e5e7eb; display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700; color: #374151; flex-shrink: 0;
+    .job-row-main {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.75rem 1rem; cursor: pointer; transition: background 0.1s;
     }
-    .job-customer-info { display: flex; flex-direction: column; gap: 0.15rem; }
-    .job-customer-info strong { font-size: 0.95rem; }
-    .job-customer-info span { font-size: 0.82rem; color: #6b7280; }
+    .job-row-main:hover { background: #fafafa; }
+    .job-row.expanded .job-row-main { background: #f9fafb; }
 
-    .job-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    .job-meta-item { display: flex; flex-direction: column; gap: 0.15rem; }
-    .job-meta-label { font-size: 0.72rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
-    .job-meta-item span:last-child { font-size: 0.88rem; color: #374151; }
-    .job-quote { font-weight: 700; color: #111827; }
+    .job-date-badge {
+      width: 34px; flex-shrink: 0; text-align: center;
+      background: #eff6ff; border-radius: 7px; padding: 0.25rem 0;
+    }
+    .jdb-day { display: block; font-size: 1rem; font-weight: 700; color: #1d4ed8; line-height: 1; }
+    .jdb-mon { display: block; font-size: 0.6rem; text-transform: uppercase; color: #93c5fd; font-weight: 600; }
+
+    .job-row-info { flex: 1; min-width: 0; }
+    .job-row-top { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.2rem; }
+    .job-type { font-size: 0.85rem; font-weight: 600; color: #111827; }
+    .job-ref  { font-size: 0.72rem; color: #9ca3af; }
+    .job-row-sub { font-size: 0.78rem; color: #9ca3af; display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }
+    .job-customer-name { color: #6b7280; font-weight: 500; }
+    .sep { color: #d1d5db; }
+
+    .job-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; flex-shrink: 0; }
+    .job-price { font-size: 0.8rem; font-weight: 700; color: #059669; }
+    .jstatus { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.45rem; border-radius: 999px; }
+    .js-pending   { background: #fef3c7; color: #92400e; }
+    .js-accepted  { background: #d1fae5; color: #065f46; }
+    .js-active    { background: #dbeafe; color: #1e40af; }
+    .js-completed { background: #f3f4f6; color: #374151; }
+    .js-declined  { background: #fee2e2; color: #991b1b; }
+
+    .job-chevron {
+      font-size: 1.1rem; color: #d1d5db; flex-shrink: 0;
+      transition: transform 0.2s; display: inline-block;
+    }
+    .job-chevron.open { transform: rotate(90deg); }
+
+    /* Expanded detail */
+    .job-detail {
+      padding: 0 1rem 1rem 1rem;
+      border-top: 1px solid #f3f4f6;
+      display: flex; flex-direction: column; gap: 0.85rem;
+      background: #fafafa;
+    }
+    .job-detail-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem;
+      padding-top: 0.85rem;
+    }
+    .jd-item { display: flex; flex-direction: column; gap: 0.15rem; }
+    .jd-label { font-size: 0.68rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.04em; }
+    .jd-item span:last-child { font-size: 0.83rem; color: #374151; }
+    .jd-price { color: #059669 !important; font-weight: 700 !important; }
+    .jd-phone { font-size: 0.83rem; color: #0057FF; text-decoration: none; font-weight: 500; }
+    .jd-phone:hover { text-decoration: underline; }
 
     .job-notes {
-      background: #fffbeb;
-      border: 1px solid #fcd34d;
-      border-radius: 8px;
-      padding: 0.6rem 0.85rem;
-      font-size: 0.85rem;
-      color: #78350f;
+      background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;
+      padding: 0.55rem 0.85rem; font-size: 0.82rem; color: #78350f;
     }
-    .job-notes-label { font-weight: 600; }
+    .job-notes-lbl { font-weight: 700; display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
 
-    .job-card-footer {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.85rem 1.25rem;
-      border-top: 1px solid #f3f4f6;
-      background: #fafafa;
-      flex-wrap: wrap;
-    }
-    .job-completed-label { font-size: 0.85rem; color: #059669; font-weight: 600; }
+    .job-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .job-done-lbl { font-size: 0.82rem; color: #059669; font-weight: 600; }
 
-    @media (max-width: 480px) {
-      .job-meta-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .job-detail-grid { grid-template-columns: 1fr 1fr; }
+      .metrics-bar { flex-wrap: wrap; }
+      .metric { min-width: 45%; }
     }
   `]
 })
 export class DashboardJobsComponent {
-  auth = inject(AuthService);
-  tab  = signal<JobTab>('pending');
+  auth     = inject(AuthService);
+  tab      = signal<JobTab>('pending');
+  expanded = signal<number | null>(null);
 
   private _jobs = signal<JobRequest[]>(getMockJobRequests(this.auth.currentUser()!.engineerId!));
 
@@ -222,26 +291,33 @@ export class DashboardJobsComponent {
     completed: this._jobs().filter(j => j.status === 'completed').length,
   }));
 
+  toggle(id: number) {
+    this.expanded.update(v => v === id ? null : id);
+  }
+
   accept(id: number)       { this.mutate(id, 'accepted'); }
-  decline(id: number)      { this.mutate(id, 'declined'); }
+  decline(id: number)      { this.mutate(id, 'declined'); this.expanded.set(null); }
   markActive(id: number)   { this.mutate(id, 'active'); }
   markComplete(id: number) { this.mutate(id, 'completed'); this.tab.set('completed'); }
 
-  contactCustomer(job: JobRequest) {
-    window.open(`tel:${job.customerPhone}`);
-  }
+  contactCustomer(job: JobRequest) { window.open(`tel:${job.customerPhone}`); }
 
   private mutate(id: number, status: JobStatus) {
     updateJobStatus(id, status);
     this._jobs.set(getMockJobRequests(this.auth.currentUser()!.engineerId!));
   }
 
-  initials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  statusLabel(status: string): string {
+    const m: Record<string, string> = { pending: 'New', accepted: 'Accepted', active: 'Active', completed: 'Done', declined: 'Declined' };
+    return m[status] ?? status;
   }
 
   propertyLabel(type: string): string {
-    const map: Record<string, string> = { flat: 'Flat', terr: 'Terraced', semi: 'Semi-detached', det: 'Detached', comm: 'Commercial' };
-    return map[type] ?? type;
+    const m: Record<string, string> = { flat: 'Flat', terr: 'Terraced', semi: 'Semi-det.', det: 'Detached', comm: 'Commercial' };
+    return m[type] ?? type;
+  }
+
+  initials(name: string): string {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   }
 }

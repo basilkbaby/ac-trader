@@ -36,7 +36,7 @@ import { QuoteWizardState } from '../../core/models/models';
           @if (state().step === 1) {
             <div class="step-content">
               <h2>What do you need?</h2>
-              <p class="step-sub">Select the type of work — we'll tailor your estimate</p>
+              <p class="step-sub">Select the type of work - we'll tailor your estimate</p>
               <div class="option-grid">
                 @for (opt of jobTypes; track opt.value) {
                   <button class="option-btn" (click)="selectJob(opt.value)">
@@ -51,11 +51,11 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 2 — unit count (install / replace) -->
+          <!-- Step 2 - unit count (install / replace) -->
           @if (state().step === 2 && isIR()) {
             <div class="step-content">
               <h2>How many rooms or areas?</h2>
-              <p class="step-sub">Each indoor unit serves one zone — multi-split systems share one outdoor unit</p>
+              <p class="step-sub">Each indoor unit serves one zone - multi-split systems share one outdoor unit</p>
               <div class="option-grid unit-grid">
                 @for (opt of unitCounts; track opt.value) {
                   <button class="option-btn unit-btn" (click)="selectUnitCount(opt.value)">
@@ -69,7 +69,7 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 2 — service type -->
+          <!-- Step 2 - service type -->
           @if (state().step === 2 && isService()) {
             <div class="step-content">
               <h2>What type of service?</h2>
@@ -89,7 +89,7 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 2 — fault type (emergency) -->
+          <!-- Step 2 - fault type (emergency) -->
           @if (state().step === 2 && isEmergency()) {
             <div class="step-content">
               <h2>What's the problem?</h2>
@@ -109,11 +109,11 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 3 — room size (install / replace) -->
+          <!-- Step 3 - room size (install / replace) -->
           @if (state().step === 3 && isIR()) {
             <div class="step-content">
               <h2>How large is the main room or area?</h2>
-              <p class="step-sub">Determines the BTU capacity needed — larger rooms need more powerful units</p>
+              <p class="step-sub">Determines the BTU capacity needed - larger rooms need more powerful units</p>
               <div class="option-grid">
                 @for (opt of roomSizes; track opt.value) {
                   <button class="option-btn" (click)="selectRoomSize(opt.value)">
@@ -129,7 +129,7 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 3 (service/emergency) or Step 4 (install/replace) — property type -->
+          <!-- Step 3 (service/emergency) or Step 4 (install/replace) - property type -->
           @if ((state().step === 3 && !isIR()) || (state().step === 4 && isIR())) {
             <div class="step-content">
               <h2>What type of property?</h2>
@@ -150,7 +150,7 @@ import { QuoteWizardState } from '../../core/models/models';
                 <div class="postcode-row">
                   <input type="text" [(ngModel)]="postcodeInput" name="postcode"
                     placeholder="Postcode (e.g. SW1A 1AA)" class="postcode-input" maxlength="8" />
-                  <p class="postcode-hint">Used to find certified engineers near you — optional</p>
+                  <p class="postcode-hint">Used to find certified engineers near you - optional</p>
                 </div>
                 @if (error()) { <p class="error-msg">{{ error() }}</p> }
               }
@@ -158,11 +158,11 @@ import { QuoteWizardState } from '../../core/models/models';
             </div>
           }
 
-          <!-- Step 5 — brand preference (install / replace) -->
+          <!-- Step 5 - brand preference (install / replace) -->
           @if (state().step === 5 && isIR()) {
             <div class="step-content">
               <h2>Brand preference?</h2>
-              <p class="step-sub">Only affects unit cost — all installations are by the same certified engineers</p>
+              <p class="step-sub">Only affects unit cost - all installations are by the same certified engineers</p>
               <div class="brand-grid">
                 @for (opt of brandTiers; track opt.value) {
                   <button class="brand-btn"
@@ -181,7 +181,7 @@ import { QuoteWizardState } from '../../core/models/models';
               <div class="postcode-row">
                 <input type="text" [(ngModel)]="postcodeInput" name="postcode"
                   placeholder="Postcode (e.g. SW1A 1AA)" class="postcode-input" maxlength="8" />
-                <p class="postcode-hint">Used to match you with engineers nearby — optional</p>
+                <p class="postcode-hint">Used to match you with engineers nearby - optional</p>
               </div>
               @if (error()) { <p class="error-msg">{{ error() }}</p> }
               <button class="btn-text step-back" (click)="back()">← Back</button>
@@ -281,12 +281,12 @@ import { QuoteWizardState } from '../../core/models/models';
             <!-- Notices -->
             @if (isEmergency()) {
               <div class="notice notice-warn">
-                <strong>Parts not included</strong> — parts are diagnosed and quoted on-site.
+                <strong>Parts not included</strong> - parts are diagnosed and quoted on-site.
                 The figures above cover labour and call-out only.
               </div>
             } @else {
               <div class="notice">
-                <strong>What could affect the final price</strong> — difficult access, pipe runs over 6m,
+                <strong>What could affect the final price</strong> - difficult access, pipe runs over 6m,
                 non-standard wall types, or consumer unit upgrades may add cost.
                 Your engineer confirms before any work begins.
               </div>
@@ -481,7 +481,7 @@ export class QuoteComponent {
     { value: 'install',   label: 'New installation',      desc: 'No existing AC system',             icon: '❄️' },
     { value: 'replace',   label: 'Replace existing',       desc: 'Like-for-like or upgrade',          icon: '🔄' },
     { value: 'service',   label: 'Service / maintenance',  desc: 'Annual check, repair or deep clean', icon: '🔧' },
-    { value: 'emergency', label: 'Emergency repair',       desc: 'System down — urgent response',     icon: '🚨' },
+    { value: 'emergency', label: 'Emergency repair',       desc: 'System down - urgent response',     icon: '🚨' },
   ];
 
   unitCounts = [
@@ -492,10 +492,10 @@ export class QuoteComponent {
   ];
 
   roomSizes = [
-    { value: 'small',  label: 'Small room',  desc: 'Up to 20 m² — bedroom, study',           icon: '🛏️' },
-    { value: 'medium', label: 'Medium room', desc: '20–35 m² — living room, open plan',       icon: '🛋️' },
-    { value: 'large',  label: 'Large room',  desc: '35–60 m² — large open plan, kitchen-diner', icon: '🏠' },
-    { value: 'xlarge', label: 'Very large',  desc: 'Over 60 m² — whole floor or multi-zone',  icon: '🏢' },
+    { value: 'small',  label: 'Small room',  desc: 'Up to 20 m² - bedroom, study',           icon: '🛏️' },
+    { value: 'medium', label: 'Medium room', desc: '20–35 m² - living room, open plan',       icon: '🛋️' },
+    { value: 'large',  label: 'Large room',  desc: '35–60 m² - large open plan, kitchen-diner', icon: '🏠' },
+    { value: 'xlarge', label: 'Very large',  desc: 'Over 60 m² - whole floor or multi-zone',  icon: '🏢' },
   ];
 
   propertyTypes = [

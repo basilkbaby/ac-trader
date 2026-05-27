@@ -157,7 +157,7 @@ import { EngineerDetail } from '../../core/models/models';
               }
             </h2>
             @if (engineer()!.reviews.length === 0) {
-              <p class="empty-reviews">No reviews yet — be the first to review after your job!</p>
+              <p class="empty-reviews">No reviews yet - be the first to review after your job!</p>
             }
             @for (review of engineer()!.reviews; track review.id) {
               <div class="review-card">

@@ -267,7 +267,7 @@ export class EngineersComponent implements OnInit {
   }
 
   applySort() {
-    // reactive — filtered() recomputes automatically
+    // reactive - filtered() recomputes automatically
   }
 
   initials(name: string): string {

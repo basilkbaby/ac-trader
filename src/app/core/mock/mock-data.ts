@@ -208,7 +208,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 102,
         rating: 5,
-        comment: "Annual service done quickly and professionally. James found a small refrigerant leak we had no idea about — caught it early and fixed it on the same visit. Brilliant.",
+        comment: "Annual service done quickly and professionally. James found a small refrigerant leak we had no idea about - caught it early and fixed it on the same visit. Brilliant.",
         customerName: 'Richard T.',
         isVerified: true,
         createdAt: '2024-09-03T10:15:00Z',
@@ -217,7 +217,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 103,
         rating: 5,
-        comment: "Emergency call on a Saturday — unit stopped working in the heat wave. James was there within 2 hours. Diagnosed a faulty capacitor, had the part in the van, fixed it within the hour. Absolute legend.",
+        comment: "Emergency call on a Saturday - unit stopped working in the heat wave. James was there within 2 hours. Diagnosed a faulty capacitor, had the part in the van, fixed it within the hour. Absolute legend.",
         customerName: 'Olga M.',
         isVerified: true,
         createdAt: '2024-07-19T16:50:00Z',
@@ -238,7 +238,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
     ...MOCK_ENGINEERS[1],
     email: 'sarah@cooltechlondon.co.uk',
     phone: '07700 900 387',
-    bio: "I run CoolTech London from North London, covering residential and light commercial AC installation and servicing. I'm a certified Mitsubishi Electric and Panasonic specialist with a strong focus on energy efficiency — I'll always tell you honestly whether a repair or replacement makes more financial sense. No upselling, just good advice.",
+    bio: "I run CoolTech London from North London, covering residential and light commercial AC installation and servicing. I'm a certified Mitsubishi Electric and Panasonic specialist with a strong focus on energy efficiency - I'll always tell you honestly whether a repair or replacement makes more financial sense. No upselling, just good advice.",
     createdAt: '2020-07-01T09:00:00Z',
     ratingBreakdown: { professionalism: 4.9, punctuality: 4.7, quality: 4.9, value: 4.8 },
     reviews: [
@@ -263,7 +263,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 203,
         rating: 4,
-        comment: "Good service overall. Came back to adjust the angle of the indoor unit which was blowing air too directly — no fuss, sorted it quickly.",
+        comment: "Good service overall. Came back to adjust the angle of the indoor unit which was blowing air too directly - no fuss, sorted it quickly.",
         customerName: 'Joe F.',
         isVerified: true,
         createdAt: '2024-06-14T16:20:00Z',
@@ -328,7 +328,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 402,
         rating: 5,
-        comment: "Service contract for our 8-unit commercial space. Priya's team come twice a year — detailed reports every time and problems always spotted before they become expensive.",
+        comment: "Service contract for our 8-unit commercial space. Priya's team come twice a year - detailed reports every time and problems always spotted before they become expensive.",
         customerName: 'Carly N. (Facilities)',
         isVerified: true,
         createdAt: '2024-08-22T14:15:00Z',
@@ -337,7 +337,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 403,
         rating: 5,
-        comment: "Emergency breakdown on a Friday afternoon — Priya was there in under 2 hours and had us back up by 5pm. Saved the weekend for our restaurant.",
+        comment: "Emergency breakdown on a Friday afternoon - Priya was there in under 2 hours and had us back up by 5pm. Saved the weekend for our restaurant.",
         customerName: 'Ahmed R.',
         isVerified: true,
         createdAt: '2024-06-28T17:30:00Z',
@@ -349,14 +349,14 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
     ...MOCK_ENGINEERS[4],
     email: 'ryan@oconnorrapid.co.uk',
     phone: '07700 900 733',
-    bio: "I started O'Connor Rapid Response AC because I was tired of customers waiting days for an engineer. I cover West and Central London with same-day availability most days. I'm not the cheapest option but I'm there when you need me — and I fix it first time.",
+    bio: "I started O'Connor Rapid Response AC because I was tired of customers waiting days for an engineer. I cover West and Central London with same-day availability most days. I'm not the cheapest option but I'm there when you need me - and I fix it first time.",
     createdAt: '2021-01-15T09:00:00Z',
     ratingBreakdown: { professionalism: 4.7, punctuality: 4.9, quality: 4.6, value: 4.3 },
     reviews: [
       {
         id: 501,
         rating: 5,
-        comment: "Our Daikin packed in on the hottest day of the year. Ryan arrived within 90 minutes and diagnosed a blocked condenser coil. Cleaned and tested — all sorted by midday.",
+        comment: "Our Daikin packed in on the hottest day of the year. Ryan arrived within 90 minutes and diagnosed a blocked condenser coil. Cleaned and tested - all sorted by midday.",
         customerName: 'Tasha E.',
         isVerified: true,
         createdAt: '2024-07-22T12:45:00Z',
@@ -384,7 +384,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 601,
         rating: 5,
-        comment: "Claire installed a Fujitsu multi-split in our flat. Incredibly tidy work — the pipes are hidden behind trunking that actually matches our skirting boards. Shows real care.",
+        comment: "Claire installed a Fujitsu multi-split in our flat. Incredibly tidy work - the pipes are hidden behind trunking that actually matches our skirting boards. Shows real care.",
         customerName: 'Yuki T.',
         isVerified: true,
         createdAt: '2024-11-01T13:00:00Z',
@@ -393,7 +393,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 602,
         rating: 5,
-        comment: "Annual service on our office units — thorough, quick, and detailed report afterwards. Claire noticed the outdoor unit was partially blocked by new signage we'd installed. Fixed on the spot.",
+        comment: "Annual service on our office units - thorough, quick, and detailed report afterwards. Claire noticed the outdoor unit was partially blocked by new signage we'd installed. Fixed on the spot.",
         customerName: 'Graham B.',
         isVerified: true,
         createdAt: '2024-08-14T10:30:00Z',
@@ -509,7 +509,7 @@ let _invoices: Invoice[] = [
     id: 7002, invoiceNumber: 'INV-0002', engineerId: 1,
     customerName: 'Marco Rossi', customerEmail: 'marco.rossi@email.com', jobRef: '#ACT-5006',
     items: [
-      { description: 'Annual AC service — Daikin FTXM30R', quantity: 1, unitPrice: 110 },
+      { description: 'Annual AC service - Daikin FTXM30R', quantity: 1, unitPrice: 110 },
       { description: 'Filter replacement (set of 2)', quantity: 1, unitPrice: 18 },
     ],
     subtotal: 128, vatAmount: 25.6, total: 153.6,
@@ -612,7 +612,7 @@ export function computeMockQuote(req: CreateQuoteRequest): QuoteResult {
 
   type Range = [number, number];
 
-  // Unit supply cost per unit — by brand tier and room size bracket
+  // Unit supply cost per unit - by brand tier and room size bracket
   const sizeBracket = req.roomSizeM2 <= 20 ? 'small'
     : req.roomSizeM2 <= 35 ? 'medium'
     : req.roomSizeM2 <= 60 ? 'large' : 'xlarge';

@@ -53,7 +53,7 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
           <span class="alert-pip"></span>
           <span class="alert-msg">
             <strong>{{ pendingJobs().length }} new job request{{ pendingJobs().length > 1 ? 's' : '' }}</strong>
-            — respond within 2 hours for best acceptance rate
+            - respond within 2 hours for best acceptance rate
           </span>
           <a routerLink="/dashboard/jobs" class="alert-link">View →</a>
         </div>

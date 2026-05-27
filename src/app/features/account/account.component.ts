@@ -63,7 +63,7 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
 
               @if (bookings.length === 0) {
                 <div class="empty-state">
-                  <p>No bookings yet — <a routerLink="/quote">get your first quote</a>.</p>
+                  <p>No bookings yet - <a routerLink="/quote">get your first quote</a>.</p>
                 </div>
               }
 
@@ -120,7 +120,7 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
               <div class="content-header">
                 <div>
                   <h2>Service plan</h2>
-                  <p class="content-sub">{{ plan ? plan.tierName + ' plan — active' : 'No active plan' }}</p>
+                  <p class="content-sub">{{ plan ? plan.tierName + ' plan - active' : 'No active plan' }}</p>
                 </div>
               </div>
 
@@ -171,7 +171,7 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
                 <div class="no-plan">
                   <div class="no-plan-icon">📅</div>
                   <h3>No active plan</h3>
-                  <p>Plans start from £99/yr — keeps your AC efficient and warranty valid.</p>
+                  <p>Plans start from £99/yr - keeps your AC efficient and warranty valid.</p>
                   <a routerLink="/service-plans" class="btn-primary btn-sm">Browse plans</a>
                 </div>
               }
@@ -505,6 +505,6 @@ export class AccountComponent {
   }
 
   leaveReview(b: CustomerBooking): void {
-    alert(`Review flow for ${b.bookingRef} — coming soon!`);
+    alert(`Review flow for ${b.bookingRef} - coming soon!`);
   }
 }

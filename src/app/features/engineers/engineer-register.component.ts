@@ -17,7 +17,7 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
 
           <div class="register-header">
             <h1>Join as a verified AC specialist</h1>
-            <p>Get matched with customers in your area. No subscription to start — first 50 engineers get 3 months commission-free.</p>
+            <p>Get matched with customers in your area. No subscription to start - first 50 engineers get 3 months commission-free.</p>
           </div>
 
           <div class="register-trust-strip">
@@ -152,7 +152,7 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
               <ol>
                 <li>We verify your F-Gas certificate number</li>
                 <li>We'll email you to confirm insurance documents</li>
-                <li>Your profile goes live — customers in your area can find you</li>
+                <li>Your profile goes live - customers in your area can find you</li>
                 <li>First job request lands in your inbox</li>
               </ol>
             </div>

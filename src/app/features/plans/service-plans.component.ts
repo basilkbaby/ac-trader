@@ -70,7 +70,7 @@ import { ServicePlanTier } from '../../core/models/models';
           <div class="include-item">
             <div class="include-icon">&#128268;</div>
             <h3>Full system inspection</h3>
-            <p>Filters, coils, drain lines, refrigerant level, electrical connections — everything checked.</p>
+            <p>Filters, coils, drain lines, refrigerant level, electrical connections - everything checked.</p>
           </div>
           <div class="include-item">
             <div class="include-icon">&#128203;</div>
@@ -85,7 +85,7 @@ import { ServicePlanTier } from '../../core/models/models';
           <div class="include-item">
             <div class="include-icon">&#128197;</div>
             <h3>Annual service reminder</h3>
-            <p>We'll remind you when your next service is due — no admin on your side.</p>
+            <p>We'll remind you when your next service is due - no admin on your side.</p>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ import { ServicePlanTier } from '../../core/models/models';
 
       <div class="plans-cta-band">
         <h2>Not sure which plan is right for you?</h2>
-        <p>Take the free AC Health Check — 4 questions and we'll tell you exactly what your system needs.</p>
+        <p>Take the free AC Health Check - 4 questions and we'll tell you exactly what your system needs.</p>
         <div class="plans-cta-actions">
           <a routerLink="/health-check" class="btn-primary">Take free health check</a>
           <a routerLink="/engineers" class="btn-secondary">Browse engineers</a>
@@ -320,7 +320,7 @@ export class ServicePlansComponent {
       priceMonthly: 15.99,
       highlight: true,
       badge: 'Most popular',
-      description: 'Our most popular plan — full annual care plus mid-year peace of mind.',
+      description: 'Our most popular plan - full annual care plus mid-year peace of mind.',
       features: [
         'Annual full system service visit',
         '6-month interim health check',
@@ -373,7 +373,7 @@ export class ServicePlansComponent {
     },
     {
       q: 'What if I have multiple AC units?',
-      a: 'Each plan covers a single indoor unit and its associated outdoor unit. For multi-split or ducted systems, please contact us for a custom quote — we offer multi-unit discounts.'
+      a: 'Each plan covers a single indoor unit and its associated outdoor unit. For multi-split or ducted systems, please contact us for a custom quote - we offer multi-unit discounts.'
     },
     {
       q: 'Can I cancel my plan?',
@@ -385,7 +385,7 @@ export class ServicePlansComponent {
     },
     {
       q: 'What is the F-Gas compliant service record?',
-      a: 'UK law requires a log of all refrigerant handling on systems over 5 tonnes CO2 equivalent. We provide a digital F-Gas record for your system after every service — useful for commercial tenants and property managers.'
+      a: 'UK law requires a log of all refrigerant handling on systems over 5 tonnes CO2 equivalent. We provide a digital F-Gas record for your system after every service - useful for commercial tenants and property managers.'
     }
   ];
 }

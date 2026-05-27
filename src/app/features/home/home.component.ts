@@ -9,10 +9,10 @@ import { RouterLink } from '@angular/router';
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-badge">F-Gas certified engineers only</div>
-        <h1>The UK's specialist<br><span class="hero-accent">AC platform.</span></h1>
+        <h1>The UK's specialist<br><span class="hero-accent">Air Conditioning platform.</span></h1>
         <p class="hero-sub">
           Verified engineers. Transparent quotes. Annual care plans.<br>
-          Everything for your air conditioning — in one place.
+          Everything for your air conditioning - in one place.
         </p>
         <div class="hero-actions">
           <a routerLink="/quote" class="btn-primary">Get instant quote</a>
@@ -87,7 +87,7 @@ import { RouterLink } from '@angular/router';
         <div class="hc-banner-text">
           <span class="hc-banner-eyebrow">Free tool</span>
           <h2>Is your AC working as it should?</h2>
-          <p>Answer 4 quick questions and get an instant health score for your system — plus an honest recommendation.</p>
+          <p>Answer 4 quick questions and get an instant health score for your system - plus an honest recommendation.</p>
           <a routerLink="/health-check" class="btn-primary hc-btn">Take the free health check</a>
         </div>
         <div class="hc-banner-scores">
@@ -113,7 +113,7 @@ import { RouterLink } from '@angular/router';
         <div class="step">
           <div class="step-num">1</div>
           <h3>Describe your job</h3>
-          <p>Tell us what you need — installation, replacement, service or emergency repair.</p>
+          <p>Tell us what you need - installation, replacement, service or emergency repair.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
@@ -123,7 +123,7 @@ import { RouterLink } from '@angular/router';
         <div class="step">
           <div class="step-num">3</div>
           <h3>Choose your engineer</h3>
-          <p>Browse verified specialists near you — see their cert number, rating, brands and reviews.</p>
+          <p>Browse verified specialists near you - see their cert number, rating, brands and reviews.</p>
         </div>
         <div class="step">
           <div class="step-num">4</div>
@@ -140,12 +140,12 @@ import { RouterLink } from '@angular/router';
           <h2>Protect your AC investment.</h2>
           <p>
             An annual service keeps your system efficient, extends its life, and keeps your warranty valid.
-            Our plans start at just £99/year — with a verified engineer assigned to your property.
+            Our plans start at just £99/year - with a verified engineer assigned to your property.
           </p>
           <ul class="plans-preview-list">
-            <li>&#10003; Essential from <strong>£99/yr</strong> — annual service + health report</li>
-            <li>&#10003; Premium from <strong>£159/yr</strong> — adds 6-month check + priority booking</li>
-            <li>&#10003; Elite from <strong>£249/yr</strong> — adds emergency cover + refrigerant top-up</li>
+            <li>&#10003; Essential from <strong>£99/yr</strong> - annual service + health report</li>
+            <li>&#10003; Premium from <strong>£159/yr</strong> - adds 6-month check + priority booking</li>
+            <li>&#10003; Elite from <strong>£249/yr</strong> - adds emergency cover + refrigerant top-up</li>
           </ul>
           <a routerLink="/service-plans" class="btn-primary">See all plans</a>
         </div>

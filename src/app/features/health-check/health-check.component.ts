@@ -14,7 +14,7 @@ import { HealthCheckState, HealthCheckResult, SystemScore } from '../../core/mod
         <div class="hc-header">
           <a routerLink="/" class="back-link">← Home</a>
           <h1>AC Health Check</h1>
-          <p class="hc-sub">4 quick questions — get an instant assessment of your system's condition.</p>
+          <p class="hc-sub">4 quick questions - get an instant assessment of your system's condition.</p>
           @if (state().step < 5) {
             <div class="hc-progress">
               <div class="hc-progress-fill" [style.width.%]="progressPct()"></div>
@@ -62,7 +62,7 @@ import { HealthCheckState, HealthCheckResult, SystemScore } from '../../core/mod
         @if (state().step === 3) {
           <div class="hc-step">
             <h2>Any of these sound familiar?</h2>
-            <p class="hc-step-hint">Select all that apply — or none if everything seems fine.</p>
+            <p class="hc-step-hint">Select all that apply - or none if everything seems fine.</p>
             <div class="hc-options hc-multi">
               @for (opt of issueOptions; track opt.value) {
                 <button class="hc-option hc-option-check"
@@ -292,7 +292,7 @@ export class HealthCheckComponent {
   ];
 
   servicedOptions = [
-    { value: 'recent',  label: 'Within the last year',  icon: '✅', hint: 'Good — well maintained' },
+    { value: 'recent',  label: 'Within the last year',  icon: '✅', hint: 'Good - well maintained' },
     { value: 'overdue', label: '1 – 2 years ago',       icon: '⏳', hint: 'Service now recommended' },
     { value: 'long',    label: '2 – 3 years ago',       icon: '⚠️', hint: 'Efficiency likely reduced' },
     { value: 'never',   label: 'Never / not sure',      icon: '❌', hint: 'Action needed' },
@@ -385,7 +385,7 @@ export class HealthCheckComponent {
         scoreLabel: 'Urgent',
         headline: isEmergency ? 'Your system needs immediate attention.' : 'Your system is showing signs of serious strain.',
         detail: isEmergency
-          ? 'An AC that won\'t start could be a refrigerant fault, electrical issue, or compressor failure. Don\'t wait — get an engineer to look at it now.'
+          ? 'An AC that won\'t start could be a refrigerant fault, electrical issue, or compressor failure. Don\'t wait - get an engineer to look at it now.'
           : 'The combination of age, service history, and the issues you\'ve described means your system is at real risk of a costly breakdown. A service now is far cheaper than an emergency repair.',
         energySavingEstimate: s.energyBillIncrease !== 'no'
           ? 'A full service on a system in this condition can reduce energy consumption by 20–30%, saving £100–£250/year on a typical home system.'
@@ -402,7 +402,7 @@ export class HealthCheckComponent {
         headline: 'Your AC would benefit from a service soon.',
         detail: 'Your system is past the point where an annual service is overdue. Left unserviced, dirty filters and low refrigerant quietly drain efficiency and shorten the unit\'s lifespan.',
         energySavingEstimate: s.energyBillIncrease !== 'no'
-          ? 'A service now could restore efficiency and cut your energy bills by up to 15% — that\'s typically £60–£120/year back in your pocket.'
+          ? 'A service now could restore efficiency and cut your energy bills by up to 15% - that\'s typically £60–£120/year back in your pocket.'
           : null,
         suggestedAction: 'book-plan',
         actionLabel: 'See annual service plans'
@@ -413,7 +413,7 @@ export class HealthCheckComponent {
       score: 'good',
       scoreLabel: 'Looking good',
       headline: 'Your system appears to be in good health.',
-      detail: 'Based on your answers, your AC is well-maintained and performing as expected. To stay ahead of any issues, consider an annual service plan — it\'s the best way to protect your investment.',
+      detail: 'Based on your answers, your AC is well-maintained and performing as expected. To stay ahead of any issues, consider an annual service plan - it\'s the best way to protect your investment.',
       energySavingEstimate: null,
       suggestedAction: 'book-plan',
       actionLabel: 'Explore annual service plans'
@@ -427,15 +427,15 @@ export class HealthCheckComponent {
   }
 
   ageLabel(val: string | null): string {
-    return this.ageOptions.find(o => o.value === val)?.label ?? '—';
+    return this.ageOptions.find(o => o.value === val)?.label ?? '-';
   }
 
   servicedLabel(val: string | null): string {
-    return this.servicedOptions.find(o => o.value === val)?.label ?? '—';
+    return this.servicedOptions.find(o => o.value === val)?.label ?? '-';
   }
 
   energyLabel(val: string | null): string {
-    return this.energyOptions.find(o => o.value === val)?.label ?? '—';
+    return this.energyOptions.find(o => o.value === val)?.label ?? '-';
   }
 
   issuesSummary(): string {

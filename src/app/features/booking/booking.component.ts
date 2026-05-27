@@ -67,7 +67,7 @@ import { QuoteResult, BookingResult } from '../../core/models/models';
             <button type="submit" class="btn-primary full-width" [disabled]="loading()">
               {{ loading() ? 'Confirming...' : 'Confirm booking request' }}
             </button>
-            <p class="form-note">No payment taken now — we'll confirm availability first.</p>
+            <p class="form-note">No payment taken now - we'll confirm availability first.</p>
           </form>
         }
 
