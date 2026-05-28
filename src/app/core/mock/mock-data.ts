@@ -1,4 +1,4 @@
-import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, CustomerBooking, CustomerServicePlan, CustomerAcSystem } from '../models/models';
+import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
 
 // ─── Toggle ──────────────────────────────────────────────────────────────────
 // Set to false once your real API is connected.
@@ -458,6 +458,39 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
     ]
   },
 };
+
+// ─── Portfolio groups (previous work stories) ────────────────────────────────
+
+export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
+  {
+    id: 1, engineerId: 1, title: 'Installations',
+    coverColor: '#1e3a5f', coverAccent: '#3b82f6',
+    images: [
+      { id: 101, caption: 'Daikin 3-head multi-split install, SW7 townhouse', jobType: 'Installation', color: '#1e3a5f', accentColor: '#3b82f6', postedAt: '2025-04-12' },
+      { id: 102, caption: 'Samsung wall unit — master bedroom, Chelsea', jobType: 'Installation', color: '#1d4ed8', accentColor: '#60a5fa', postedAt: '2025-03-28' },
+      { id: 103, caption: 'Mitsubishi ceiling cassette, open-plan living space', jobType: 'Installation', color: '#0f172a', accentColor: '#818cf8', postedAt: '2025-02-14' },
+      { id: 104, caption: 'LG dual-zone installation, period conversion flat', jobType: 'Installation', color: '#172554', accentColor: '#93c5fd', postedAt: '2025-01-09' },
+    ]
+  },
+  {
+    id: 2, engineerId: 1, title: 'Service & Repair',
+    coverColor: '#064e3b', coverAccent: '#10b981',
+    images: [
+      { id: 201, caption: 'Annual service + full gas recharge completed', jobType: 'Service', color: '#064e3b', accentColor: '#10b981', postedAt: '2025-05-02' },
+      { id: 202, caption: 'Refrigerant leak traced and repaired, SW3', jobType: 'Repair', color: '#065f46', accentColor: '#34d399', postedAt: '2025-04-18' },
+      { id: 203, caption: 'PCB board replacement — same-day turnaround', jobType: 'Repair', color: '#047857', accentColor: '#6ee7b7', postedAt: '2025-03-05' },
+    ]
+  },
+  {
+    id: 3, engineerId: 1, title: 'Commercial',
+    coverColor: '#4c1d95', coverAccent: '#a78bfa',
+    images: [
+      { id: 301, caption: '6-zone VRF system, Mayfair office building', jobType: 'Commercial', color: '#4c1d95', accentColor: '#a78bfa', postedAt: '2025-05-10' },
+      { id: 302, caption: 'Retail unit — 2 ceiling cassettes installed overnight', jobType: 'Commercial', color: '#5b21b6', accentColor: '#c4b5fd', postedAt: '2025-04-01' },
+      { id: 303, caption: 'Restaurant kitchen extract + cool air system', jobType: 'Commercial', color: '#6d28d9', accentColor: '#ddd6fe', postedAt: '2025-02-20' },
+    ]
+  },
+];
 
 // ─── Demo auth accounts ───────────────────────────────────────────────────────
 

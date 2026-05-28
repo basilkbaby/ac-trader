@@ -2,7 +2,8 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { MOCK_ENGINEER_DETAILS } from '../../core/mock/mock-data';
+import { MOCK_ENGINEER_DETAILS, MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
+import { PortfolioGroup, PortfolioImage } from '../../core/models/models';
 
 interface UploadedCert {
   id: number;
@@ -185,6 +186,91 @@ const MOCK_CERTS: UploadedCert[] = [
                   <p class="cert-empty">No certificates uploaded yet.</p>
                 }
               </div>
+            </div>
+          </div>
+
+          <!-- Portfolio / Previous work -->
+          <div class="profile-card">
+            <div class="card-header">
+              <h3>Portfolio · Previous work</h3>
+              <button class="btn-secondary btn-sm" (click)="addGroupOpen.set(!addGroupOpen())">
+                {{ addGroupOpen() ? '✕ Cancel' : '+ New album' }}
+              </button>
+            </div>
+            <div class="card-body">
+
+              @if (addGroupOpen()) {
+                <div class="upload-form">
+                  <div class="form-group">
+                    <label>Album title</label>
+                    <input type="text" [(ngModel)]="newGroupTitle" name="newGroupTitle"
+                      placeholder="e.g. Installations, Commercial jobs…" />
+                  </div>
+                  @if (addGroupError()) { <div class="upload-error">{{ addGroupError() }}</div> }
+                  <button class="btn-primary btn-sm" (click)="createGroup()">Create album</button>
+                </div>
+              }
+
+              @for (group of portfolioGroups(); track group.id) {
+                <div class="portfolio-group">
+                  <div class="pg-header">
+                    <div class="pg-ring" [style.background]="group.coverColor">
+                      <span>📸</span>
+                    </div>
+                    <div class="pg-info">
+                      <span class="pg-title">{{ group.title }}</span>
+                      <span class="pg-count">{{ group.images.length }} photo{{ group.images.length !== 1 ? 's' : '' }}</span>
+                    </div>
+                    <div class="pg-actions">
+                      <button class="cert-view-btn" (click)="addPhotoGroup.set(addPhotoGroup() === group.id ? null : group.id)">
+                        {{ addPhotoGroup() === group.id ? '✕' : '+ Add photo' }}
+                      </button>
+                      <button class="cert-del-btn" (click)="deleteGroup(group.id)">✕</button>
+                    </div>
+                  </div>
+
+                  @if (addPhotoGroup() === group.id) {
+                    <div class="upload-form pg-photo-form">
+                      <div class="form-group">
+                        <label>Caption</label>
+                        <input type="text" [(ngModel)]="newPhotoCaption" name="newPhotoCaption"
+                          placeholder="Describe the job…" />
+                      </div>
+                      <div class="form-group">
+                        <label>File (PDF or image)</label>
+                        <div class="file-drop" (click)="photoInput.click()" [class.has-file]="newPhotoFileName">
+                          @if (newPhotoFileName) {
+                            <span class="file-chosen">📷 {{ newPhotoFileName }}</span>
+                          } @else {
+                            <span>Click to choose or drag &amp; drop</span>
+                            <span class="file-hint">JPG, PNG, HEIC — max 10 MB</span>
+                          }
+                        </div>
+                        <input #photoInput type="file" accept=".jpg,.jpeg,.png,.heic,.webp"
+                          style="display:none" (change)="onPhotoChosen($event)" />
+                      </div>
+                      @if (addPhotoError()) { <div class="upload-error">{{ addPhotoError() }}</div> }
+                      <button class="btn-primary btn-sm" (click)="submitPhoto(group.id)">Save photo</button>
+                    </div>
+                  }
+
+                  @if (group.images.length > 0) {
+                    <div class="pg-thumbs">
+                      @for (img of group.images; track img.id) {
+                        <div class="pg-thumb" [style.background]="img.color">
+                          <span class="pg-thumb-del" (click)="deletePhoto(group.id, img.id)">✕</span>
+                          <span class="pg-thumb-label">{{ img.jobType }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (portfolioGroups().length === 0) {
+                <p class="cert-empty">No albums yet. Create one to showcase your previous work.</p>
+              }
+
             </div>
           </div>
 
@@ -435,6 +521,37 @@ const MOCK_CERTS: UploadedCert[] = [
     .cert-del-btn:hover { color: #dc2626; border-color: #fca5a5; }
     .cert-empty { font-size: 0.82rem; color: #9ca3af; margin: 0; }
 
+    /* Portfolio */
+    .portfolio-group {
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 0.75rem; display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .pg-header { display: flex; align-items: center; gap: 0.65rem; }
+    .pg-ring {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .pg-info { flex: 1; min-width: 0; }
+    .pg-title { display: block; font-size: 0.85rem; font-weight: 600; color: #111827; }
+    .pg-count { font-size: 0.72rem; color: #9ca3af; }
+    .pg-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+    .pg-photo-form { margin-top: 0; }
+    .pg-thumbs { display: flex; flex-wrap: wrap; gap: 0.4rem; padding-top: 0.2rem; }
+    .pg-thumb {
+      width: 56px; height: 56px; border-radius: 8px; position: relative;
+      display: flex; align-items: flex-end; padding: 0.2rem; cursor: default;
+    }
+    .pg-thumb-del {
+      position: absolute; top: 3px; right: 3px; width: 16px; height: 16px;
+      border-radius: 50%; background: rgba(0,0,0,0.4); color: white;
+      font-size: 0.55rem; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; line-height: 1;
+    }
+    .pg-thumb-label {
+      font-size: 0.55rem; font-weight: 700; color: rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.3); border-radius: 4px; padding: 0.1rem 0.25rem;
+    }
+
     /* Save bar */
     .save-bar { display: flex; gap: 0.5rem; align-items: center; justify-content: flex-end; padding-top: 0.25rem; }
 
@@ -472,6 +589,74 @@ export class DashboardProfileComponent implements OnInit {
   private _selectedFile: File | null = null;
   private _selectedBrands: string[] = [];
   private original!: typeof this.form;
+
+  // Portfolio
+  private _portfolioGroups = signal<PortfolioGroup[]>(
+    MOCK_PORTFOLIO_GROUPS.filter(g => g.engineerId === (this.auth.currentUser()?.engineerId ?? 0))
+      .map(g => ({ ...g, images: [...g.images] }))
+  );
+  addGroupOpen  = signal(false);
+  addGroupError = signal<string | null>(null);
+  addPhotoGroup = signal<number | null>(null);
+  addPhotoError = signal<string | null>(null);
+  newGroupTitle  = '';
+  newPhotoCaption = '';
+  newPhotoFileName = '';
+  private _selectedPhoto: File | null = null;
+
+  portfolioGroups(): PortfolioGroup[] { return this._portfolioGroups(); }
+
+  createGroup() {
+    if (!this.newGroupTitle.trim()) { this.addGroupError.set('Please enter a title.'); return; }
+    const colors = ['#1e3a5f','#064e3b','#4c1d95','#7f1d1d','#713f12'];
+    const accents = ['#3b82f6','#10b981','#a78bfa','#f87171','#fcd34d'];
+    const idx = this._portfolioGroups().length % colors.length;
+    const newGroup: PortfolioGroup = {
+      id: Date.now(), engineerId: this.auth.currentUser()!.engineerId!,
+      title: this.newGroupTitle.trim(),
+      coverColor: colors[idx], coverAccent: accents[idx], images: [],
+    };
+    this._portfolioGroups.update(gs => [...gs, newGroup]);
+    this.newGroupTitle = '';
+    this.addGroupOpen.set(false);
+    this.addGroupError.set(null);
+  }
+
+  deleteGroup(id: number) {
+    this._portfolioGroups.update(gs => gs.filter(g => g.id !== id));
+    if (this.addPhotoGroup() === id) this.addPhotoGroup.set(null);
+  }
+
+  onPhotoChosen(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (file) { this._selectedPhoto = file; this.newPhotoFileName = file.name; }
+  }
+
+  submitPhoto(groupId: number) {
+    if (!this.newPhotoCaption.trim()) { this.addPhotoError.set('Please add a caption.'); return; }
+    if (!this._selectedPhoto)         { this.addPhotoError.set('Please choose a photo.');  return; }
+    const jobTypes = ['Installation', 'Service', 'Repair', 'Commercial'];
+    const newImg: PortfolioImage = {
+      id: Date.now(), caption: this.newPhotoCaption.trim(),
+      jobType: jobTypes[Math.floor(Math.random() * jobTypes.length)],
+      color: '#1e3a5f', accentColor: '#3b82f6',
+      postedAt: new Date().toISOString().split('T')[0],
+    };
+    this._portfolioGroups.update(gs =>
+      gs.map(g => g.id === groupId ? { ...g, images: [...g.images, newImg] } : g)
+    );
+    this.newPhotoCaption = '';
+    this.newPhotoFileName = '';
+    this._selectedPhoto = null;
+    this.addPhotoGroup.set(null);
+    this.addPhotoError.set(null);
+  }
+
+  deletePhoto(groupId: number, imageId: number) {
+    this._portfolioGroups.update(gs =>
+      gs.map(g => g.id === groupId ? { ...g, images: g.images.filter(i => i.id !== imageId) } : g)
+    );
+  }
 
   form = {
     fullName: '', companyName: '', email: '', phone: '',

@@ -1,8 +1,9 @@
-import { Component, inject, signal, OnInit, input } from '@angular/core';
+import { Component, inject, signal, OnInit, input, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { EngineerService } from '../../core/services/engineer.service';
-import { EngineerDetail } from '../../core/models/models';
+import { EngineerDetail, PortfolioGroup, PortfolioImage } from '../../core/models/models';
+import { MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
 
 @Component({
   selector: 'app-engineer-detail',
@@ -48,6 +49,24 @@ import { EngineerDetail } from '../../core/models/models';
               <a routerLink="/service-plans" class="btn-secondary detail-plan-btn">See service plans</a>
             </div>
           </div>
+
+          <!-- Portfolio story rings -->
+          @if (portfolioGroups().length > 0) {
+            <div class="portfolio-strip">
+              <div class="portfolio-rings">
+                @for (group of portfolioGroups(); track group.id) {
+                  <button class="story-ring-btn" (click)="openStory(group, 0)">
+                    <div class="story-ring" [style.--ring-color]="group.coverAccent">
+                      <div class="story-thumb" [style.background]="group.coverColor">
+                        <span class="story-thumb-icon">📸</span>
+                      </div>
+                    </div>
+                    <span class="story-label">{{ group.title }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
 
           @if (engineer()!.bio) {
             <div class="detail-section">
@@ -188,8 +207,166 @@ import { EngineerDetail } from '../../core/models/models';
         </div>
       }
     </div>
+
+    <!-- Story viewer -->
+    @if (storyGroup()) {
+      <div class="story-overlay" (click)="closeStory()">
+        <div class="story-viewer" (click)="$event.stopPropagation()">
+
+          <!-- Progress bars -->
+          <div class="story-progress">
+            @for (img of storyGroup()!.images; track img.id; let i = $index) {
+              <div class="story-prog-track">
+                <div class="story-prog-fill"
+                  [class.done]="i < storyIndex()"
+                  [class.active]="i === storyIndex()">
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Header -->
+          <div class="story-header">
+            <div class="story-meta">
+              <div class="story-avatar-sm">{{ initials(engineer()!.fullName) }}</div>
+              <div class="story-meta-text">
+                <span class="story-name">{{ engineer()!.fullName }}</span>
+                <span class="story-group-title">{{ storyGroup()!.title }}</span>
+              </div>
+            </div>
+            <button class="story-close" (click)="closeStory()">✕</button>
+          </div>
+
+          <!-- Image card -->
+          <div class="story-card"
+            [style.background]="'linear-gradient(160deg, ' + currentImage()!.color + ' 0%, ' + currentImage()!.accentColor + '33 100%)'">
+            <div class="story-job-pill">{{ currentImage()!.jobType }}</div>
+            <div class="story-card-inner">
+              <div class="story-placeholder-icon">🔧</div>
+              <p class="story-caption">{{ currentImage()!.caption }}</p>
+              <span class="story-date">{{ currentImage()!.postedAt | date:'d MMM yyyy' }}</span>
+            </div>
+          </div>
+
+          <!-- Nav tap zones -->
+          <div class="story-nav story-nav-prev" (click)="prevImage()"></div>
+          <div class="story-nav story-nav-next" (click)="nextImage()"></div>
+
+          <!-- Counter -->
+          <div class="story-counter">{{ storyIndex() + 1 }} / {{ storyGroup()!.images.length }}</div>
+
+        </div>
+      </div>
+    }
   `,
   styles: [`
+    /* Portfolio story rings */
+    .portfolio-strip {
+      padding: 1.25rem 0 0.25rem;
+      border-bottom: 1px solid #f3f4f6;
+      margin-bottom: 0.5rem;
+    }
+    .portfolio-rings {
+      display: flex; gap: 1.25rem; flex-wrap: wrap;
+    }
+    .story-ring-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      background: none; border: none; cursor: pointer; padding: 0;
+    }
+    .story-ring {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: conic-gradient(var(--ring-color, #3b82f6) 0%, var(--ring-color, #3b82f6) 100%);
+      padding: 3px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .story-thumb {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 3px solid white;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .story-thumb-icon { font-size: 1.4rem; }
+    .story-label { font-size: 0.72rem; font-weight: 600; color: #374151; max-width: 72px; text-align: center; line-height: 1.2; }
+
+    /* Story viewer overlay */
+    .story-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 2000; display: flex; align-items: center; justify-content: center;
+    }
+    .story-viewer {
+      position: relative; width: 100%; max-width: 390px; height: 680px;
+      border-radius: 18px; overflow: hidden; display: flex; flex-direction: column;
+    }
+
+    /* Progress bars */
+    .story-progress {
+      position: absolute; top: 10px; left: 10px; right: 10px;
+      display: flex; gap: 4px; z-index: 10;
+    }
+    .story-prog-track {
+      flex: 1; height: 3px; background: rgba(255,255,255,0.35); border-radius: 999px; overflow: hidden;
+    }
+    .story-prog-fill { height: 100%; width: 0; background: white; transition: none; border-radius: 999px; }
+    .story-prog-fill.done  { width: 100%; }
+    .story-prog-fill.active { width: 60%; }
+
+    /* Story header */
+    .story-header {
+      position: absolute; top: 22px; left: 10px; right: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 10;
+    }
+    .story-meta { display: flex; align-items: center; gap: 0.6rem; }
+    .story-avatar-sm {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1e3a5f; border: 2px solid white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .story-meta-text { display: flex; flex-direction: column; }
+    .story-name { font-size: 0.82rem; font-weight: 700; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    .story-group-title { font-size: 0.7rem; color: rgba(255,255,255,0.75); }
+    .story-close {
+      background: rgba(0,0,0,0.3); border: none; color: white;
+      border-radius: 50%; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.82rem; backdrop-filter: blur(4px);
+    }
+
+    /* Story card */
+    .story-card {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 5rem 1.5rem 3rem;
+      position: relative;
+    }
+    .story-job-pill {
+      position: absolute; top: 72px; right: 16px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+      color: white; font-size: 0.72rem; font-weight: 700;
+      padding: 0.25rem 0.65rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .story-card-inner { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+    .story-placeholder-icon { font-size: 3.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .story-caption {
+      font-size: 1rem; font-weight: 600; color: white; line-height: 1.4;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4); max-width: 280px;
+    }
+    .story-date { font-size: 0.75rem; color: rgba(255,255,255,0.65); }
+
+    /* Nav tap zones */
+    .story-nav {
+      position: absolute; top: 0; bottom: 0; width: 40%; cursor: pointer; z-index: 5;
+    }
+    .story-nav-prev { left: 0; }
+    .story-nav-next { right: 0; }
+
+    /* Counter */
+    .story-counter {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      font-size: 0.72rem; color: rgba(255,255,255,0.6); z-index: 10;
+    }
+
     .detail-response {
       display: flex;
       gap: 0.75rem;
@@ -283,6 +460,51 @@ export class EngineerDetailComponent implements OnInit {
   engineer = signal<EngineerDetail | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // Portfolio stories
+  storyGroup  = signal<PortfolioGroup | null>(null);
+  storyIndex  = signal(0);
+
+  portfolioGroups(): PortfolioGroup[] {
+    return MOCK_PORTFOLIO_GROUPS.filter(g => g.engineerId === +this.id());
+  }
+
+  currentImage(): PortfolioImage | null {
+    const g = this.storyGroup();
+    if (!g) return null;
+    return g.images[this.storyIndex()] ?? null;
+  }
+
+  openStory(group: PortfolioGroup, index: number) {
+    this.storyGroup.set(group);
+    this.storyIndex.set(index);
+  }
+
+  closeStory() { this.storyGroup.set(null); }
+
+  nextImage() {
+    const g = this.storyGroup();
+    if (!g) return;
+    if (this.storyIndex() < g.images.length - 1) {
+      this.storyIndex.update(i => i + 1);
+    } else {
+      this.closeStory();
+    }
+  }
+
+  prevImage() {
+    if (this.storyIndex() > 0) {
+      this.storyIndex.update(i => i - 1);
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKey(e: KeyboardEvent) {
+    if (!this.storyGroup()) return;
+    if (e.key === 'ArrowRight') this.nextImage();
+    if (e.key === 'ArrowLeft')  this.prevImage();
+    if (e.key === 'Escape')     this.closeStory();
+  }
 
   ngOnInit() {
     this.loading.set(true);

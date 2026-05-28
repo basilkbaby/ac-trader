@@ -245,6 +245,25 @@ export interface CustomerAcSystem {
   serviceStatus: 'ok' | 'due-soon' | 'overdue';
 }
 
+// Portfolio (previous work stories)
+export interface PortfolioImage {
+  id: number;
+  caption: string;
+  jobType: string;
+  color: string;
+  accentColor: string;
+  postedAt: string;
+}
+
+export interface PortfolioGroup {
+  id: number;
+  engineerId: number;
+  title: string;
+  coverColor: string;
+  coverAccent: string;
+  images: PortfolioImage[];
+}
+
 // Service plans
 export interface ServicePlanTier {
   id: 'essential' | 'premium' | 'elite';
