@@ -41,7 +41,7 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
         </div>
         <div class="metric-div"></div>
         <div class="metric">
-          <span class="metric-val">4.9 ⭐</span>
+          <span class="metric-val">4.9 <span class="metric-star">&#9733;</span></span>
           <span class="metric-lbl">Rating</span>
           <span class="metric-delta">312 reviews</span>
         </div>
@@ -122,16 +122,16 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
       <!-- Quick actions -->
       <div class="quick-actions">
         <a routerLink="/dashboard/invoices" class="qa">
-          <span class="qa-ico">📄</span>New invoice
+          <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 13h6M9 17h6"/></svg></span>New invoice
         </a>
         <a routerLink="/dashboard/jobs" class="qa">
-          <span class="qa-ico">📅</span>View jobs
+          <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span>View jobs
         </a>
         <a routerLink="/dashboard/profile" class="qa">
-          <span class="qa-ico">👤</span>Edit profile
+          <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>Edit profile
         </a>
         <a routerLink="/engineers/1" class="qa">
-          <span class="qa-ico">🔍</span>Public profile
+          <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>Public profile
         </a>
       </div>
 
@@ -143,7 +143,7 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
     /* Title row */
     .ov-titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .ov-titlerow h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.15rem; }
-    .ov-date { font-size: 0.78rem; color: #9ca3af; margin: 0; }
+    .ov-date { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
     .verified-badge {
       font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.7rem;
       border-radius: 999px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46;
@@ -153,19 +153,19 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
     /* Metrics bar */
     .metrics-bar {
       display: flex; align-items: center;
-      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      background: white; border: 1px solid var(--border); border-radius: 12px;
       padding: 0; overflow: hidden;
     }
     .metric {
       flex: 1; display: flex; flex-direction: column; gap: 0.15rem;
       padding: 0.85rem 1.1rem;
     }
-    .metric-val { font-size: 1.25rem; font-weight: 700; color: #111827; line-height: 1; }
+    .metric-val { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
     .metric-val.warn { color: #d97706; }
-    .metric-lbl { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.04em; }
-    .metric-delta { font-size: 0.72rem; color: #9ca3af; }
+    .metric-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .metric-delta { font-size: 0.72rem; color: var(--text-muted); }
     .metric-delta.up { color: #059669; }
-    .metric-div { width: 1px; background: #f3f4f6; align-self: stretch; }
+    .metric-div { width: 1px; background: var(--border); align-self: stretch; }
 
     /* Alert */
     .alert-row {
@@ -174,39 +174,39 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
       padding: 0.65rem 1rem; font-size: 0.83rem;
     }
     .alert-pip { width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; }
-    .alert-msg { flex: 1; color: #374151; }
+    .alert-msg { flex: 1; color: var(--text-primary); }
     .alert-msg strong { color: #92400e; }
-    .alert-link { font-size: 0.8rem; font-weight: 700; color: #0057FF; text-decoration: none; white-space: nowrap; }
+    .alert-link { font-size: 0.8rem; font-weight: 700; color: var(--brand); text-decoration: none; white-space: nowrap; }
 
     /* Body grid */
     .ov-body { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
 
-    .ov-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+    .ov-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
     .ov-card-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.85rem 1rem; border-bottom: 1px solid #f3f4f6;
+      padding: 0.85rem 1rem; border-bottom: 1px solid var(--border);
     }
-    .ov-card-header h2 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; margin: 0; }
-    .ov-card-link  { font-size: 0.78rem; color: #0057FF; text-decoration: none; }
-    .ov-card-total { font-size: 0.78rem; color: #9ca3af; }
-    .ov-empty { padding: 1.5rem 1rem; font-size: 0.83rem; color: #9ca3af; text-align: center; }
+    .ov-card-header h2 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin: 0; }
+    .ov-card-link  { font-size: 0.78rem; color: var(--brand); text-decoration: none; }
+    .ov-card-total { font-size: 0.78rem; color: var(--text-muted); }
+    .ov-empty { padding: 1.5rem 1rem; font-size: 0.83rem; color: var(--text-muted); text-align: center; }
 
     /* Job rows */
     .job-rows { display: flex; flex-direction: column; }
     .job-row {
       display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.65rem 1rem; border-bottom: 1px solid #f9fafb;
+      padding: 0.65rem 1rem; border-bottom: 1px solid var(--bg);
     }
     .job-row:last-child { border-bottom: none; }
     .job-row-date {
       width: 32px; flex-shrink: 0; text-align: center;
-      background: #eff6ff; border-radius: 6px; padding: 0.25rem 0;
+      background: var(--brand-light); border-radius: 6px; padding: 0.25rem 0;
     }
-    .jd-day { display: block; font-size: 0.95rem; font-weight: 700; color: #1d4ed8; line-height: 1; }
+    .jd-day { display: block; font-size: 0.95rem; font-weight: 700; color: var(--brand); line-height: 1; }
     .jd-mon { display: block; font-size: 0.6rem; text-transform: uppercase; color: #93c5fd; font-weight: 600; }
     .job-row-info { flex: 1; min-width: 0; }
-    .job-row-type { display: block; font-size: 0.83rem; font-weight: 600; color: #111827; }
-    .job-row-sub  { display: block; font-size: 0.75rem; color: #9ca3af; }
+    .job-row-type { display: block; font-size: 0.83rem; font-weight: 600; color: var(--text-primary); }
+    .job-row-sub  { display: block; font-size: 0.75rem; color: var(--text-muted); }
     .job-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.2rem; flex-shrink: 0; }
     .job-row-price { font-size: 0.78rem; color: #059669; font-weight: 600; }
     .jstatus { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; }
@@ -225,24 +225,26 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
       width: 100%; background: #bfdbfe; border-radius: 3px 3px 0 0;
       transition: height 0.3s; min-height: 3px;
     }
-    .chart-bar.bar-current { background: #1d4ed8; }
-    .chart-mon { font-size: 0.62rem; color: #9ca3af; margin-top: 0.2rem; }
+    .chart-bar.bar-current { background: var(--brand); }
+    .chart-mon { font-size: 0.62rem; color: var(--text-muted); margin-top: 0.2rem; }
     .chart-legend {
       display: flex; padding: 0 1rem 0.75rem;
     }
-    .chart-amt { flex: 1; font-size: 0.62rem; color: #9ca3af; text-align: center; }
-    .chart-amt.amt-current { color: #1d4ed8; font-weight: 700; }
+    .chart-amt { flex: 1; font-size: 0.62rem; color: var(--text-muted); text-align: center; }
+    .chart-amt.amt-current { color: var(--brand); font-weight: 700; }
 
     /* Quick actions */
     .quick-actions { display: flex; gap: 0.65rem; }
     .qa {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
-      padding: 0.65rem 0.5rem; background: white; border: 1px solid #e5e7eb;
-      border-radius: 10px; text-decoration: none; color: #374151;
+      padding: 0.65rem 0.5rem; background: white; border: 1px solid var(--border);
+      border-radius: 10px; text-decoration: none; color: var(--text-primary);
       font-size: 0.8rem; font-weight: 500; transition: all 0.12s;
     }
-    .qa:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
-    .qa-ico { font-size: 1rem; }
+    .qa:hover { background: var(--brand-light); border-color: #93c5fd; color: var(--brand); }
+    .qa-ico { display: inline-flex; align-items: center; justify-content: center; color: var(--brand); }
+    .qa-ico svg { width: 17px; height: 17px; }
+    .metric-star { color: var(--gold); }
 
     @media (max-width: 700px) {
       .ov-body { grid-template-columns: 1fr; }

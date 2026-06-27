@@ -318,7 +318,7 @@ import { MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
     .story-meta { display: flex; align-items: center; gap: 0.6rem; }
     .story-avatar-sm {
       width: 36px; height: 36px; border-radius: 50%;
-      background: #1e3a5f; border: 2px solid white;
+      background: var(--ink-2); border: 2px solid white;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.72rem; font-weight: 700; color: white; flex-shrink: 0;
     }

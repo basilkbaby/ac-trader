@@ -11,7 +11,7 @@ import { AuthService } from './core/services/auth.service';
     <header class="site-header">
       <nav class="nav-inner">
         <a routerLink="/" class="logo" (click)="closeAll()">
-          <span class="logo-ac">AC</span><span class="logo-trader">trader</span>
+          <span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">AC</span><span class="logo-trader">trader</span>
         </a>
 
         <!-- Desktop nav -->
@@ -101,15 +101,18 @@ import { AuthService } from './core/services/auth.service';
     @if (!isDashboard()) {
       <footer class="site-footer">
         <div class="footer-inner">
-          <span class="logo"><span class="logo-ac">AC</span><span class="logo-trader">trader</span></span>
-          <p>Connecting homeowners with F-Gas certified AC engineers across the UK.</p>
+          <span class="logo"><span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">AC</span><span class="logo-trader">trader</span></span>
+          <p class="footer-tagline">The UK's Professional Air Conditioning Network.</p>
+          <p>Connecting homeowners, businesses and qualified F-Gas certified engineers across the UK — one trusted network.</p>
           <div class="footer-links">
+            <a routerLink="/quote">Get a quote</a>
+            <a routerLink="/engineers">Find engineers</a>
             <a routerLink="/service-plans">Service plans</a>
             <a routerLink="/health-check">Health check</a>
-            <a routerLink="/engineers">Find engineers</a>
             <a routerLink="/join">Join as engineer</a>
           </div>
-          <p class="footer-small">© 2025 ACTrader Ltd · actrader.co.uk</p>
+          <div class="footer-divider"></div>
+          <p class="footer-small">© 2026 ACtrader Ltd · actrader.co.uk · Verified · Insured · F-Gas certified</p>
         </div>
       </footer>
     }
@@ -193,11 +196,12 @@ import { AuthService } from './core/services/auth.service';
       border-bottom: 1px solid var(--border);
     }
 
-.footer-links {
+.footer-tagline { color: #fff !important; font-weight: 600; font-size: 1rem !important; margin-bottom: 0.5rem !important; }
+    .footer-links {
       display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
-      margin: 0.75rem 0;
+      margin: 1.25rem 0 0;
     }
-    .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.6); text-decoration: none; }
+    .footer-links a { font-size: 0.85rem; color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.15s; }
     .footer-links a:hover { color: white; }
   `]
 })

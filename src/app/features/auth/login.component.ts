@@ -99,7 +99,7 @@ type Tab = 'customer' | 'engineer';
       transition: all 0.15s;
       line-height: 1.3;
     }
-    .login-tab.active { background: #1e3a5f; color: white; }
+    .login-tab.active { background: var(--ink-2); color: white; }
 
     .demo-banner {
       display: flex;
@@ -148,7 +148,7 @@ type Tab = 'customer' | 'engineer';
       box-sizing: border-box;
       transition: border-color 0.15s;
     }
-    .form-group input:focus { outline: none; border-color: #1e3a5f; }
+    .form-group input:focus { outline: none; border-color: var(--ink-2); }
     .pw-toggle {
       position: absolute;
       right: 0.75rem;
@@ -173,7 +173,7 @@ type Tab = 'customer' | 'engineer';
     .btn-primary.full-width { margin-top: 0.25rem; }
 
     .login-footer { margin-top: 1.5rem; text-align: center; font-size: 0.88rem; color: #6b7280; }
-    .login-footer a { color: #1e3a5f; font-weight: 500; }
+    .login-footer a { color: var(--ink-2); font-weight: 500; }
   `]
 })
 export class LoginComponent {

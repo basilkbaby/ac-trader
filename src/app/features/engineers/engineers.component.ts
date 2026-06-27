@@ -14,12 +14,20 @@ const BRANDS = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi', 'Fu
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
-    <div class="page-container">
-      <div class="page-header">
-        <h1>Find AC engineers near you</h1>
-        <p>All engineers are F-Gas certified, insured, and identity verified</p>
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <span class="eyebrow">The network near you</span>
+        <h1>Find your AC engineer</h1>
+        <p>Every engineer is F-Gas certified, insurance checked and identity verified — compare ratings, brands and response times.</p>
+        <ul class="page-hero-trust">
+          <li><span>&#10003;</span> Verified profiles</li>
+          <li><span>&#10003;</span> Real customer reviews</li>
+          <li><span>&#10003;</span> Fixed, upfront quotes</li>
+        </ul>
       </div>
+    </section>
 
+    <div class="page-container">
       <div class="filter-panel">
         <div class="filter-row filter-row-top">
           <div class="filter-group filter-postcode">
@@ -163,9 +171,10 @@ const BRANDS = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi', 'Fu
   `,
   styles: [`
     .filter-panel {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
       padding: 1.25rem 1.5rem;
       margin-bottom: 2rem;
       display: flex;
@@ -174,45 +183,46 @@ const BRANDS = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi', 'Fu
     }
     .filter-row { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
     .filter-group { display: flex; flex-direction: column; gap: 0.3rem; }
-    .filter-group label { font-size: 0.78rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filter-group label { font-size: 0.74rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
     .filter-group input, .filter-group select {
-      padding: 0.55rem 0.85rem;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
       font-size: 0.9rem;
-      background: white;
+      background: var(--surface);
       min-width: 160px;
     }
     .filter-postcode input { min-width: 200px; }
     .filter-actions { justify-content: flex-end; padding-bottom: 0; }
 
-    .filter-row-brands { align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-    .filter-label-sm { font-size: 0.78rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+    .filter-row-brands { align-items: center; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.25rem; border-top: 1px solid var(--border); }
+    .filter-label-sm { font-size: 0.74rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
     .brand-filter-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .brand-filter-btn {
-      padding: 0.3rem 0.8rem;
-      border: 1px solid #d1d5db;
+      padding: 0.34rem 0.85rem;
+      border: 1.5px solid var(--border);
       border-radius: 999px;
-      background: white;
+      background: var(--surface);
       font-size: 0.82rem;
+      font-weight: 500;
       cursor: pointer;
-      color: #374151;
+      color: var(--text-secondary);
       transition: all 0.15s;
     }
-    .brand-filter-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
-    .brand-filter-btn.active { background: #1e3a5f; border-color: #1e3a5f; color: white; }
+    .brand-filter-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .brand-filter-btn.active { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: 0 4px 12px -4px rgba(11,92,255,0.5); }
 
     .filter-row-toggles { gap: 1.5rem; }
-    .toggle-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; color: #374151; cursor: pointer; }
+    .toggle-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; color: var(--text-secondary); cursor: pointer; }
 
-    .results-meta { font-size: 0.85rem; color: #9ca3af; margin-bottom: 1rem; }
+    .results-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 500; }
 
     .eng-trust-row { display: flex; gap: 0.3rem; margin-top: 0.25rem; flex-wrap: wrap; }
     .badge-xs { font-size: 0.7rem; padding: 0.1rem 0.4rem; }
-    .badge-blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 999px; }
+    .badge-blue { background: var(--brand-light); color: var(--brand); border: 1px solid #bfdbfe; border-radius: 999px; }
 
-    .eng-response-time { font-size: 0.75rem; color: #6b7280; }
-    .specialism-brand { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .eng-response-time { font-size: 0.75rem; color: var(--text-muted); }
+    .specialism-brand { background: var(--brand-light); color: var(--brand); border-color: #bfdbfe; }
   `]
 })
 export class EngineersComponent implements OnInit {

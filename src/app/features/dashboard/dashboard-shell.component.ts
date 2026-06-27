@@ -24,21 +24,21 @@ import { CommonModule } from '@angular/common';
 
           <nav class="dash-nav">
             <a routerLink="/dashboard/overview" routerLinkActive="active" (click)="sidebarOpen.set(false)">
-              <span class="nav-icon">🏠</span> Overview
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span> Overview
             </a>
             <a routerLink="/dashboard/jobs" routerLinkActive="active" (click)="sidebarOpen.set(false)">
-              <span class="nav-icon">📅</span> Jobs
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span> Jobs
             </a>
             <a routerLink="/dashboard/invoices" routerLinkActive="active" (click)="sidebarOpen.set(false)">
-              <span class="nav-icon">📄</span> Invoices
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/><path d="M9 13h6M9 17h6"/></svg></span> Invoices
             </a>
             <a routerLink="/dashboard/profile" routerLinkActive="active" (click)="sidebarOpen.set(false)">
-              <span class="nav-icon">👤</span> My profile
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span> My profile
             </a>
           </nav>
 
           <div class="dash-sidebar-footer">
-            <a routerLink="/engineers/1" class="footer-link">↗ View public profile</a>
+            <a routerLink="/engineers/1" class="footer-link">View public profile &#8599;</a>
             <button class="footer-btn" (click)="signOut()">Sign out</button>
           </div>
 
@@ -48,7 +48,9 @@ import { CommonModule } from '@angular/common';
       <!-- Main -->
       <div class="dash-main">
         <div class="dash-topbar">
-          <button class="dash-burger" (click)="toggleSidebar()">☰</button>
+          <button class="dash-burger" (click)="toggleSidebar()" aria-label="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
           <span class="dash-topbar-title">Dashboard</span>
           <div class="dash-topbar-right">
             <label class="avail-toggle">
@@ -72,12 +74,12 @@ import { CommonModule } from '@angular/common';
     .dash-layout {
       display: flex;
       min-height: calc(100vh - 64px);
-      background: #f3f4f6;
+      background: var(--border);
     }
 
     .dash-sidebar {
       width: 220px; flex-shrink: 0;
-      background: #0f172a; color: white;
+      background: var(--ink); color: white;
     }
     .dash-sidebar-inner {
       position: sticky; top: 64px;
@@ -94,7 +96,7 @@ import { CommonModule } from '@angular/common';
     }
     .dash-avatar {
       width: 36px; height: 36px; border-radius: 50%;
-      background: #1e3a5f; display: flex; align-items: center; justify-content: center;
+      background: var(--ink-2); display: flex; align-items: center; justify-content: center;
       font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
     }
     .dash-profile-info strong { display: block; font-size: 0.82rem; }
@@ -109,7 +111,8 @@ import { CommonModule } from '@angular/common';
     }
     .dash-nav a:hover  { background: rgba(255,255,255,0.07); color: white; }
     .dash-nav a.active { background: rgba(255,255,255,0.12); color: white; }
-    .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .nav-icon svg { width: 18px; height: 18px; }
 
     .dash-sidebar-footer {
       margin-top: auto; padding: 1rem 1rem 0;
@@ -126,20 +129,21 @@ import { CommonModule } from '@angular/common';
     .dash-topbar {
       display: flex; align-items: center; gap: 0.85rem;
       padding: 0.65rem 1.5rem;
-      background: white; border-bottom: 1px solid #e5e7eb;
+      background: white; border-bottom: 1px solid var(--border);
       position: sticky; top: 64px; z-index: 10;
     }
-    .dash-burger { display: none; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
-    .dash-topbar-title { font-size: 0.88rem; font-weight: 600; color: #374151; }
+    .dash-burger { display: none; background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.25rem; }
+    .dash-burger svg { width: 22px; height: 22px; display: block; }
+    .dash-topbar-title { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
     .dash-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; }
 
     .avail-toggle { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; }
     .avail-toggle input { opacity: 0; width: 0; height: 0; }
-    .avail-slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 20px; transition: 0.2s; }
+    .avail-slider { position: absolute; inset: 0; background: var(--border); border-radius: 20px; transition: 0.2s; }
     .avail-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
     .avail-toggle input:checked + .avail-slider { background: #059669; }
     .avail-toggle input:checked + .avail-slider::before { transform: translateX(16px); }
-    .avail-lbl { font-size: 0.78rem; font-weight: 500; color: #9ca3af; }
+    .avail-lbl { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); }
     .avail-lbl.on { color: #059669; }
 
     .dash-content { padding: 1.5rem; flex: 1; }

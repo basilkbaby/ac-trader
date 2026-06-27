@@ -11,29 +11,25 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
+    @if (!submitted()) {
+      <section class="page-hero">
+        <div class="page-hero-inner">
+          <span class="eyebrow">For engineers</span>
+          <h1>Join the network. Grow your business.</h1>
+          <p>Get matched with local customers — plus the tools to quote, invoice and manage every job. No subscription to start; the first 50 engineers get 3 months commission-free.</p>
+          <ul class="page-hero-trust">
+            <li><span>&#10003;</span> Identity verified</li>
+            <li><span>&#10003;</span> F-Gas cert checked</li>
+            <li><span>&#10003;</span> Insurance confirmed</li>
+            <li><span>&#10003;</span> Rated by customers</li>
+          </ul>
+        </div>
+      </section>
+    }
+
     <div class="page-container">
       <div class="register-wrap">
         @if (!submitted()) {
-
-          <div class="register-header">
-            <h1>Join as a verified AC specialist</h1>
-            <p>Get matched with customers in your area. No subscription to start - first 50 engineers get 3 months commission-free.</p>
-          </div>
-
-          <div class="register-trust-strip">
-            <div class="reg-trust-item">
-              <span>&#128100;</span> Identity verified
-            </div>
-            <div class="reg-trust-item">
-              <span>&#127942;</span> F-Gas cert checked
-            </div>
-            <div class="reg-trust-item">
-              <span>&#128220;</span> Insurance confirmed
-            </div>
-            <div class="reg-trust-item">
-              <span>&#9733;</span> Rated by customers
-            </div>
-          </div>
 
           <form (ngSubmit)="submit()">
 
@@ -206,9 +202,9 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
       background: white;
       transition: all 0.15s;
     }
-    .brand-check-label:hover { border-color: #1e3a5f; }
-    .brand-check-label.selected { border-color: #1e3a5f; background: #f0f5ff; color: #1e3a5f; font-weight: 500; }
-    .brand-check-label input { accent-color: #1e3a5f; }
+    .brand-check-label:hover { border-color: var(--ink-2); }
+    .brand-check-label.selected { border-color: var(--ink-2); background: #f0f5ff; color: var(--ink-2); font-weight: 500; }
+    .brand-check-label input { accent-color: var(--ink-2); }
 
     .checkbox-label {
       display: flex;
@@ -218,7 +214,7 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
       color: #374151;
       cursor: pointer;
     }
-    .checkbox-label input { margin-top: 0.2rem; accent-color: #1e3a5f; }
+    .checkbox-label input { margin-top: 0.2rem; accent-color: var(--ink-2); }
 
     .success-next-steps {
       background: #f9fafb;

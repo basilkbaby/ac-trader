@@ -120,26 +120,35 @@ import { ServicePlanTier } from '../../core/models/models';
   `,
   styles: [`
     .plans-hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      background: var(--grad-hero);
       color: white;
-      padding: 4rem 1.5rem 3rem;
+      padding: 4rem 1.5rem 3.25rem;
       text-align: center;
       margin-bottom: 0;
+      position: relative;
+      overflow: hidden;
     }
-    .plans-hero-inner { max-width: 640px; margin: 0 auto; }
+    .plans-hero::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(45% 70% at 85% 0%, rgba(25,192,214,0.16), transparent 70%);
+      pointer-events: none;
+    }
+    .plans-hero-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
     .plans-eyebrow {
       display: inline-block;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
+      color: #7fd4e3;
+      background: rgba(25,192,214,0.12);
+      border: 1px solid rgba(25,192,214,0.28);
       border-radius: 999px;
-      padding: 0.25rem 1rem;
-      font-size: 0.8rem;
-      letter-spacing: 0.05em;
+      padding: 0.3rem 0.95rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 1rem;
     }
-    .plans-hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 1rem; line-height: 1.2; }
-    .plans-sub { font-size: 1.05rem; opacity: 0.85; line-height: 1.6; }
+    .plans-hero h1 { color: #fff; font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 1rem; line-height: 1.2; }
+    .plans-sub { font-size: 1.05rem; color: rgba(255,255,255,0.82); line-height: 1.6; }
 
     .plans-toggle-wrap {
       display: flex;
@@ -161,8 +170,8 @@ import { ServicePlanTier } from '../../core/models/models';
       transition: all 0.15s;
     }
     .toggle-btn.active {
-      border-color: #1e3a5f;
-      background: #1e3a5f;
+      border-color: var(--brand);
+      background: var(--brand);
       color: white;
     }
     .toggle-saving {
@@ -183,24 +192,24 @@ import { ServicePlanTier } from '../../core/models/models';
       padding: 0 1.5rem;
     }
     .plan-card {
-      background: white;
-      border: 2px solid #e5e7eb;
-      border-radius: 16px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: 2rem 1.75rem;
       position: relative;
-      transition: box-shadow 0.15s;
+      transition: box-shadow 0.18s ease, transform 0.18s ease;
     }
-    .plan-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    .plan-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
     .plan-highlight {
-      border-color: #1e3a5f;
-      box-shadow: 0 4px 24px rgba(30,58,95,0.15);
+      border-color: var(--brand);
+      box-shadow: 0 12px 32px -10px rgba(11,92,255,0.28);
     }
     .plan-badge {
       position: absolute;
       top: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: #1e3a5f;
+      background: var(--grad-brand);
       color: white;
       font-size: 0.75rem;
       font-weight: 700;
@@ -268,11 +277,11 @@ import { ServicePlanTier } from '../../core/models/models';
     }
     .faq-chevron { color: #9ca3af; font-size: 0.75rem; }
     .faq-a { padding: 0 1.25rem 1rem; font-size: 0.9rem; color: #6b7280; line-height: 1.6; }
-    .faq-open { border-color: #1e3a5f; }
-    .faq-open .faq-q { background: #f8faff; }
+    .faq-open { border-color: var(--brand); }
+    .faq-open .faq-q { background: var(--brand-light); }
 
     .plans-cta-band {
-      background: #0f172a;
+      background: var(--grad-hero);
       color: white;
       text-align: center;
       padding: 4rem 1.5rem;

@@ -149,7 +149,7 @@ const MOCK_CERTS: UploadedCert[] = [
                     <label>File (PDF or image)</label>
                     <div class="file-drop" (click)="fileInput.click()" [class.has-file]="uploadDraft.fileName">
                       @if (uploadDraft.fileName) {
-                        <span class="file-chosen">📄 {{ uploadDraft.fileName }}</span>
+                        <span class="file-chosen">{{ uploadDraft.fileName }}</span>
                       } @else {
                         <span>Click to choose or drag &amp; drop</span>
                         <span class="file-hint">PDF, JPG, PNG - max 5 MB</span>
@@ -166,7 +166,7 @@ const MOCK_CERTS: UploadedCert[] = [
               <div class="cert-list">
                 @for (cert of certs(); track cert.id) {
                   <div class="cert-row" [class.cert-expiring]="isCertExpiringSoon(cert)">
-                    <span class="cert-icon">📋</span>
+                    <span class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 12l2 2 4-4"/></svg></span>
                     <div class="cert-info">
                       <span class="cert-type">{{ cert.type }}</span>
                       <span class="cert-meta">
@@ -177,8 +177,8 @@ const MOCK_CERTS: UploadedCert[] = [
                       </span>
                     </div>
                     <div class="cert-actions">
-                      <button class="cert-view-btn" (click)="viewingCert.set(cert)">👁 View</button>
-                      <button class="cert-del-btn"  (click)="deleteCert(cert.id)">✕</button>
+                      <button class="cert-view-btn" (click)="viewingCert.set(cert)">View</button>
+                      <button class="cert-del-btn"  (click)="deleteCert(cert.id)">&#10005;</button>
                     </div>
                   </div>
                 }
@@ -215,7 +215,7 @@ const MOCK_CERTS: UploadedCert[] = [
                 <div class="portfolio-group">
                   <div class="pg-header">
                     <div class="pg-ring" [style.background]="group.coverColor">
-                      <span>📸</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l2-2h8l2 2h3v13H3z"/><circle cx="12" cy="13" r="3.5"/></svg>
                     </div>
                     <div class="pg-info">
                       <span class="pg-title">{{ group.title }}</span>
@@ -240,7 +240,7 @@ const MOCK_CERTS: UploadedCert[] = [
                         <label>File (PDF or image)</label>
                         <div class="file-drop" (click)="photoInput.click()" [class.has-file]="newPhotoFileName">
                           @if (newPhotoFileName) {
-                            <span class="file-chosen">📷 {{ newPhotoFileName }}</span>
+                            <span class="file-chosen">{{ newPhotoFileName }}</span>
                           } @else {
                             <span>Click to choose or drag &amp; drop</span>
                             <span class="file-hint">JPG, PNG, HEIC — max 10 MB</span>
@@ -326,37 +326,37 @@ const MOCK_CERTS: UploadedCert[] = [
             <div class="card-body compliance-list">
               <div class="compliance-item" [class.comp-ok]="true">
                 <div class="comp-item-left">
-                  <span class="comp-icon">🔑</span>
+                  <span class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 12l2 2 4-4"/></svg></span>
                   <div>
                     <span class="comp-name">F-Gas Certificate</span>
                     <span class="comp-detail">{{ form.fGasCertNumber }}</span>
                   </div>
                 </div>
-                <span class="comp-badge comp-verified">Verified ✓</span>
+                <span class="comp-badge comp-verified">Verified &#10003;</span>
               </div>
               <div class="compliance-item" [class.comp-ok]="form.hasPublicLiability">
                 <div class="comp-item-left">
-                  <span class="comp-icon">📋</span>
+                  <span class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg></span>
                   <div>
                     <span class="comp-name">Public Liability Insurance</span>
                     <span class="comp-detail">{{ form.hasPublicLiability ? 'On file' : 'Not provided' }}</span>
                   </div>
                 </div>
                 @if (form.hasPublicLiability) {
-                  <span class="comp-badge comp-verified">Verified ✓</span>
+                  <span class="comp-badge comp-verified">Verified &#10003;</span>
                 } @else {
-                  <span class="comp-badge comp-missing">Upload cert →</span>
+                  <span class="comp-badge comp-missing">Upload cert &#8594;</span>
                 }
               </div>
               <div class="compliance-item">
                 <div class="comp-item-left">
-                  <span class="comp-icon">🛡️</span>
+                  <span class="comp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M16 11l2 2 3-3" transform="translate(0 -1)"/></svg></span>
                   <div>
                     <span class="comp-name">DBS Check</span>
                     <span class="comp-detail">Not provided</span>
                   </div>
                 </div>
-                <span class="comp-badge comp-missing">Upload cert →</span>
+                <span class="comp-badge comp-missing">Upload cert &#8594;</span>
               </div>
             </div>
           </div>
@@ -382,10 +382,10 @@ const MOCK_CERTS: UploadedCert[] = [
           </div>
           <div class="modal-body">
             <div class="cert-preview">
-              <span>📄</span>
+              <span class="cert-preview-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 13h6M9 17h4"/></svg></span>
               <p>{{ viewingCert()!.fileName }}</p>
               <p class="preview-hint">Certificate preview would display here.</p>
-              <button class="btn-primary btn-sm">⬇ Download</button>
+              <button class="btn-primary btn-sm">Download</button>
             </div>
           </div>
           <div class="modal-footer">
@@ -404,7 +404,7 @@ const MOCK_CERTS: UploadedCert[] = [
     /* Title */
     .profile-titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .profile-titlerow h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.15rem; }
-    .profile-sub { font-size: 0.78rem; color: #9ca3af; margin: 0; }
+    .profile-sub { font-size: 0.78rem; color: var(--text-muted); margin: 0; }
     .title-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
 
     .save-banner {
@@ -423,81 +423,83 @@ const MOCK_CERTS: UploadedCert[] = [
 
     /* Card */
     .profile-card {
-      background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
     }
     .card-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.85rem 1.25rem; border-bottom: 1px solid #f3f4f6;
+      padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
     }
     .card-header h3 {
       font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; color: #6b7280; margin: 0;
+      letter-spacing: 0.05em; color: var(--text-secondary); margin: 0;
     }
-    .card-header-hint { font-size: 0.72rem; color: #9ca3af; }
+    .card-header-hint { font-size: 0.72rem; color: var(--text-muted); }
     .card-body { padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
 
     /* Forms */
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
-    .form-group label { font-size: 0.72rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-group label { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
     .form-group input, .form-group textarea, .form-group select {
-      padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 8px;
+      padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px;
       font-size: 0.88rem; width: 100%; box-sizing: border-box; background: white;
     }
     .form-group textarea { resize: vertical; }
-    .lbl-hint { font-size: 0.7rem; color: #9ca3af; font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 0.3rem; }
+    .lbl-hint { font-size: 0.7rem; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 0.3rem; }
 
     /* Availability */
     .avail-row { display: flex; align-items: center; gap: 0.85rem; }
     .avail-toggle-wrap { cursor: pointer; flex-shrink: 0; }
     .big-toggle { position: relative; display: inline-block; width: 48px; height: 26px; }
     .big-toggle input { opacity: 0; width: 0; height: 0; }
-    .big-slider { position: absolute; cursor: pointer; inset: 0; background: #d1d5db; border-radius: 26px; transition: 0.2s; }
+    .big-slider { position: absolute; cursor: pointer; inset: 0; background: var(--border); border-radius: 26px; transition: 0.2s; }
     .big-slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
     .big-toggle input:checked + .big-slider { background: #059669; }
     .big-toggle input:checked + .big-slider::before { transform: translateX(22px); }
-    .avail-text strong { display: block; font-size: 0.88rem; color: #111827; margin-bottom: 0.1rem; }
-    .avail-text span { font-size: 0.78rem; color: #9ca3af; }
+    .avail-text strong { display: block; font-size: 0.88rem; color: var(--text-primary); margin-bottom: 0.1rem; }
+    .avail-text span { font-size: 0.78rem; color: var(--text-muted); }
 
     /* Brand chips */
     .brand-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .brand-chip {
       display: flex; align-items: center; gap: 0.3rem;
-      padding: 0.3rem 0.65rem; border: 1px solid #e5e7eb; border-radius: 999px;
-      cursor: pointer; font-size: 0.78rem; color: #6b7280; transition: all 0.12s;
+      padding: 0.3rem 0.65rem; border: 1px solid var(--border); border-radius: 999px;
+      cursor: pointer; font-size: 0.78rem; color: var(--text-secondary); transition: all 0.12s;
     }
-    .brand-chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
-    .brand-chip.selected { border-color: #1e3a5f; background: #eff6ff; color: #1e3a5f; font-weight: 600; }
-    .brand-chip input { width: 12px; height: 12px; accent-color: #1e3a5f; }
+    .brand-chip:hover { border-color: var(--ink-2); color: var(--ink-2); }
+    .brand-chip.selected { border-color: var(--ink-2); background: var(--brand-light); color: var(--ink-2); font-weight: 600; }
+    .brand-chip input { width: 12px; height: 12px; accent-color: var(--ink-2); }
 
     /* Compliance */
     .compliance-list { gap: 0.5rem !important; }
     .compliance-item {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.7rem 0.85rem; border: 1px solid #e5e7eb; border-radius: 10px;
-      background: #f9fafb; opacity: 0.6;
+      padding: 0.7rem 0.85rem; border: 1px solid var(--border); border-radius: 10px;
+      background: var(--bg); opacity: 0.6;
     }
     .compliance-item.comp-ok { opacity: 1; border-color: #bbf7d0; background: #f0fdf4; }
     .comp-item-left { display: flex; align-items: center; gap: 0.65rem; }
-    .comp-icon { font-size: 1rem; }
-    .comp-name   { display: block; font-size: 0.83rem; font-weight: 600; color: #111827; }
-    .comp-detail { display: block; font-size: 0.72rem; color: #9ca3af; }
+    .comp-icon { color: var(--text-secondary); display: inline-flex; flex-shrink: 0; }
+    .comp-icon svg { width: 19px; height: 19px; }
+    .comp-ok .comp-icon { color: var(--success); }
+    .comp-name   { display: block; font-size: 0.83rem; font-weight: 600; color: var(--text-primary); }
+    .comp-detail { display: block; font-size: 0.72rem; color: var(--text-muted); }
     .comp-badge { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 999px; flex-shrink: 0; }
     .comp-verified { background: #d1fae5; color: #065f46; }
-    .comp-missing  { background: #f3f4f6; color: #6b7280; cursor: pointer; }
+    .comp-missing  { background: var(--border); color: var(--text-secondary); cursor: pointer; }
 
     /* Certs */
     .upload-form {
-      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
       padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;
       margin-bottom: 0.75rem;
     }
     .file-drop {
-      border: 2px dashed #d1d5db; border-radius: 8px; padding: 1.1rem;
-      text-align: center; cursor: pointer; font-size: 0.82rem; color: #9ca3af;
+      border: 2px dashed var(--border); border-radius: 8px; padding: 1.1rem;
+      text-align: center; cursor: pointer; font-size: 0.82rem; color: var(--text-muted);
       display: flex; flex-direction: column; gap: 0.2rem; transition: all 0.12s;
     }
-    .file-drop:hover { border-color: #1e3a5f; background: #f0f5ff; }
+    .file-drop:hover { border-color: var(--ink-2); background: var(--brand-light); }
     .file-drop.has-file { border-color: #6ee7b7; background: #f0fdf4; }
     .file-chosen { color: #065f46; font-weight: 600; }
     .file-hint { font-size: 0.72rem; }
@@ -506,34 +508,36 @@ const MOCK_CERTS: UploadedCert[] = [
     .cert-list { display: flex; flex-direction: column; }
     .cert-row {
       display: flex; align-items: center; gap: 0.65rem;
-      padding: 0.65rem 0; border-bottom: 1px solid #f3f4f6;
+      padding: 0.65rem 0; border-bottom: 1px solid var(--border);
     }
     .cert-row:last-child { border-bottom: none; }
     .cert-row.cert-expiring { background: #fffbeb; border-radius: 8px; padding: 0.65rem 0.5rem; }
-    .cert-icon { font-size: 1rem; flex-shrink: 0; }
+    .cert-icon { flex-shrink: 0; color: var(--brand); display: inline-flex; }
+    .cert-icon svg { width: 18px; height: 18px; }
     .cert-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
-    .cert-type { font-size: 0.82rem; font-weight: 600; color: #111827; }
-    .cert-meta { font-size: 0.72rem; color: #9ca3af; }
+    .cert-type { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+    .cert-meta { font-size: 0.72rem; color: var(--text-muted); }
     .exp-soon  { color: #d97706; font-weight: 600; }
     .cert-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
-    .cert-view-btn { font-size: 0.72rem; font-weight: 600; color: #1e3a5f; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.18rem 0.5rem; cursor: pointer; }
-    .cert-del-btn  { font-size: 0.72rem; color: #9ca3af; background: none; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.18rem 0.45rem; cursor: pointer; }
+    .cert-view-btn { font-size: 0.72rem; font-weight: 600; color: var(--ink-2); background: var(--brand-light); border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.18rem 0.5rem; cursor: pointer; }
+    .cert-del-btn  { font-size: 0.72rem; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 0.18rem 0.45rem; cursor: pointer; }
     .cert-del-btn:hover { color: #dc2626; border-color: #fca5a5; }
-    .cert-empty { font-size: 0.82rem; color: #9ca3af; margin: 0; }
+    .cert-empty { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
     /* Portfolio */
     .portfolio-group {
-      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
       padding: 0.75rem; display: flex; flex-direction: column; gap: 0.6rem;
     }
     .pg-header { display: flex; align-items: center; gap: 0.65rem; }
     .pg-ring {
       width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; color: #fff;
     }
+    .pg-ring svg { width: 20px; height: 20px; }
     .pg-info { flex: 1; min-width: 0; }
-    .pg-title { display: block; font-size: 0.85rem; font-weight: 600; color: #111827; }
-    .pg-count { font-size: 0.72rem; color: #9ca3af; }
+    .pg-title { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+    .pg-count { font-size: 0.72rem; color: var(--text-muted); }
     .pg-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
     .pg-photo-form { margin-top: 0; }
     .pg-thumbs { display: flex; flex-wrap: wrap; gap: 0.4rem; padding-top: 0.2rem; }
@@ -558,15 +562,16 @@ const MOCK_CERTS: UploadedCert[] = [
     /* Modal */
     .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
     .modal { background: white; border-radius: 14px; width: 100%; max-width: 420px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.1rem; border-bottom: 1px solid #f3f4f6; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--border); }
     .modal-header strong { font-size: 0.88rem; }
-    .modal-close { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1rem; }
+    .modal-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; }
     .modal-body { padding: 1.5rem 1.1rem; }
     .cert-preview { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
-    .cert-preview span { font-size: 2.5rem; }
-    .cert-preview p { font-size: 0.85rem; color: #374151; margin: 0; font-weight: 500; }
-    .preview-hint { color: #9ca3af !important; font-size: 0.75rem !important; }
-    .modal-footer { display: flex; gap: 1.5rem; padding: 0.75rem 1.1rem; border-top: 1px solid #f3f4f6; background: #f9fafb; font-size: 0.75rem; color: #9ca3af; }
+    .cert-preview-ico { width: 56px; height: 56px; border-radius: 14px; background: var(--brand-light); color: var(--brand); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.4rem; }
+    .cert-preview-ico svg { width: 28px; height: 28px; }
+    .cert-preview p { font-size: 0.85rem; color: var(--text-primary); margin: 0; font-weight: 500; }
+    .preview-hint { color: var(--text-muted) !important; font-size: 0.75rem !important; }
+    .modal-footer { display: flex; gap: 1.5rem; padding: 0.75rem 1.1rem; border-top: 1px solid var(--border); background: var(--bg); font-size: 0.75rem; color: var(--text-muted); }
 
     @media (max-width: 900px) {
       .profile-columns { grid-template-columns: 1fr; }
@@ -608,7 +613,7 @@ export class DashboardProfileComponent implements OnInit {
 
   createGroup() {
     if (!this.newGroupTitle.trim()) { this.addGroupError.set('Please enter a title.'); return; }
-    const colors = ['#1e3a5f','#064e3b','#4c1d95','#7f1d1d','#713f12'];
+    const colors = ['var(--ink-2)','#064e3b','#4c1d95','#7f1d1d','#713f12'];
     const accents = ['#3b82f6','#10b981','#a78bfa','#f87171','#fcd34d'];
     const idx = this._portfolioGroups().length % colors.length;
     const newGroup: PortfolioGroup = {
@@ -639,7 +644,7 @@ export class DashboardProfileComponent implements OnInit {
     const newImg: PortfolioImage = {
       id: Date.now(), caption: this.newPhotoCaption.trim(),
       jobType: jobTypes[Math.floor(Math.random() * jobTypes.length)],
-      color: '#1e3a5f', accentColor: '#3b82f6',
+      color: 'var(--ink-2)', accentColor: '#3b82f6',
       postedAt: new Date().toISOString().split('T')[0],
     };
     this._portfolioGroups.update(gs =>
