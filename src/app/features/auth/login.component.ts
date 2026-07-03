@@ -16,7 +16,7 @@ type Tab = 'customer' | 'engineer';
 
         <div class="login-header">
           <a routerLink="/" class="back-link">← Home</a>
-          <h1>Sign in to ACTrader</h1>
+          <h1>Sign in to Cool HQ</h1>
         </div>
 
         <div class="login-tabs">

@@ -58,6 +58,22 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard-jobs.component').then(m => m.DashboardJobsComponent)
       },
       {
+        path: 'quotes',
+        loadComponent: () => import('./features/dashboard/dashboard-quotes-list.component').then(m => m.DashboardQuotesListComponent)
+      },
+      {
+        path: 'quotes/new',
+        loadComponent: () => import('./features/dashboard/dashboard-quote.component').then(m => m.DashboardQuoteComponent)
+      },
+      {
+        path: 'quotes/:id',
+        loadComponent: () => import('./features/dashboard/dashboard-quote.component').then(m => m.DashboardQuoteComponent)
+      },
+      {
+        path: 'heat-load',
+        loadComponent: () => import('./features/dashboard/dashboard-heat-load.component').then(m => m.DashboardHeatLoadComponent)
+      },
+      {
         path: 'invoices',
         loadComponent: () => import('./features/dashboard/dashboard-invoices.component').then(m => m.DashboardInvoicesComponent)
       },

@@ -12,7 +12,7 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   return next(apiReq).pipe(
     catchError((error: HttpErrorResponse) => {
       const message = error.error?.message ?? 'Something went wrong. Please try again.';
-      console.error('[ACTrader API Error]', error.status, message);
+      console.error('[Cool HQ API Error]', error.status, message);
       return throwError(() => new Error(message));
     })
   );

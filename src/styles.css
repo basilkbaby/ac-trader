@@ -374,3 +374,12 @@ textarea { resize: vertical; min-height: 90px; }
   .nav-links a { font-size: 0.95rem; }
   .engineer-card:hover { box-shadow: var(--shadow-md); }
 }
+
+/* ── Print: isolate documents (quotes / invoices) from app chrome ────────────── */
+@media print {
+  body { background: #fff; }
+  .site-header, .site-footer, .dash-sidebar, .dash-topbar, .qb-noprint,
+  .qb-preview-bar, .nav-burger, .inv-detail-topbar { display: none !important; }
+  .dash-layout, .dash-main, .dash-content { display: block !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; background: #fff !important; }
+  .qb-doc, .inv-doc { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+}

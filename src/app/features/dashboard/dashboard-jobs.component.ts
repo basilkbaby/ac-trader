@@ -144,6 +144,7 @@ type JobTab = 'pending' | 'active' | 'completed';
                   }
                   @if (job.status === 'completed') {
                     <span class="job-done-lbl">&#10003; Completed</span>
+                    <a routerLink="/dashboard/quotes/new" class="btn-secondary btn-sm">New quote</a>
                     <a routerLink="/dashboard/invoices" class="btn-secondary btn-sm">Create invoice</a>
                   }
                 </div>

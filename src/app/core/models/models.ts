@@ -210,6 +210,42 @@ export interface Invoice {
   notes: string | null;
 }
 
+// Engineer saved quotations
+export interface EquipRow {
+  qty: number;
+  model: string;
+  description: string;
+}
+
+export type SavedQuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined';
+
+export interface SavedQuote {
+  id: number;
+  engineerId: number;
+  ref: string;
+  createdAt: string;
+  status: SavedQuoteStatus;
+  customerName: string;
+  customerEmail: string;
+  customerAddress: string;
+  title: string;
+  summary: string;
+  recommendedBtu: string;
+  estimatedDuration: string;
+  scopeText: string;
+  exclusionsText: string;
+  notesText: string;
+  equipment: EquipRow[];
+  items: InvoiceItem[];
+  addWorks: boolean;
+  addWorksDesc: string;
+  addWorksCost: number;
+  vat: boolean;
+  subtotal: number;
+  vatAmount: number;
+  total: number;
+}
+
 // Customer booking summary (for account page)
 export interface CustomerBooking {
   id: number;

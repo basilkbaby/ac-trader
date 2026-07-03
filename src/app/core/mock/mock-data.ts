@@ -1,4 +1,4 @@
-import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
+import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, InvoiceItem, SavedQuote, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
 
 // ─── Toggle ──────────────────────────────────────────────────────────────────
 // Set to false once your real API is connected.
@@ -583,6 +583,132 @@ export function updateInvoiceStatus(invoiceId: number, status: Invoice['status']
   _invoices = _invoices.map(i => i.id === invoiceId ? { ...i, status } : i);
 }
 
+// ─── Engineer saved quotations ────────────────────────────────────────────────
+
+const _DEF_EXCL = [
+  'Any unforeseen site-specific requirements',
+  'Structural or building works',
+  'Decorative making good (plastering / painting)',
+  'Electrical supply upgrades beyond those stated above',
+].join('\n');
+const _DEF_NOTES = [
+  'All works will be carried out in accordance with current UK regulations and industry standards.',
+  'Installation date to be agreed upon acceptance of this quotation.',
+  "Manufacturer's warranty applies to all supplied equipment.",
+  'This quotation is valid for 30 days from the date above.',
+].join('\n');
+
+let nextSavedQuoteId = 8004;
+
+let _savedQuotes: SavedQuote[] = [
+  {
+    id: 8001, engineerId: 1, ref: 'QTE-412/2026', createdAt: '2026-06-28T10:00:00Z', status: 'sent',
+    customerName: 'Sophie Walker', customerEmail: 'sophie.walker@email.com',
+    customerAddress: '14 Eaton Square\nLondon SW1W 9BE',
+    title: 'Quotation – Supply & Installation of Air Conditioning System',
+    summary: 'New installation · 1 unit · mid-range · flat', recommendedBtu: '12,000 BTU', estimatedDuration: '1 day',
+    scopeText: [
+      'Supply and installation of mid-range single-split air conditioning system',
+      'Installation of 1 indoor wall-mounted unit',
+      'Installation of outdoor condenser unit mounted on external wall brackets',
+      'Installation of refrigerant pipework with insulation (lagging)',
+      'Full system testing, commissioning and client handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [
+      { qty: 1, model: '', description: 'Outdoor condenser unit' },
+      { qty: 1, model: '', description: 'Wall-mounted indoor unit — 12,000 BTU' },
+    ],
+    items: [
+      { description: 'Mid-range wall-mounted AC unit — 12,000 BTU (medium room)', quantity: 1, unitPrice: 875 },
+      { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 300 },
+      { description: 'Pipework, cabling & fittings', quantity: 1, unitPrice: 140 },
+      { description: 'Commissioning, F-Gas sign-off & handover', quantity: 1, unitPrice: 80 },
+      { description: 'Waste removal & consumables', quantity: 1, unitPrice: 45 },
+    ],
+    addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
+    subtotal: 1440, vatAmount: 0, total: 1440,
+  },
+  {
+    id: 8002, engineerId: 1, ref: 'QTE-408/2026', createdAt: '2026-06-24T14:30:00Z', status: 'accepted',
+    customerName: 'Gareth Evans', customerEmail: 'gareth.evans@email.com',
+    customerAddress: '87 Chelsea Embankment\nLondon SW3 4LW',
+    title: 'Quotation – Supply & Installation of Air Conditioning System',
+    summary: 'New installation · 3 units · premium · terraced house', recommendedBtu: '24,000 BTU', estimatedDuration: '2–3 days',
+    scopeText: [
+      'Supply and installation of premium multi-split air conditioning system',
+      'Installation of 3 indoor wall-mounted units',
+      'Installation of 1 outdoor condenser unit mounted on external wall brackets',
+      'Installation of refrigerant pipework with insulation (lagging)',
+      'Installation of condensate drainage system',
+      'Electrical interconnection between indoor and outdoor units',
+      'Installation of trunking to ensure a neat and professional finish',
+      'Full system testing, commissioning and client handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [
+      { qty: 1, model: 'AOEG36KBTA5', description: 'Multi-split outdoor condenser (3:1)' },
+      { qty: 3, model: '', description: 'Wall-mounted indoor unit — 24,000 BTU' },
+    ],
+    items: [
+      { description: 'Premium wall-mounted AC unit — 24,000 BTU (large room)', quantity: 3, unitPrice: 1700 },
+      { description: 'Multi-split outdoor condenser (3 zones)', quantity: 1, unitPrice: 650 },
+      { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 700 },
+      { description: 'Pipework, cabling & fittings', quantity: 3, unitPrice: 150 },
+      { description: 'Commissioning, F-Gas sign-off & handover', quantity: 1, unitPrice: 80 },
+      { description: 'Waste removal & consumables', quantity: 1, unitPrice: 45 },
+    ],
+    addWorks: true, addWorksDesc: 'Provision of a new power supply from the distribution board to the outdoor unit, including 32A RCBO, 32A isolator, containment, conduits and associated cabling.', addWorksCost: 150, vat: false,
+    subtotal: 7025, vatAmount: 0, total: 7175,
+  },
+  {
+    id: 8003, engineerId: 1, ref: 'QTE-401/2026', createdAt: '2026-06-19T09:15:00Z', status: 'draft',
+    customerName: 'Nina Patel', customerEmail: 'nina.patel@email.com',
+    customerAddress: '22 Sloane Gardens\nLondon SW1W 8DP',
+    title: 'Quotation – Air Conditioning Service',
+    summary: 'Service · flat', recommendedBtu: '', estimatedDuration: '2–3 hours',
+    scopeText: [
+      'Full service and performance check of the existing system',
+      'Filter clean and condensate drainage check',
+      'Refrigerant pressure and level check',
+      'Electrical safety check',
+      'Written service report and handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [],
+    items: [
+      { description: 'Annual service & performance check', quantity: 1, unitPrice: 105 },
+      { description: 'Filters, consumables & refrigerant check', quantity: 1, unitPrice: 24 },
+    ],
+    addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
+    subtotal: 129, vatAmount: 0, total: 129,
+  },
+];
+
+export function getSavedQuotes(engineerId: number): SavedQuote[] {
+  return _savedQuotes
+    .filter(q => q.engineerId === engineerId)
+    .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+}
+
+export function getSavedQuoteById(id: number): SavedQuote | null {
+  return _savedQuotes.find(q => q.id === id) ?? null;
+}
+
+export function saveEngineerQuote(q: Omit<SavedQuote, 'id'>): SavedQuote {
+  const full: SavedQuote = { ...q, id: nextSavedQuoteId++ };
+  _savedQuotes = [full, ..._savedQuotes];
+  return full;
+}
+
+export function updateEngineerQuote(id: number, patch: Partial<SavedQuote>): void {
+  _savedQuotes = _savedQuotes.map(q => q.id === id ? { ...q, ...patch } : q);
+}
+
+export function updateSavedQuoteStatus(id: number, status: SavedQuote['status']): void {
+  _savedQuotes = _savedQuotes.map(q => q.id === id ? { ...q, status } : q);
+}
+
 // ─── Customer portal data ─────────────────────────────────────────────────────
 
 export const MOCK_CUSTOMER_BOOKINGS: CustomerBooking[] = [
@@ -814,4 +940,100 @@ function getBtu(m2: number): string {
   if (m2 <= 40) return '12,000 BTU';
   if (m2 <= 55) return '18,000 BTU';
   return '24,000 BTU';
+}
+
+// ─── Engineer quote generator ─────────────────────────────────────────────────
+// Produces itemised, editable line items with point prices (mid-band), using the
+// same cost tables as the customer estimate so quotes stay consistent.
+
+export interface QuoteGenParams {
+  jobType: string;          // install | replace | service | emergency
+  unitCount: number;
+  roomSizeM2: number;
+  propertyType: string;     // flat | terr | semi | det | comm
+  brandTier: string;        // budget | mid | premium
+  serviceJobType?: string;  // annual | strip | repair
+  recommendedBtu?: number;  // optional override from the heat-load calculator
+}
+
+export interface QuoteGenResult {
+  items: InvoiceItem[];
+  recommendedBtu: string;
+  estimatedDuration: string;
+  summary: string;
+}
+
+export function generateQuoteItems(p: QuoteGenParams): QuoteGenResult {
+  const mid   = (a: number, b: number) => Math.round((a + b) / 2 / 5) * 5; // round to nearest £5
+  const units = Math.max(1, Number(p.unitCount) || 1);
+  const tier  = p.brandTier || 'mid';
+  const isIR  = p.jobType === 'install' || p.jobType === 'replace';
+  const isService = p.jobType === 'service';
+  const btuNum = p.recommendedBtu && p.recommendedBtu > 0 ? p.recommendedBtu : null;
+  const btu   = btuNum ? `${btuNum.toLocaleString()} BTU` : getBtu(p.roomSizeM2);
+
+  const sizeBracket = btuNum
+    ? (btuNum <= 9000 ? 'small' : btuNum <= 12000 ? 'medium' : btuNum <= 18000 ? 'large' : 'xlarge')
+    : (p.roomSizeM2 <= 20 ? 'small'
+      : p.roomSizeM2 <= 35 ? 'medium'
+      : p.roomSizeM2 <= 60 ? 'large' : 'xlarge');
+
+  const unitCostByTier: Record<string, Record<string, [number, number]>> = {
+    budget:  { small: [350,550],  medium: [450,700],  large: [600,950],  xlarge: [800,1200]  },
+    mid:     { small: [550,800],  medium: [700,1050], large: [950,1400], xlarge: [1200,1800] },
+    premium: { small: [850,1200], medium: [1100,1600],large: [1400,2000],xlarge: [1800,2600] },
+  };
+  const multiSplitUplift: Record<number, [number, number]> = { 2:[300,500], 3:[500,800], 4:[700,1100] };
+  const labourFirst: [number, number] = [220, 380];
+  const labourExtra: [number, number] = [150, 250];
+  const pipeByProp: Record<string, [number, number]> = {
+    flat: [80,140], terr: [100,180], semi: [130,220], det: [160,260], comm: [220,380],
+  };
+  const svcCosts: Record<string, [number, number]> = { annual: [80,130], strip: [140,220], repair: [95,160] };
+
+  const tierName = tier === 'budget' ? 'Budget-range' : tier === 'premium' ? 'Premium' : 'Mid-range';
+  const sizeName = sizeBracket === 'small' ? 'small room' : sizeBracket === 'medium' ? 'medium room'
+    : sizeBracket === 'large' ? 'large room' : 'very large space';
+  const propName: Record<string, string> = { flat: 'flat', terr: 'terraced house', semi: 'semi-detached', det: 'detached house', comm: 'commercial premises' };
+
+  const items: InvoiceItem[] = [];
+  let duration = '';
+
+  if (isIR) {
+    const [uL, uH] = unitCostByTier[tier][sizeBracket];
+    items.push({ description: `${tierName} wall-mounted AC unit — ${btu} (${sizeName})`, quantity: units, unitPrice: mid(uL, uH) });
+    if (units >= 2) {
+      const key = Math.min(units, 4) as 2 | 3 | 4;
+      const [mL, mH] = multiSplitUplift[key];
+      items.push({ description: `Multi-split outdoor condenser (${units} zones)`, quantity: 1, unitPrice: mid(mL, mH) });
+    }
+    const labL = labourFirst[0] + (units - 1) * labourExtra[0];
+    const labH = labourFirst[1] + (units - 1) * labourExtra[1];
+    items.push({ description: `Installation labour, mounting & bracketry`, quantity: 1, unitPrice: mid(labL, labH) });
+    const [pL, pH] = pipeByProp[p.propertyType] ?? [100, 180];
+    items.push({ description: `Pipework, cabling & fittings`, quantity: units, unitPrice: mid(pL, pH) });
+    items.push({ description: `Commissioning, F-Gas sign-off & handover`, quantity: 1, unitPrice: 80 });
+    items.push({ description: `Waste removal & consumables`, quantity: 1, unitPrice: 45 });
+    duration = units === 1 ? '1 day' : units <= 2 ? '1–2 days' : '2–3 days';
+  } else if (isService) {
+    const svc = p.serviceJobType || 'annual';
+    const [sL, sH] = svcCosts[svc] ?? svcCosts['annual'];
+    const label = svc === 'strip' ? 'Deep clean & full chemical strip'
+      : svc === 'repair' ? 'Non-urgent repair labour'
+      : 'Annual service & performance check';
+    items.push({ description: label, quantity: units, unitPrice: mid(sL, sH) });
+    items.push({ description: `Filters, consumables & refrigerant check`, quantity: 1, unitPrice: 24 });
+    duration = svc === 'strip' ? '3–4 hours' : '2–3 hours';
+  } else {
+    items.push({ description: `Emergency call-out (includes first hour on site)`, quantity: 1, unitPrice: 120 });
+    items.push({ description: `Diagnostic & written fault report`, quantity: 1, unitPrice: 45 });
+    duration = '1–3 hours (same/next day)';
+  }
+
+  const jobName: Record<string, string> = { install: 'New installation', replace: 'Replacement', service: 'Service', emergency: 'Emergency repair' };
+  const summary = isIR
+    ? `${jobName[p.jobType]} · ${units} ${units === 1 ? 'unit' : 'units'} · ${tierName.toLowerCase()} · ${propName[p.propertyType] ?? 'property'}`
+    : `${jobName[p.jobType]} · ${propName[p.propertyType] ?? 'property'}`;
+
+  return { items, recommendedBtu: btu, estimatedDuration: duration, summary };
 }

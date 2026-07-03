@@ -94,7 +94,7 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
           <div class="inv-doc">
             <div class="inv-doc-head">
               <div>
-                <div class="inv-doc-brand"><span class="logo-ac">AC</span><span class="logo-tr">trader</span></div>
+                <div class="inv-doc-brand"><span class="logo-ac">Cool</span> <span class="logo-tr">HQ</span></div>
                 <div class="inv-doc-brandlbl">Tax Invoice</div>
               </div>
               <div class="inv-doc-meta">

@@ -121,6 +121,9 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
 
       <!-- Quick actions -->
       <div class="quick-actions">
+        <a routerLink="/dashboard/quotes/new" class="qa qa-primary">
+          <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h2M8 15h2M14 11h2M14 15h2"/></svg></span>New quote
+        </a>
         <a routerLink="/dashboard/invoices" class="qa">
           <span class="qa-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4M9 13h6M9 17h6"/></svg></span>New invoice
         </a>
@@ -244,6 +247,9 @@ import { getMockJobRequests, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-
     .qa:hover { background: var(--brand-light); border-color: #93c5fd; color: var(--brand); }
     .qa-ico { display: inline-flex; align-items: center; justify-content: center; color: var(--brand); }
     .qa-ico svg { width: 17px; height: 17px; }
+    .qa-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .qa-primary .qa-ico { color: #fff; }
+    .qa-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
     .metric-star { color: var(--gold); }
 
     @media (max-width: 700px) {

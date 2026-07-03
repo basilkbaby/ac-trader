@@ -11,7 +11,7 @@ import { AuthService } from './core/services/auth.service';
     <header class="site-header">
       <nav class="nav-inner">
         <a routerLink="/" class="logo" (click)="closeAll()">
-          <span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">AC</span><span class="logo-trader">trader</span>
+          <span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">Cool</span><span class="logo-trader">HQ</span>
         </a>
 
         <!-- Desktop nav -->
@@ -101,7 +101,7 @@ import { AuthService } from './core/services/auth.service';
     @if (!isDashboard()) {
       <footer class="site-footer">
         <div class="footer-inner">
-          <span class="logo"><span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">AC</span><span class="logo-trader">trader</span></span>
+          <span class="logo"><span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">Cool</span><span class="logo-trader">HQ</span></span>
           <p class="footer-tagline">The UK's Professional Air Conditioning Network.</p>
           <p>Connecting homeowners, businesses and qualified F-Gas certified engineers across the UK — one trusted network.</p>
           <div class="footer-links">
@@ -112,7 +112,7 @@ import { AuthService } from './core/services/auth.service';
             <a routerLink="/join">Join as engineer</a>
           </div>
           <div class="footer-divider"></div>
-          <p class="footer-small">© 2026 ACtrader Ltd · actrader.co.uk · Verified · Insured · F-Gas certified</p>
+          <p class="footer-small">© 2026 Cool HQ Ltd · coolhq.co.uk · Verified · Insured · F-Gas certified</p>
         </div>
       </footer>
     }
