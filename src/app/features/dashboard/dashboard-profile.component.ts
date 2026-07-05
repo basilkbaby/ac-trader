@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { AvailabilityService } from '../../core/services/availability.service';
 import { MOCK_ENGINEER_DETAILS, MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
 import { PortfolioGroup, PortfolioImage } from '../../core/models/models';
 
@@ -243,7 +244,7 @@ const MOCK_CERTS: UploadedCert[] = [
                             <span class="file-chosen">{{ newPhotoFileName }}</span>
                           } @else {
                             <span>Click to choose or drag &amp; drop</span>
-                            <span class="file-hint">JPG, PNG, HEIC — max 10 MB</span>
+                            <span class="file-hint">JPG, PNG, HEIC - max 10 MB</span>
                           }
                         </div>
                         <input #photoInput type="file" accept=".jpg,.jpeg,.png,.heic,.webp"
@@ -288,13 +289,13 @@ const MOCK_CERTS: UploadedCert[] = [
               <div class="avail-row">
                 <label class="avail-toggle-wrap">
                   <div class="big-toggle">
-                    <input type="checkbox" [(ngModel)]="form.isAvailable" name="available" />
+                    <input type="checkbox" [checked]="avail.available()" (change)="avail.toggle()" name="available" />
                     <span class="big-slider"></span>
                   </div>
                 </label>
                 <div class="avail-text">
-                  <strong>{{ form.isAvailable ? 'Available for new jobs' : 'Not taking new jobs' }}</strong>
-                  <span>{{ form.isAvailable ? 'Your profile appears in customer searches' : 'Hidden from customer searches' }}</span>
+                  <strong>{{ avail.available() ? 'Available for new jobs' : 'Not taking new jobs' }}</strong>
+                  <span>{{ avail.available() ? 'Your profile appears in customer searches and the top bar' : 'Hidden from customer searches' }}</span>
                 </div>
               </div>
             </div>
@@ -399,7 +400,7 @@ const MOCK_CERTS: UploadedCert[] = [
     }
   `,
   styles: [`
-    .profile-page { display: flex; flex-direction: column; gap: 1.1rem; }
+    .profile-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 1080px; }
 
     /* Title */
     .profile-titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
@@ -583,6 +584,7 @@ const MOCK_CERTS: UploadedCert[] = [
 })
 export class DashboardProfileComponent implements OnInit {
   auth       = inject(AuthService);
+  avail      = inject(AvailabilityService);
   saved      = signal(false);
   brandList  = BRAND_LIST;
   certTypes  = CERT_TYPES;

@@ -158,7 +158,7 @@ type JobTab = 'pending' | 'active' | 'completed';
     </div>
   `,
   styles: [`
-    .jobs-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 860px; }
+    .jobs-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 980px; }
 
     /* Title */
     .jobs-titlerow h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.15rem; }

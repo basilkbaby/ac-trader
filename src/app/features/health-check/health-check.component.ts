@@ -17,7 +17,7 @@ import { HealthCheckState, HealthCheckResult, SystemScore } from '../../core/mod
           <div class="hc-top-head">
             <span class="eyebrow">Free AC health check</span>
             <h1>How healthy is your air conditioning?</h1>
-            <p class="hc-top-sub">Answer 4 quick questions for an instant, honest assessment of your system — no obligation.</p>
+            <p class="hc-top-sub">Answer 4 quick questions for an instant, honest assessment of your system - no obligation.</p>
           </div>
 
           <ol class="stepper" [attr.aria-label]="'Step ' + (activeIndex()+1) + ' of ' + stepper().length">
@@ -84,7 +84,7 @@ import { HealthCheckState, HealthCheckResult, SystemScore } from '../../core/mod
             @if (state().step === 3) {
               <section class="step">
                 <h2 class="step-title">Any of these sound familiar?</h2>
-                <p class="step-hint">Select all that apply — or "no issues" if everything seems fine.</p>
+                <p class="step-hint">Select all that apply - or "no issues" if everything seems fine.</p>
                 <div class="check-grid">
                   @for (opt of issueOptions; track opt.value) {
                     <button class="check-card"
@@ -199,7 +199,7 @@ import { HealthCheckState, HealthCheckResult, SystemScore } from '../../core/mod
               <ul class="trust-list">
                 <li><span class="trust-ico" [innerHTML]="icon('clock')"></span> Takes under 60 seconds</li>
                 <li><span class="trust-ico" [innerHTML]="icon('check')"></span> 100% free, no obligation</li>
-                <li><span class="trust-ico" [innerHTML]="icon('shield')"></span> No hard sell — straight advice</li>
+                <li><span class="trust-ico" [innerHTML]="icon('shield')"></span> No hard sell - straight advice</li>
                 <li><span class="trust-ico" [innerHTML]="icon('leaf')"></span> Cut energy use up to 30%</li>
               </ul>
             </div>
@@ -414,7 +414,7 @@ export class HealthCheckComponent {
   ];
 
   servicedOptions = [
-    { value: 'recent',  label: 'Within the last year', icon: 'check', tone: 'good', hint: 'Good — well maintained' },
+    { value: 'recent',  label: 'Within the last year', icon: 'check', tone: 'good', hint: 'Good - well maintained' },
     { value: 'overdue', label: '1 – 2 years ago',      icon: 'clock', tone: 'warn', hint: 'Service now recommended' },
     { value: 'long',    label: '2 – 3 years ago',      icon: 'alert', tone: 'bad',  hint: 'Efficiency likely reduced' },
     { value: 'never',   label: 'Never / not sure',     icon: 'x',     tone: 'bad',  hint: 'Action needed' },

@@ -246,6 +246,34 @@ export interface SavedQuote {
   total: number;
 }
 
+// Engineer's clients (CRM)
+export interface ClientSystem {
+  brand: string;
+  model: string;
+  installedDate: string;
+  lastServicedDate: string | null;
+  nextServiceDue: string | null;
+}
+
+export interface Client {
+  id: number;
+  engineerId: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  postcode: string;
+  since: string;
+  jobsCount: number;
+  totalSpent: number;
+  lastJobDate: string | null;
+  nextServiceDue: string | null;   // earliest due date across their systems
+  onServicePlan: boolean;
+  systems: ClientSystem[];
+  notes: string;
+  tags: string[];
+}
+
 // Customer booking summary (for account page)
 export interface CustomerBooking {
   id: number;

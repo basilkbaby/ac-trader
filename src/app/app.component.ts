@@ -103,7 +103,7 @@ import { AuthService } from './core/services/auth.service';
         <div class="footer-inner">
           <span class="logo"><span class="logo-mark" aria-hidden="true">&#10052;</span><span class="logo-ac">Cool</span><span class="logo-trader">HQ</span></span>
           <p class="footer-tagline">The UK's Professional Air Conditioning Network.</p>
-          <p>Connecting homeowners, businesses and qualified F-Gas certified engineers across the UK — one trusted network.</p>
+          <p>Connecting homeowners, businesses and qualified F-Gas certified engineers across the UK - one trusted network.</p>
           <div class="footer-links">
             <a routerLink="/quote">Get a quote</a>
             <a routerLink="/engineers">Find engineers</a>

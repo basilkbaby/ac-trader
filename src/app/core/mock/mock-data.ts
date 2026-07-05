@@ -1,4 +1,4 @@
-import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, InvoiceItem, SavedQuote, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
+import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, InvoiceItem, SavedQuote, Client, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
 
 // ─── Toggle ──────────────────────────────────────────────────────────────────
 // Set to false once your real API is connected.
@@ -467,7 +467,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     coverColor: '#1e3a5f', coverAccent: '#3b82f6',
     images: [
       { id: 101, caption: 'Daikin 3-head multi-split install, SW7 townhouse', jobType: 'Installation', color: '#1e3a5f', accentColor: '#3b82f6', postedAt: '2025-04-12' },
-      { id: 102, caption: 'Samsung wall unit — master bedroom, Chelsea', jobType: 'Installation', color: '#1d4ed8', accentColor: '#60a5fa', postedAt: '2025-03-28' },
+      { id: 102, caption: 'Samsung wall unit - master bedroom, Chelsea', jobType: 'Installation', color: '#1d4ed8', accentColor: '#60a5fa', postedAt: '2025-03-28' },
       { id: 103, caption: 'Mitsubishi ceiling cassette, open-plan living space', jobType: 'Installation', color: '#0f172a', accentColor: '#818cf8', postedAt: '2025-02-14' },
       { id: 104, caption: 'LG dual-zone installation, period conversion flat', jobType: 'Installation', color: '#172554', accentColor: '#93c5fd', postedAt: '2025-01-09' },
     ]
@@ -478,7 +478,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     images: [
       { id: 201, caption: 'Annual service + full gas recharge completed', jobType: 'Service', color: '#064e3b', accentColor: '#10b981', postedAt: '2025-05-02' },
       { id: 202, caption: 'Refrigerant leak traced and repaired, SW3', jobType: 'Repair', color: '#065f46', accentColor: '#34d399', postedAt: '2025-04-18' },
-      { id: 203, caption: 'PCB board replacement — same-day turnaround', jobType: 'Repair', color: '#047857', accentColor: '#6ee7b7', postedAt: '2025-03-05' },
+      { id: 203, caption: 'PCB board replacement - same-day turnaround', jobType: 'Repair', color: '#047857', accentColor: '#6ee7b7', postedAt: '2025-03-05' },
     ]
   },
   {
@@ -486,7 +486,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     coverColor: '#4c1d95', coverAccent: '#a78bfa',
     images: [
       { id: 301, caption: '6-zone VRF system, Mayfair office building', jobType: 'Commercial', color: '#4c1d95', accentColor: '#a78bfa', postedAt: '2025-05-10' },
-      { id: 302, caption: 'Retail unit — 2 ceiling cassettes installed overnight', jobType: 'Commercial', color: '#5b21b6', accentColor: '#c4b5fd', postedAt: '2025-04-01' },
+      { id: 302, caption: 'Retail unit - 2 ceiling cassettes installed overnight', jobType: 'Commercial', color: '#5b21b6', accentColor: '#c4b5fd', postedAt: '2025-04-01' },
       { id: 303, caption: 'Restaurant kitchen extract + cool air system', jobType: 'Commercial', color: '#6d28d9', accentColor: '#ddd6fe', postedAt: '2025-02-20' },
     ]
   },
@@ -617,10 +617,10 @@ let _savedQuotes: SavedQuote[] = [
     exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
     equipment: [
       { qty: 1, model: '', description: 'Outdoor condenser unit' },
-      { qty: 1, model: '', description: 'Wall-mounted indoor unit — 12,000 BTU' },
+      { qty: 1, model: '', description: 'Wall-mounted indoor unit - 12,000 BTU' },
     ],
     items: [
-      { description: 'Mid-range wall-mounted AC unit — 12,000 BTU (medium room)', quantity: 1, unitPrice: 875 },
+      { description: 'Mid-range wall-mounted AC unit - 12,000 BTU (medium room)', quantity: 1, unitPrice: 875 },
       { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 300 },
       { description: 'Pipework, cabling & fittings', quantity: 1, unitPrice: 140 },
       { description: 'Commissioning, F-Gas sign-off & handover', quantity: 1, unitPrice: 80 },
@@ -648,10 +648,10 @@ let _savedQuotes: SavedQuote[] = [
     exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
     equipment: [
       { qty: 1, model: 'AOEG36KBTA5', description: 'Multi-split outdoor condenser (3:1)' },
-      { qty: 3, model: '', description: 'Wall-mounted indoor unit — 24,000 BTU' },
+      { qty: 3, model: '', description: 'Wall-mounted indoor unit - 24,000 BTU' },
     ],
     items: [
-      { description: 'Premium wall-mounted AC unit — 24,000 BTU (large room)', quantity: 3, unitPrice: 1700 },
+      { description: 'Premium wall-mounted AC unit - 24,000 BTU (large room)', quantity: 3, unitPrice: 1700 },
       { description: 'Multi-split outdoor condenser (3 zones)', quantity: 1, unitPrice: 650 },
       { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 700 },
       { description: 'Pipework, cabling & fittings', quantity: 3, unitPrice: 150 },
@@ -707,6 +707,86 @@ export function updateEngineerQuote(id: number, patch: Partial<SavedQuote>): voi
 
 export function updateSavedQuoteStatus(id: number, status: SavedQuote['status']): void {
   _savedQuotes = _savedQuotes.map(q => q.id === id ? { ...q, status } : q);
+}
+
+// ─── Engineer clients (CRM) ────────────────────────────────────────────────────
+
+let _clients: Client[] = [
+  {
+    id: 6001, engineerId: 1, name: 'Fiona Harrison', email: 'fiona.harrison@email.com', phone: '07700 902 555',
+    address: "38 King's Road", postcode: 'SW3 5UR', since: '2024-05-10',
+    jobsCount: 3, totalSpent: 4180, lastJobDate: '2026-05-15', nextServiceDue: '2026-06-10', onServicePlan: true,
+    systems: [
+      { brand: 'Daikin', model: 'FTXM25R', installedDate: '2024-05-15', lastServicedDate: '2025-06-10', nextServiceDue: '2026-06-10' },
+    ],
+    notes: 'Prefers morning appointments. Cat in the property — keep doors closed.', tags: ['Repeat', 'Service plan'],
+  },
+  {
+    id: 6002, engineerId: 1, name: 'Marco Rossi', email: 'marco.rossi@email.com', phone: '07700 902 666',
+    address: '11 Pont Street', postcode: 'SW1X 9EH', since: '2023-08-04',
+    jobsCount: 4, totalSpent: 5920, lastJobDate: '2026-05-08', nextServiceDue: '2026-07-20', onServicePlan: true,
+    systems: [
+      { brand: 'Daikin', model: 'FTXM30R', installedDate: '2023-08-04', lastServicedDate: '2025-07-20', nextServiceDue: '2026-07-20' },
+      { brand: 'Mitsubishi Electric', model: 'MSZ-AP20VG', installedDate: '2023-08-04', lastServicedDate: '2025-07-20', nextServiceDue: '2026-07-20' },
+    ],
+    notes: 'Restaurant — avoid lunch service 12–3pm.', tags: ['Repeat', 'Commercial', 'Service plan'],
+  },
+  {
+    id: 6003, engineerId: 1, name: 'Sophie Walker', email: 'sophie.walker@email.com', phone: '07700 902 111',
+    address: '14 Eaton Square', postcode: 'SW1W 9BE', since: '2026-06-10',
+    jobsCount: 1, totalSpent: 0, lastJobDate: null, nextServiceDue: '2027-06-15', onServicePlan: false,
+    systems: [
+      { brand: 'Mitsubishi Electric', model: 'MSZ-AP25VG', installedDate: '2026-06-15', lastServicedDate: null, nextServiceDue: '2027-06-15' },
+    ],
+    notes: 'Quote QTE-412 sent, awaiting decision.', tags: ['New lead'],
+  },
+  {
+    id: 6004, engineerId: 1, name: 'David Lin', email: 'david.lin@officeco.uk', phone: '07700 902 777',
+    address: '2 Mayfair Place', postcode: 'W1J 8AA', since: '2022-03-18',
+    jobsCount: 6, totalSpent: 18450, lastJobDate: '2026-04-02', nextServiceDue: '2026-10-02', onServicePlan: true,
+    systems: [
+      { brand: 'Daikin', model: 'VRV IV S', installedDate: '2022-03-18', lastServicedDate: '2026-04-02', nextServiceDue: '2026-10-02' },
+    ],
+    notes: '6-zone VRF, office building. Facilities contact: Carly (07700 902 780).', tags: ['Repeat', 'Commercial', 'Service plan'],
+  },
+  {
+    id: 6005, engineerId: 1, name: 'Nina Patel', email: 'nina.patel@email.com', phone: '07700 902 333',
+    address: '22 Sloane Gardens', postcode: 'SW1W 8DP', since: '2025-01-22',
+    jobsCount: 2, totalSpent: 1360, lastJobDate: '2026-01-22', nextServiceDue: '2026-06-22', onServicePlan: false,
+    systems: [
+      { brand: 'Samsung', model: 'AR12', installedDate: '2025-01-22', lastServicedDate: '2025-06-22', nextServiceDue: '2026-06-22' },
+    ],
+    notes: 'Service overdue — chase for annual.', tags: ['Repeat'],
+  },
+  {
+    id: 6006, engineerId: 1, name: 'Thomas Hardy', email: 'thomas.hardy@email.com', phone: '07700 902 444',
+    address: '5 Cadogan Square', postcode: 'SW1X 0HT', since: '2025-05-22',
+    jobsCount: 1, totalSpent: 300, lastJobDate: '2026-05-23', nextServiceDue: null, onServicePlan: false,
+    systems: [
+      { brand: 'LG', model: 'Standard Plus', installedDate: '2021-06-01', lastServicedDate: '2026-05-23', nextServiceDue: null },
+    ],
+    notes: 'Emergency repair only so far — offer a service plan.', tags: ['New lead'],
+  },
+];
+
+export function getClients(engineerId: number): Client[] {
+  return _clients
+    .filter(c => c.engineerId === engineerId)
+    .sort((a, b) => (a.name).localeCompare(b.name));
+}
+
+export function getClientById(id: number): Client | null {
+  return _clients.find(c => c.id === id) ?? null;
+}
+
+export function updateClientNotes(id: number, notes: string): void {
+  _clients = _clients.map(c => c.id === id ? { ...c, notes } : c);
+}
+
+/** Days until a client's next service (negative = overdue, null = none scheduled). */
+export function daysUntil(dateIso: string | null): number | null {
+  if (!dateIso) return null;
+  return Math.ceil((new Date(dateIso).getTime() - Date.now()) / 86400000);
 }
 
 // ─── Customer portal data ─────────────────────────────────────────────────────
@@ -1001,7 +1081,7 @@ export function generateQuoteItems(p: QuoteGenParams): QuoteGenResult {
 
   if (isIR) {
     const [uL, uH] = unitCostByTier[tier][sizeBracket];
-    items.push({ description: `${tierName} wall-mounted AC unit — ${btu} (${sizeName})`, quantity: units, unitPrice: mid(uL, uH) });
+    items.push({ description: `${tierName} wall-mounted AC unit - ${btu} (${sizeName})`, quantity: units, unitPrice: mid(uL, uH) });
     if (units >= 2) {
       const key = Math.min(units, 4) as 2 | 3 | 4;
       const [mL, mH] = multiSplitUplift[key];

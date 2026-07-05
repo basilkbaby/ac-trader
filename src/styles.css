@@ -86,6 +86,11 @@ p  { color: var(--text-secondary); }
 /* Surface card — reusable elevated panel */
 .surface-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 
+/* Centre dashboard content so it doesn't sit left-aligned with a big right gutter */
+.dash-content > * { display: block; width: 100%; }
+.hub, .overview, .cl-page, .ql-page, .jobs-page, .inv-page,
+.qb-page, .hl-page, .profile-page { margin-inline: auto; }
+
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */
 .site-header { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
 .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; height: 56px; gap: 1rem; }

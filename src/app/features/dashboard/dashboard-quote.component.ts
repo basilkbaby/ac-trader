@@ -75,7 +75,7 @@ import { InvoiceItem, EquipRow } from '../../core/models/models';
                 <thead><tr><th class="c-q">Qty</th><th class="c-m">Model</th><th>Description</th></tr></thead>
                 <tbody>
                   @for (e of equipment(); track $index) {
-                    <tr><td class="c-q">{{ e.qty }}</td><td class="c-m">{{ e.model || '—' }}</td><td>{{ e.description }}</td></tr>
+                    <tr><td class="c-q">{{ e.qty }}</td><td class="c-m">{{ e.model || '-' }}</td><td>{{ e.description }}</td></tr>
                   }
                 </tbody>
               </table>
@@ -262,12 +262,12 @@ import { InvoiceItem, EquipRow } from '../../core/models/models';
               <div class="qb-empty">
                 <span class="qb-empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></span>
                 <p><strong>Your quote will appear here.</strong></p>
-                <p class="qb-empty-sub">Set the job details and hit <em>Generate quote</em> — you'll get itemised pricing plus an editable, professional document.</p>
+                <p class="qb-empty-sub">Set the job details and hit <em>Generate quote</em> - you'll get itemised pricing plus an editable, professional document.</p>
               </div>
             } @else {
               <div class="qb-card-head qb-out-head">
                 <div><h3>Quote</h3><p class="qb-meta">{{ meta().summary }} · {{ meta().recommendedBtu }} · est. {{ meta().estimatedDuration }}</p></div>
-                <span class="qb-suggest">Suggested — edit freely</span>
+                <span class="qb-suggest">Suggested - edit freely</span>
               </div>
 
               <!-- Customer + reference -->
@@ -611,7 +611,7 @@ export class DashboardQuoteComponent {
       if (/kitchen|caf|office|retail|server|commercial/i.test(rec.label)) this.propertyType = 'comm';
       this.sizingBtu = rec.recommendedBtu;
       this.sizingNote.set(
-        `Sized from heat-load calc: ${rec.totalBtu.toLocaleString()} BTU/hr (${rec.kw} kW) for ${rec.label.toLowerCase()} — ` +
+        `Sized from heat-load calc: ${rec.totalBtu.toLocaleString()} BTU/hr (${rec.kw} kW) for ${rec.label.toLowerCase()} - ` +
         `pricing a ${rec.recommendedBtu.toLocaleString()} BTU ${rec.multiUnit ? 'multi-split' : 'unit'}.`
       );
       this.generate();
@@ -696,7 +696,7 @@ export class DashboardQuoteComponent {
     const n = Number(this.unitCount);
     const rows: EquipRow[] = [];
     rows.push({ qty: 1, model: '', description: n > 1 ? `Multi-split outdoor condenser (${n}:1)` : `Outdoor condenser unit` });
-    rows.push({ qty: n, model: '', description: `Wall-mounted indoor unit — ${btu}` });
+    rows.push({ qty: n, model: '', description: `Wall-mounted indoor unit - ${btu}` });
     return rows;
   }
 

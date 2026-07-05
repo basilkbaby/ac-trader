@@ -18,7 +18,7 @@ const BRANDS = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi', 'Fu
       <div class="page-hero-inner">
         <span class="eyebrow">The network near you</span>
         <h1>Find your AC engineer</h1>
-        <p>Every engineer is F-Gas certified, insurance checked and identity verified — compare ratings, brands and response times.</p>
+        <p>Every engineer is F-Gas certified, insurance checked and identity verified - compare ratings, brands and response times.</p>
         <ul class="page-hero-trust">
           <li><span>&#10003;</span> Verified profiles</li>
           <li><span>&#10003;</span> Real customer reviews</li>

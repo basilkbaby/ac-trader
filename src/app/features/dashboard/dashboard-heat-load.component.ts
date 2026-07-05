@@ -6,7 +6,7 @@ import { SizingService } from '../../core/services/sizing.service';
 
 interface EquipItem { name: string; qty: number; btu: number; }
 
-// Typical sensible heat output per appliance (BTU/hr) — editable per job.
+// Typical sensible heat output per appliance (BTU/hr) - editable per job.
 const EQUIP_PRESETS: { group: string; items: { name: string; btu: number }[] }[] = [
   {
     group: 'Café / commercial kitchen',
@@ -58,7 +58,7 @@ const AC_SIZES = [
       <div class="hl-titlerow">
         <div>
           <h1>Heat load calculator</h1>
-          <p class="hl-sub">Size the unit properly — factor in the room, people, equipment, glazing &amp; lighting.</p>
+          <p class="hl-sub">Add up every heat source in the space for an accurate unit size. Fill in what applies — leave anything that doesn't at zero. The result updates as you type.</p>
         </div>
       </div>
 
@@ -67,83 +67,84 @@ const AC_SIZES = [
         <!-- ── Inputs ─────────────────────────────────────────────────── -->
         <div class="hl-col">
 
-          <!-- Room -->
-          <div class="hl-card">
-            <div class="hl-card-head"><h3>Room</h3></div>
-            <div class="hl-fields">
-              <div class="hl-field">
-                <label>Floor area <span class="hl-opt">m²</span></label>
-                <input type="number" [(ngModel)]="areaM2" name="area" min="1" />
-              </div>
-              <div class="hl-field">
-                <label>Ceiling height <span class="hl-opt">m</span></label>
-                <input type="number" [(ngModel)]="heightM" name="height" min="2" step="0.1" />
-              </div>
-              <div class="hl-field">
-                <label>Space type</label>
-                <select [(ngModel)]="spaceLabel" name="space">
-                  <option value="Café / commercial kitchen">Café / kitchen</option>
-                  <option value="Office">Office</option>
-                  <option value="Retail unit">Retail unit</option>
-                  <option value="Residential room">Residential room</option>
-                  <option value="Server / comms room">Server room</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <!-- All heat sources, grouped & explained -->
+          <div class="hl-card hl-inputs">
 
-          <!-- People -->
-          <div class="hl-card">
-            <div class="hl-card-head"><h3>Occupancy</h3></div>
-            <div class="hl-fields">
-              <div class="hl-field">
-                <label>Number of people</label>
-                <input type="number" [(ngModel)]="people" name="people" min="0" />
+            <div class="hl-group">
+              <div class="hl-group-head">
+                <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
+                <div><h4>Room size</h4><span class="hl-group-hint">The area you're cooling.</span></div>
               </div>
-              <div class="hl-field">
-                <label>Activity level</label>
-                <select [(ngModel)]="personBtu" name="activity">
-                  <option [ngValue]="400">Seated / light (400)</option>
-                  <option [ngValue]="500">Standard (500)</option>
-                  <option [ngValue]="600">Active / busy (600)</option>
-                </select>
+              <div class="hl-fields">
+                <div class="hl-field"><label>Floor area <span class="hl-opt">m²</span></label><input type="number" [(ngModel)]="areaM2" name="area" min="1" /></div>
+                <div class="hl-field"><label>Ceiling height <span class="hl-opt">m</span></label><input type="number" [(ngModel)]="heightM" name="height" min="2" step="0.1" /></div>
+                <div class="hl-field hl-field-wide">
+                  <label>Space type</label>
+                  <select [(ngModel)]="spaceLabel" name="space">
+                    <option value="Residential room">Residential room (130)</option>
+                    <option value="Office">Office (135)</option>
+                    <option value="Retail unit">Retail unit (138)</option>
+                    <option value="Café / commercial kitchen">Café / kitchen (141)</option>
+                    <option value="Server / comms room">Server room (145)</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Windows -->
-          <div class="hl-card">
-            <div class="hl-card-head"><h3>Glazing / windows</h3></div>
-            <div class="hl-fields">
-              <div class="hl-field">
-                <label>Total window area <span class="hl-opt">m²</span></label>
-                <input type="number" [(ngModel)]="windowAreaM2" name="win" min="0" step="0.1" />
+            <div class="hl-group">
+              <div class="hl-group-head">
+                <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3 3 0 0 1 0 6M21 20a6 6 0 0 0-5-5.9"/></svg></span>
+                <div><h4>People</h4><span class="hl-group-hint">Body heat — 400–600 BTU each.</span></div>
               </div>
-              <div class="hl-field">
-                <label>Sun exposure</label>
-                <select [(ngModel)]="windowFactor" name="sun">
-                  <option [ngValue]="700">Shaded / north-facing (700)</option>
-                  <option [ngValue]="1000">Standard (1000)</option>
-                  <option [ngValue]="1300">Sunny / south-facing (1300)</option>
-                </select>
+              <div class="hl-fields">
+                <div class="hl-field"><label>Number of people</label><input type="number" [(ngModel)]="people" name="people" min="0" /></div>
+                <div class="hl-field">
+                  <label>Activity level</label>
+                  <select [(ngModel)]="personBtu" name="activity">
+                    <option [ngValue]="400">Seated / light</option>
+                    <option [ngValue]="500">Standard</option>
+                    <option [ngValue]="600">Active / busy</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Lighting -->
-          <div class="hl-card">
-            <div class="hl-card-head"><h3>Lighting</h3></div>
-            <div class="hl-fields">
-              <div class="hl-field">
-                <label>Total lighting load <span class="hl-opt">watts</span></label>
-                <input type="number" [(ngModel)]="lightWatts" name="lights" min="0" />
+            <div class="hl-group">
+              <div class="hl-group-head">
+                <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
+                <div><h4>Windows &amp; sunlight</h4><span class="hl-group-hint">Solar heat through the glass.</span></div>
+              </div>
+              <div class="hl-fields">
+                <div class="hl-field"><label>Window area <span class="hl-opt">m²</span></label><input type="number" [(ngModel)]="windowAreaM2" name="win" min="0" step="0.1" /></div>
+                <div class="hl-field">
+                  <label>Sun exposure</label>
+                  <select [(ngModel)]="windowFactor" name="sun">
+                    <option [ngValue]="700">Shaded / north-facing</option>
+                    <option [ngValue]="1000">Standard</option>
+                    <option [ngValue]="1300">Sunny / south-facing</option>
+                  </select>
+                </div>
               </div>
             </div>
+
+            <div class="hl-group">
+              <div class="hl-group-head">
+                <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 2a6 6 0 0 0-4 10.5c.6.6 1 1.3 1 2.1V15h6v-.4c0-.8.4-1.5 1-2.1A6 6 0 0 0 12 2z"/></svg></span>
+                <div><h4>Lighting</h4><span class="hl-group-hint">Lights give off heat — ≈ 3.4 BTU per watt.</span></div>
+              </div>
+              <div class="hl-fields">
+                <div class="hl-field"><label>Total lighting <span class="hl-opt">watts</span></label><input type="number" [(ngModel)]="lightWatts" name="lights" min="0" /></div>
+              </div>
+            </div>
+
           </div>
 
           <!-- Equipment -->
           <div class="hl-card">
-            <div class="hl-card-head"><h3>Equipment</h3></div>
+            <div class="hl-group-head hl-equip-head-row">
+              <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0z"/><path d="M12 16v6"/></svg></span>
+              <div><h4>Equipment</h4><span class="hl-group-hint">Fridges, ovens, PCs, servers — anything that runs warm.</span></div>
+            </div>
             <div class="hl-equip-add">
               <select [(ngModel)]="presetPick" name="preset">
                 <option value="">Add equipment…</option>
@@ -190,7 +191,7 @@ const AC_SIZES = [
 
             <ul class="hl-breakdown">
               <li>
-                <span class="b-label">Room / volume<span class="b-calc">{{ areaM2 }}m² × {{ heightM }}m × 141</span></span>
+                <span class="b-label">Room / volume<span class="b-calc">{{ areaM2 }}m² × {{ heightM }}m × {{ baseFactor() }}</span></span>
                 <strong>{{ roomLoad() | number }}</strong>
               </li>
               <li>
@@ -233,7 +234,7 @@ const AC_SIZES = [
                 </div>
               </div>
               @if (reco().multiUnit) {
-                <p class="hl-reco-note">Load exceeds a single split — consider a multi-split or VRF system.</p>
+                <p class="hl-reco-note">Load exceeds a single split - consider a multi-split or VRF system.</p>
               }
             </div>
 
@@ -257,17 +258,27 @@ const AC_SIZES = [
     .hl-sub { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
 
     .hl-grid { display: grid; grid-template-columns: 1fr; gap: 1.1rem; align-items: start; }
-    .hl-col { display: flex; flex-direction: column; gap: 1.1rem; min-width: 0; }
+    .hl-col { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
 
-    .hl-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1.1rem 1.25rem; }
-    .hl-card-head { margin-bottom: 0.9rem; }
-    .hl-card-head h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin: 0; }
+    .hl-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 1rem 1.1rem; }
+    .hl-card-head { margin-bottom: 0.75rem; }
+    .hl-card-head h3 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin: 0; }
 
-    .hl-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    .hl-field { display: flex; flex-direction: column; gap: 0.3rem; }
-    .hl-field label { font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
+    .hl-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.7rem 0.75rem; }
+    .hl-field { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+    .hl-field-wide { grid-column: span 2; }
+    .hl-field label { font-size: 0.68rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
     .hl-opt { color: var(--text-muted); font-weight: 400; text-transform: none; }
-    .hl-field input, .hl-field select { padding: 0.55rem 0.7rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; background: var(--surface); width: 100%; box-sizing: border-box; }
+    .hl-field input, .hl-field select { padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.9rem; background: var(--surface); width: 100%; box-sizing: border-box; }
+
+    /* Grouped, explained sections */
+    .hl-group + .hl-group { border-top: 1px solid var(--border); margin-top: 0.9rem; padding-top: 0.9rem; }
+    .hl-group-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.7rem; }
+    .hl-group-ico { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--brand-light); color: var(--brand); display: inline-flex; align-items: center; justify-content: center; }
+    .hl-group-ico svg { width: 17px; height: 17px; }
+    .hl-group-head h4 { font-size: 0.86rem; font-weight: 700; margin: 0; color: var(--text-primary); line-height: 1.2; }
+    .hl-group-hint { font-size: 0.72rem; color: var(--text-muted); }
+    .hl-equip-head-row { margin-bottom: 0.85rem; }
 
     /* Equipment */
     .hl-equip-add { display: flex; gap: 0.5rem; margin-bottom: 0.85rem; }
@@ -285,9 +296,9 @@ const AC_SIZES = [
     .hl-del:hover { color: var(--danger); border-color: #fca5a5; }
 
     /* Results */
-    .hl-breakdown { list-style: none; padding: 0; margin: 0 0 1rem; }
-    .hl-breakdown li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
-    .b-label { display: flex; flex-direction: column; font-size: 0.88rem; color: var(--text-primary); font-weight: 500; }
+    .hl-breakdown { list-style: none; padding: 0; margin: 0 0 0.9rem; }
+    .hl-breakdown li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
+    .b-label { display: flex; flex-direction: column; font-size: 0.86rem; color: var(--text-primary); font-weight: 500; }
     .b-calc { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; margin-top: 0.1rem; }
     .hl-breakdown strong { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
 
@@ -347,8 +358,16 @@ export class DashboardHeatLoadComponent {
 
   // Room
   areaM2   = 18;
-  heightM  = 3;
-  spaceLabel = 'Café / commercial kitchen';
+  heightM  = 2.7;
+  spaceLabel = 'Residential room';
+  // Base fabric/ambient gain per m³ — varies with glazing ratio & occupancy density by space type.
+  private spaceFactors: Record<string, number> = {
+    'Residential room': 130,
+    'Office': 135,
+    'Retail unit': 138,
+    'Café / commercial kitchen': 141,
+    'Server / comms room': 145,
+  };
   // People
   people    = 2;
   personBtu = 500;
@@ -357,7 +376,7 @@ export class DashboardHeatLoadComponent {
   windowFactor = 1000;
   // Lighting
   lightWatts = 400;
-  // Equipment (pre-seeded with the café example)
+  // Equipment (pre-loaded example set)
   equipment = signal<EquipItem[]>([
     { name: 'Dishwasher', qty: 1, btu: 1200 },
     { name: 'Ice machine', qty: 1, btu: 800 },
@@ -372,7 +391,8 @@ export class DashboardHeatLoadComponent {
   copied = signal(false);
 
   // ── Loads (BTU/hr) ──────────────────────────────────────────────────────────
-  roomLoad      = computed(() => Math.round((Number(this.areaM2) || 0) * (Number(this.heightM) || 0) * 141));
+  baseFactor    = computed(() => this.spaceFactors[this.spaceLabel] ?? 141);
+  roomLoad      = computed(() => Math.round((Number(this.areaM2) || 0) * (Number(this.heightM) || 0) * this.baseFactor()));
   peopleLoad    = computed(() => (Number(this.people) || 0) * (Number(this.personBtu) || 0));
   equipmentLoad = computed(() => this.equipment().reduce((s, e) => s + (Number(e.qty) || 0) * (Number(e.btu) || 0), 0));
   windowLoad    = computed(() => Math.round((Number(this.windowAreaM2) || 0) * (Number(this.windowFactor) || 0)));
@@ -415,7 +435,7 @@ export class DashboardHeatLoadComponent {
 
   copy() {
     const lines = [
-      `Heat load — ${this.spaceLabel} (${this.areaM2}m² × ${this.heightM}m)`,
+      `Heat load - ${this.spaceLabel} (${this.areaM2}m² × ${this.heightM}m)`,
       `Room/volume:  ${this.roomLoad().toLocaleString()} BTU/hr`,
       `People:       ${this.peopleLoad().toLocaleString()} BTU/hr`,
       `Equipment:    ${this.equipmentLoad().toLocaleString()} BTU/hr`,

@@ -243,7 +243,7 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
     </div>
   `,
   styles: [`
-    .inv-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 860px; }
+    .inv-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 980px; }
 
     /* Title */
     .inv-titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }

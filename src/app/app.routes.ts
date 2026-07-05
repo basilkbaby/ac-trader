@@ -74,6 +74,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard-heat-load.component').then(m => m.DashboardHeatLoadComponent)
       },
       {
+        path: 'clients',
+        loadComponent: () => import('./features/dashboard/dashboard-clients.component').then(m => m.DashboardClientsComponent)
+      },
+      {
         path: 'invoices',
         loadComponent: () => import('./features/dashboard/dashboard-invoices.component').then(m => m.DashboardInvoicesComponent)
       },

@@ -16,7 +16,7 @@ import { Engineer } from '../../core/models/models';
           <h1>The UK's Professional<br><span class="hero-accent">Air Conditioning Network</span></h1>
           <p class="hero-sub">
             The network connecting homeowners and businesses with verified,
-            F-Gas certified air conditioning engineers — and giving those engineers
+            F-Gas certified air conditioning engineers - and giving those engineers
             the tools to run and grow their business.
           </p>
           <div class="hero-actions">
@@ -101,7 +101,7 @@ import { Engineer } from '../../core/models/models';
       <div class="section-head">
         <span class="eyebrow">For customers</span>
         <h2>The safest way to hire an AC engineer</h2>
-        <p>Four simple steps — from instant pricing to a confirmed booking, with a verified professional you can trust.</p>
+        <p>Four simple steps - from instant pricing to a confirmed booking, with a verified professional you can trust.</p>
       </div>
       <div class="how-steps">
         <div class="how-step">
@@ -122,7 +122,7 @@ import { Engineer } from '../../core/models/models';
         <div class="how-step">
           <div class="how-num">4</div>
           <h3>Relax</h3>
-          <p>Your job, warranty, certificates and service history — all kept in one place.</p>
+          <p>Your job, warranty, certificates and service history - all kept in one place.</p>
         </div>
       </div>
     </section>
@@ -132,7 +132,7 @@ import { Engineer } from '../../core/models/models';
       <div class="section-head">
         <span class="eyebrow">Top rated near you</span>
         <h2>Featured engineers</h2>
-        <p>A snapshot of the verified specialists in our network — every one F-Gas certified and insurance checked.</p>
+        <p>A snapshot of the verified specialists in our network - every one F-Gas certified and insurance checked.</p>
       </div>
 
       @if (featured().length) {
@@ -208,7 +208,7 @@ import { Engineer } from '../../core/models/models';
           <h2>Grow your air conditioning business.</h2>
           <p>
             We don't just send you leads. We give you the complete toolkit to win work,
-            look professional and run your business — all in one place.
+            look professional and run your business - all in one place.
           </p>
           <ul class="grow-list">
             <li><span>&#10003;</span> Online profile &amp; SEO page</li>
@@ -265,7 +265,7 @@ import { Engineer } from '../../core/models/models';
       <div class="reviews-grid">
         <div class="rev-card">
           <div class="rev-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p>"Cold in 30 minutes and the install was spotless. Booked online in two minutes — no callbacks, no haggling. Exactly how it should be."</p>
+          <p>"Cold in 30 minutes and the install was spotless. Booked online in two minutes - no callbacks, no haggling. Exactly how it should be."</p>
           <div class="rev-author"><span class="rev-av">FH</span><div><strong>Fiona H.</strong><span>Chelsea &middot; Installation</span></div></div>
         </div>
         <div class="rev-card">

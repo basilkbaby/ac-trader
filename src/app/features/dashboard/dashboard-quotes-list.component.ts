@@ -88,7 +88,7 @@ type Filter = 'all' | SavedQuoteStatus;
     </div>
   `,
   styles: [`
-    .ql-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 900px; }
+    .ql-page { display: flex; flex-direction: column; gap: 1.1rem; max-width: 980px; }
     .ql-titlerow { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .ql-titlerow h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.15rem; }
     .ql-sub { font-size: 0.8rem; color: var(--text-muted); margin: 0; }

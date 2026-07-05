@@ -1,6 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { AvailabilityService } from '../../core/services/availability.service';
+import { MOCK_ENGINEER_DETAILS } from '../../core/mock/mock-data';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -29,11 +32,14 @@ import { CommonModule } from '@angular/common';
             <a routerLink="/dashboard/jobs" routerLinkActive="active" (click)="sidebarOpen.set(false)">
               <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span> Jobs
             </a>
+            <a routerLink="/dashboard/clients" routerLinkActive="active" (click)="sidebarOpen.set(false)">
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3 3 0 0 1 0 6M21 20a6 6 0 0 0-5-5.9"/></svg></span> Clients
+            </a>
             <a routerLink="/dashboard/quotes" routerLinkActive="active" (click)="sidebarOpen.set(false)">
               <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h2M8 15h2M14 11h2M14 15h2"/></svg></span> Quotations
             </a>
             <a routerLink="/dashboard/heat-load" routerLinkActive="active" (click)="sidebarOpen.set(false)">
-              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M5 19 19 5"/></svg></span> Heat load calc
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M5 5l14 14M5 19 19 5"/></svg></span> Heat load
             </a>
             <a routerLink="/dashboard/invoices" routerLinkActive="active" (click)="sidebarOpen.set(false)">
               <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/><path d="M9 13h6M9 17h6"/></svg></span> Invoices
@@ -57,13 +63,14 @@ import { CommonModule } from '@angular/common';
           <button class="dash-burger" (click)="toggleSidebar()" aria-label="Menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
-          <span class="dash-topbar-title">Dashboard</span>
+          <span class="dash-topbar-title">{{ pageTitle() }}</span>
           <div class="dash-topbar-right">
-            <label class="avail-toggle">
-              <input type="checkbox" [checked]="available()" (change)="toggleAvailable()" />
-              <span class="avail-slider"></span>
-            </label>
-            <span class="avail-lbl" [class.on]="available()">{{ available() ? 'Available' : 'Unavailable' }}</span>
+            <a routerLink="/dashboard/profile" class="avail-pill" [class.on]="avail.available()"
+               [title]="avail.available() ? 'Available for new jobs — change in profile' : 'Not taking new jobs — change in profile'">
+              <span class="avail-dot"></span>
+              <span class="avail-pill-text">{{ avail.available() ? 'Available' : 'Unavailable' }}</span>
+            </a>
+            <a routerLink="/dashboard/quotes/new" class="btn-primary btn-sm topbar-cta">New quote</a>
           </div>
         </div>
 
@@ -134,25 +141,33 @@ import { CommonModule } from '@angular/common';
 
     .dash-topbar {
       display: flex; align-items: center; gap: 0.85rem;
-      padding: 0.65rem 1.5rem;
-      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem; height: 56px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
       position: sticky; top: 64px; z-index: 10;
     }
     .dash-burger { display: none; background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.25rem; }
     .dash-burger svg { width: 22px; height: 22px; display: block; }
-    .dash-topbar-title { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
-    .dash-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; }
+    .dash-topbar-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+    .dash-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
 
-    .avail-toggle { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; }
-    .avail-toggle input { opacity: 0; width: 0; height: 0; }
-    .avail-slider { position: absolute; inset: 0; background: var(--border); border-radius: 20px; transition: 0.2s; }
-    .avail-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
-    .avail-toggle input:checked + .avail-slider { background: #059669; }
-    .avail-toggle input:checked + .avail-slider::before { transform: translateX(16px); }
-    .avail-lbl { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); }
-    .avail-lbl.on { color: #059669; }
+    .avail-pill {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-size: 0.78rem; font-weight: 600; text-decoration: none;
+      color: var(--text-secondary); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.3rem 0.75rem; transition: all 0.15s;
+    }
+    .avail-pill:hover { border-color: var(--brand); text-decoration: none; }
+    .avail-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+    .avail-pill.on { color: #065f46; background: #f0fdf4; border-color: #bbf7d0; }
+    .avail-pill.on .avail-dot { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); }
 
     .dash-content { padding: 1.5rem; flex: 1; }
+
+    @media (max-width: 560px) {
+      .avail-pill-text { display: none; }
+      .avail-pill { padding: 0.35rem; }
+    }
 
     @media (max-width: 768px) {
       .dash-sidebar {
@@ -167,11 +182,33 @@ import { CommonModule } from '@angular/common';
 })
 export class DashboardShellComponent {
   auth        = inject(AuthService);
+  avail       = inject(AvailabilityService);
+  private router = inject(Router);
   sidebarOpen = signal(false);
-  available   = signal(true);
+  pageTitle   = signal('Business Hub');
 
-  toggleSidebar()   { this.sidebarOpen.update(v => !v); }
-  toggleAvailable() { this.available.update(v => !v); }
+  constructor() {
+    // Seed availability from the engineer's saved status (single source of truth)
+    const eng = MOCK_ENGINEER_DETAILS[this.auth.currentUser()?.engineerId ?? 0];
+    if (eng) this.avail.set(eng.isAvailable);
+
+    this.pageTitle.set(this.titleFor(this.router.url));
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => this.pageTitle.set(this.titleFor(this.router.url)));
+  }
+
+  private titleFor(url: string): string {
+    if (url.includes('/quotes/new') || url.includes('/quotes/')) return 'Quote builder';
+    if (url.includes('/quotes'))    return 'Quotations';
+    if (url.includes('/clients'))   return 'Clients';
+    if (url.includes('/heat-load')) return 'Heat load calculator';
+    if (url.includes('/invoices'))  return 'Invoices';
+    if (url.includes('/jobs'))      return 'Jobs';
+    if (url.includes('/profile'))   return 'My profile';
+    return 'Business Hub';
+  }
+
+  toggleSidebar() { this.sidebarOpen.update(v => !v); }
 
   signOut() { this.auth.logout(); window.location.href = '/'; }
 }

@@ -16,7 +16,7 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
         <div class="page-hero-inner">
           <span class="eyebrow">For engineers</span>
           <h1>Join the network. Grow your business.</h1>
-          <p>Get matched with local customers — plus the tools to quote, invoice and manage every job. No subscription to start; the first 50 engineers get 3 months commission-free.</p>
+          <p>Get matched with local customers - plus the tools to quote, invoice and manage every job. No subscription to start; the first 50 engineers get 3 months commission-free.</p>
           <ul class="page-hero-trust">
             <li><span>&#10003;</span> Identity verified</li>
             <li><span>&#10003;</span> F-Gas cert checked</li>

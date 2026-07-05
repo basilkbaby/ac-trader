@@ -19,7 +19,7 @@ import { QuoteWizardState } from '../../core/models/models';
           <div class="quote-top-head">
             <span class="eyebrow">Instant AC quote</span>
             <h1>Build your free, no-obligation quote</h1>
-            <p class="quote-top-sub">Transparent, itemised pricing from F-Gas certified engineers — in under two minutes.</p>
+            <p class="quote-top-sub">Transparent, itemised pricing from F-Gas certified engineers - in under two minutes.</p>
           </div>
 
           <ol class="stepper" [attr.aria-label]="'Step ' + (activeIndex()+1) + ' of ' + stepper().length">
@@ -78,7 +78,7 @@ import { QuoteWizardState } from '../../core/models/models';
               @if (state().step === 2 && isIR()) {
                 <section class="step">
                   <h2 class="step-title">How many rooms or areas?</h2>
-                  <p class="step-hint">Each indoor unit serves one zone — multi-split systems share one outdoor unit.</p>
+                  <p class="step-hint">Each indoor unit serves one zone - multi-split systems share one outdoor unit.</p>
                   <div class="tile-grid">
                     @for (opt of unitCounts; track opt.value) {
                       <button class="tile" [class.selected]="state().unitCount === opt.value" (click)="selectUnitCount(opt.value)">
@@ -138,7 +138,7 @@ import { QuoteWizardState } from '../../core/models/models';
               @if (state().step === 3 && isIR()) {
                 <section class="step">
                   <h2 class="step-title">How large is the main room?</h2>
-                  <p class="step-hint">This sets the BTU capacity needed — larger rooms need more powerful units.</p>
+                  <p class="step-hint">This sets the BTU capacity needed - larger rooms need more powerful units.</p>
                   <div class="tile-grid">
                     @for (opt of roomSizes; track opt.value) {
                       <button class="tile" [class.selected]="state().roomSize === opt.value" (click)="selectRoomSize(opt.value)">
@@ -184,7 +184,7 @@ import { QuoteWizardState } from '../../core/models/models';
               @if (state().step === 5 && isIR()) {
                 <section class="step">
                   <h2 class="step-title">Brand &amp; budget preference</h2>
-                  <p class="step-hint">Only affects unit cost — every install is by the same certified engineers.</p>
+                  <p class="step-hint">Only affects unit cost - every install is by the same certified engineers.</p>
                   <div class="brand-list">
                     @for (opt of brandTiers; track opt.value) {
                       <button class="brand-card"
@@ -329,7 +329,7 @@ import { QuoteWizardState } from '../../core/models/models';
                   <div class="panel-title">What happens next</div>
                   <ol class="next-list">
                     <li><span class="next-num">1</span> Book a verified engineer or request quotes from up to 3 specialists.</li>
-                    <li><span class="next-num">2</span> They confirm the details and a fixed price — no obligation.</li>
+                    <li><span class="next-num">2</span> They confirm the details and a fixed price - no obligation.</li>
                     <li><span class="next-num">3</span> Choose your date and the work is booked in.</li>
                   </ol>
                 </div>
@@ -634,7 +634,7 @@ export class QuoteComponent {
   isService   = computed(() => this.state().jobType === 'service');
   isEmergency = computed(() => this.state().jobType === 'emergency');
 
-  /** Stepper node labels — depend on the chosen path. */
+  /** Stepper node labels - depend on the chosen path. */
   stepper = computed(() => {
     if (this.isIR())        return ['Job type', 'Rooms', 'Room size', 'Property', 'Preferences', 'Your quote'];
     if (this.isService())   return ['Job type', 'Service', 'Property', 'Your quote'];
@@ -723,7 +723,7 @@ export class QuoteComponent {
     { value: 'install',   label: 'New installation',      desc: 'No existing AC system',              icon: 'install' },
     { value: 'replace',   label: 'Replace existing',       desc: 'Like-for-like or upgrade',           icon: 'replace' },
     { value: 'service',   label: 'Service / maintenance',  desc: 'Annual check, repair or deep clean', icon: 'service' },
-    { value: 'emergency', label: 'Emergency repair',       desc: 'System down — urgent response',      icon: 'emergency' },
+    { value: 'emergency', label: 'Emergency repair',       desc: 'System down - urgent response',      icon: 'emergency' },
   ];
 
   unitCounts = [
