@@ -35,6 +35,11 @@ export interface EngineerDetail extends Engineer {
   createdAt: string;
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
+  // Company details — shown on quotes & invoices to comply with UK trading/invoicing standards
+  companyAddress?: string | null;
+  companyRegNumber?: string | null;
+  vatNumber?: string | null;      // presence gates whether VAT can legally be charged
+  companyLogoUrl?: string | null; // data URL (base64)
 }
 
 export interface RatingBreakdown {
@@ -133,6 +138,10 @@ export interface CreateEngineerRequest {
   hasPublicLiability: boolean;
   publicLiabilityAmount: number;
   bio: string;
+  companyAddress: string;
+  companyRegNumber?: string;
+  vatNumber?: string;
+  companyLogoUrl?: string;
 }
 
 // Quote wizard state
@@ -307,6 +316,19 @@ export interface CustomerAcSystem {
   unitCount: number;
   roomLabel: string;
   serviceStatus: 'ok' | 'due-soon' | 'overdue';
+}
+
+export interface CustomerProfile {
+  fullName: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+}
+
+export interface UpdateCustomerProfileRequest {
+  fullName: string;
+  phone: string | null;
+  address: string | null;
 }
 
 // Portfolio (previous work stories)

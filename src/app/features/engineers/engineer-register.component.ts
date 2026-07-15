@@ -6,6 +6,30 @@ import { EngineerService } from '../../core/services/engineer.service';
 
 const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi', 'Fujitsu', 'Panasonic', 'Toshiba', 'Midea', 'Gree'];
 
+// Rough centre-point per UK postcode area — a coverage marker, not real geocoding.
+// Falls back to central London if the entered area isn't recognised.
+const POSTCODE_AREA_COORDS: Record<string, [number, number]> = {
+  E: [51.5150, -0.0500], EC: [51.5175, -0.0920], N: [51.5580, -0.1090], NW: [51.5550, -0.1950],
+  SE: [51.4780, -0.0450], SW: [51.4650, -0.1850], W: [51.5090, -0.1950], WC: [51.5175, -0.1250],
+  M: [53.4808, -2.2426], B: [52.4862, -1.8904], LS: [53.8008, -1.5491], G: [55.8642, -4.2518],
+  EH: [55.9533, -3.1883], BS: [51.4545, -2.5879], L: [53.4084, -2.9916], NE: [54.9783, -1.6178],
+  S: [53.3811, -1.4701], CF: [51.4816, -3.1791], BT: [54.5973, -5.9301], NG: [52.9548, -1.1581],
+  LE: [52.6369, -1.1398], CB: [52.2053, 0.1218], OX: [51.7520, -1.2577], BA: [51.3811, -2.3590],
+  BN: [50.8225, -0.1372], PO: [50.8198, -1.0880], SO: [50.9097, -1.4044], EX: [50.7184, -3.5339],
+  PL: [50.3755, -4.1427], YO: [53.9600, -1.0873], HU: [53.7457, -0.3367], DE: [52.9225, -1.4746],
+  CV: [52.4068, -1.5197], ST: [52.9970, -2.1798], RG: [51.4543, -0.9781], MK: [52.0406, -0.7594],
+  LU: [51.8787, -0.4200], AB: [57.1497, -2.0943], DD: [56.4620, -2.9707], SA: [51.6214, -3.9436],
+  NP: [51.5842, -2.9977], IP: [52.0567, 1.1482], NR: [52.6309, 1.2974], CT: [51.2802, 1.0789],
+  GU: [51.2362, -0.5704], KT: [51.4123, -0.3007], CR: [51.3720, -0.0980], WD: [51.6560, -0.3960],
+  AL: [51.7520, -0.3360],
+};
+
+function estimateLatLng(postcode: string): { lat: number; lng: number } {
+  const area = (postcode || '').trim().toUpperCase().match(/^[A-Z]{1,2}/)?.[0] ?? '';
+  const coords = POSTCODE_AREA_COORDS[area];
+  return coords ? { lat: coords[0], lng: coords[1] } : { lat: 51.5074, lng: -0.1278 };
+}
+
 @Component({
   selector: 'app-engineer-register',
   standalone: true,
@@ -56,6 +80,38 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
                   <label>About you <span class="label-hint">Tell customers about your experience and approach (min 50 words recommended)</span></label>
                   <textarea [(ngModel)]="form.bio" name="bio" rows="4"
                     placeholder="e.g. I've been installing and servicing AC systems for 12 years across London. I specialise in Daikin and Mitsubishi Electric systems and take pride in clean, tidy installations with no mess left behind."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h2 class="form-section-title">Company details</h2>
+              <p class="form-section-hint">Shown on the quotes and invoices you send to customers — required for legal, professional documents.</p>
+              <div class="form-grid">
+                <div class="form-group form-full">
+                  <label>Registered / trading address *</label>
+                  <textarea [(ngModel)]="form.companyAddress" name="companyAddress" rows="2" required
+                    placeholder="14 Battersea Rise&#10;London&#10;SW11 1EE"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Companies House number <span class="label-hint">If a limited company</span></label>
+                  <input type="text" [(ngModel)]="form.companyRegNumber" name="companyRegNumber" placeholder="e.g. 09876543" />
+                </div>
+                <div class="form-group">
+                  <label>VAT registration number <span class="label-hint">If VAT-registered</span></label>
+                  <input type="text" [(ngModel)]="form.vatNumber" name="vatNumber" placeholder="e.g. GB 234 5678 90" />
+                </div>
+                <div class="form-group form-full">
+                  <label>Company logo <span class="label-hint">Optional — appears on your quotes &amp; invoices</span></label>
+                  @if (logoPreview()) {
+                    <div class="logo-preview-row">
+                      <img [src]="logoPreview()" alt="Company logo preview" class="logo-preview" />
+                      <button type="button" class="btn-text btn-sm" (click)="removeLogo()">Remove</button>
+                    </div>
+                  } @else {
+                    <input type="file" accept="image/png,image/jpeg,image/svg+xml" (change)="onLogoChosen($event)" />
+                  }
+                  @if (logoError()) { <p class="error-msg">{{ logoError() }}</p> }
                 </div>
               </div>
             </div>
@@ -184,6 +240,9 @@ const BRAND_LIST = ['Daikin', 'Mitsubishi Electric', 'Samsung', 'LG', 'Hitachi',
 
     .label-hint { display: block; font-size: 0.78rem; color: #9ca3af; font-weight: 400; margin-top: 0.1rem; }
 
+    .logo-preview-row { display: flex; align-items: center; gap: 0.85rem; }
+    .logo-preview { width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 0.35rem; }
+
     .brand-check-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -237,6 +296,9 @@ export class EngineerRegisterComponent {
   brandList = BRAND_LIST;
   selectedBrands: string[] = [];
 
+  logoPreview = signal<string | null>(null);
+  logoError = signal<string | null>(null);
+
   form = {
     fullName: '', email: '', phone: '', companyName: '',
     fGasCertNumber: '', coveragePostcode: '',
@@ -245,7 +307,8 @@ export class EngineerRegisterComponent {
     brandsSupported: '',
     hasPublicLiability: false,
     publicLiabilityAmount: 2,
-    bio: ''
+    bio: '',
+    companyAddress: '', companyRegNumber: '', vatNumber: '', companyLogoUrl: '',
   };
 
   isBrandSelected(brand: string): boolean {
@@ -261,10 +324,34 @@ export class EngineerRegisterComponent {
     this.form.brandsSupported = this.selectedBrands.join(', ');
   }
 
+  onLogoChosen(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (!file) return;
+    this.logoError.set(null);
+    if (file.size > 500_000) { this.logoError.set('Logo must be under 500KB.'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      this.form.companyLogoUrl = dataUrl;
+      this.logoPreview.set(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeLogo() {
+    this.form.companyLogoUrl = '';
+    this.logoPreview.set(null);
+    this.logoError.set(null);
+  }
+
   submit() {
     this.loading.set(true);
     this.error.set(null);
     this.form.brandsSupported = this.selectedBrands.join(', ');
+    // Approximate coordinates from the coverage postcode so the engineer plots in roughly the right area.
+    const { lat, lng } = estimateLatLng(this.form.coveragePostcode);
+    this.form.latitude = lat;
+    this.form.longitude = lng;
     this.engineerService.register(this.form).subscribe({
       next: () => { this.loading.set(false); this.submitted.set(true); },
       error: (err) => { this.loading.set(false); this.error.set(err.message); }

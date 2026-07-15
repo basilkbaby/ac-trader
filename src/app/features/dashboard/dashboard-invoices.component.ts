@@ -2,7 +2,8 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { getMockInvoices, createMockInvoice, updateInvoiceStatus } from '../../core/mock/mock-data';
+import { InvoiceService } from '../../core/services/invoice.service';
+import { EngineerService } from '../../core/services/engineer.service';
 import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
 
 @Component({
@@ -94,7 +95,11 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
           <div class="inv-doc">
             <div class="inv-doc-head">
               <div>
-                <div class="inv-doc-brand"><span class="logo-ac">Cool</span> <span class="logo-tr">HQ</span></div>
+                @if (company.logoUrl) {
+                  <img [src]="company.logoUrl" alt="{{ company.name }} logo" class="inv-doc-logo-img" />
+                } @else {
+                  <div class="inv-doc-brand">{{ company.name || auth.currentUser()!.fullName }}</div>
+                }
                 <div class="inv-doc-brandlbl">Tax Invoice</div>
               </div>
               <div class="inv-doc-meta">
@@ -111,8 +116,10 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
             <div class="inv-doc-parties">
               <div class="inv-party">
                 <div class="inv-party-lbl">From</div>
-                <strong>{{ auth.currentUser()!.fullName }}</strong>
-                <span>F-Gas Certified Engineer</span>
+                <strong>{{ company.name || auth.currentUser()!.fullName }}</strong>
+                @if (company.address) { <span class="inv-party-addr">{{ company.address }}</span> } @else { <span>F-Gas Certified Engineer</span> }
+                @if (company.regNumber) { <span>Company No. {{ company.regNumber }}</span> }
+                @if (company.vatNumber) { <span>VAT Reg. No. {{ company.vatNumber }}</span> }
               </div>
               <div class="inv-party">
                 <div class="inv-party-lbl">To</div>
@@ -145,8 +152,13 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
 
             <div class="inv-totals">
               <div class="inv-tot-row"><span>Subtotal</span><span>£{{ viewing()!.subtotal | number:'1.2-2' }}</span></div>
-              <div class="inv-tot-row"><span>VAT (20%)</span><span>£{{ viewing()!.vatAmount | number:'1.2-2' }}</span></div>
+              @if (viewing()!.vatAmount > 0) {
+                <div class="inv-tot-row"><span>VAT (20%)</span><span>£{{ viewing()!.vatAmount | number:'1.2-2' }}</span></div>
+              }
               <div class="inv-tot-grand"><span>Total due</span><span>£{{ viewing()!.total | number:'1.2-2' }}</span></div>
+              @if (viewing()!.vatAmount === 0 && !company.vatNumber) {
+                <div class="inv-tot-novat">Not VAT registered</div>
+              }
             </div>
 
             @if (viewing()!.notes) {
@@ -218,7 +230,11 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
 
             <div class="create-totals">
               <div class="ct-row"><span>Subtotal</span><span>£{{ draft.subtotal | number:'1.2-2' }}</span></div>
-              <div class="ct-row"><span>VAT (20%)</span><span>£{{ draft.vatAmount | number:'1.2-2' }}</span></div>
+              @if (hasVat()) {
+                <div class="ct-row"><span>VAT (20%)</span><span>£{{ draft.vatAmount | number:'1.2-2' }}</span></div>
+              } @else {
+                <p class="ct-novat">Not VAT registered — add a VAT number in your profile to charge VAT.</p>
+              }
               <div class="ct-grand"><span>Total</span><span>£{{ draft.total | number:'1.2-2' }}</span></div>
             </div>
 
@@ -316,8 +332,8 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
       padding: 1.75rem; display: flex; flex-direction: column; gap: 1.5rem;
     }
     .inv-doc-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
-    .inv-doc-brand .logo-ac { font-size: 1.2rem; font-weight: 900; color: var(--brand); }
-    .inv-doc-brand .logo-tr { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); }
+    .inv-doc-brand { font-size: 1.2rem; font-weight: 900; color: var(--text-primary); }
+    .inv-doc-logo-img { max-width: 180px; max-height: 56px; object-fit: contain; }
     .inv-doc-brandlbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; }
     .inv-doc-meta { display: flex; flex-direction: column; gap: 0.35rem; }
     .inv-meta-row { display: flex; gap: 1rem; justify-content: flex-end; align-items: center; font-size: 0.83rem; }
@@ -330,6 +346,7 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
     .inv-party-lbl { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.15rem; }
     .inv-party strong { font-size: 0.88rem; color: var(--text-primary); }
     .inv-party span { font-size: 0.78rem; color: var(--text-secondary); }
+    .inv-party-addr { white-space: pre-line; }
 
     .inv-table { width: 100%; border-collapse: collapse; }
     .inv-table th { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding: 0.45rem 0.65rem; border-bottom: 2px solid var(--border); text-align: left; }
@@ -340,6 +357,7 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
     .inv-totals { max-width: 260px; margin-left: auto; display: flex; flex-direction: column; gap: 0.3rem; }
     .inv-tot-row { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-secondary); padding: 0.25rem 0; border-bottom: 1px solid var(--border); }
     .inv-tot-grand { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 700; color: var(--text-primary); padding-top: 0.4rem; border-top: 2px solid var(--text-primary); }
+    .inv-tot-novat { font-size: 0.72rem; color: var(--text-muted); text-align: right; margin-top: 0.2rem; }
 
     .inv-notes-block { border-top: 1px solid var(--border); padding-top: 1rem; }
     .inv-notes-lbl { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); display: block; margin-bottom: 0.3rem; }
@@ -386,6 +404,7 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
     .create-totals { max-width: 260px; margin-left: auto; display: flex; flex-direction: column; gap: 0.25rem; }
     .ct-row { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-secondary); padding: 0.2rem 0; border-bottom: 1px solid var(--border); }
     .ct-grand { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 700; color: var(--text-primary); padding-top: 0.35rem; border-top: 2px solid var(--text-primary); margin-top: 0.1rem; }
+    .ct-novat { font-size: 0.76rem; color: var(--text-muted); margin: 0.1rem 0; }
 
     .create-error { color: #dc2626; font-size: 0.83rem; }
     .create-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -402,13 +421,33 @@ import { Invoice, InvoiceItem, InvoiceStatus } from '../../core/models/models';
 })
 export class DashboardInvoicesComponent {
   auth        = inject(AuthService);
+  private invoiceSvc = inject(InvoiceService);
+  private engineerSvc = inject(EngineerService);
+  private eid = this.auth.currentUser()!.engineerId!;
   creating    = signal(false);
   viewing     = signal<Invoice | null>(null);
   createError = signal<string | null>(null);
   today       = new Date().toISOString().split('T')[0];
 
-  private _invoices = signal<Invoice[]>(getMockInvoices(this.auth.currentUser()!.engineerId!));
+  company = { name: '', address: '', regNumber: '', vatNumber: '', logoUrl: '' as string | null };
+  /** Plain method (not computed()) — `company` is reassigned outside a signal after the async profile load. */
+  hasVat(): boolean { return !!this.company.vatNumber; }
+
+  private _invoices = signal<Invoice[]>([]);
   invoices = computed(() => this._invoices());
+
+  constructor() {
+    this.reload();
+    this.engineerSvc.getById(this.eid).subscribe(eng => {
+      if (!eng) return;
+      this.company = {
+        name: eng.companyName, address: eng.companyAddress ?? '',
+        regNumber: eng.companyRegNumber ?? '', vatNumber: eng.vatNumber ?? '',
+        logoUrl: eng.companyLogoUrl ?? '',
+      };
+    });
+  }
+  private reload() { this.invoiceSvc.getInvoices(this.eid).subscribe(list => this._invoices.set(list)); }
 
   totals = computed(() => ({
     paid:        this._invoices().filter(i => i.status === 'paid').reduce((s, i) => s + i.total, 0),
@@ -431,7 +470,7 @@ export class DashboardInvoicesComponent {
 
   recalc() {
     this.draft.subtotal  = this.draft.items.reduce((s, it) => s + it.quantity * it.unitPrice, 0);
-    this.draft.vatAmount = Math.round(this.draft.subtotal * 0.2 * 100) / 100;
+    this.draft.vatAmount = this.hasVat() ? Math.round(this.draft.subtotal * 0.2 * 100) / 100 : 0;
     this.draft.total     = Math.round((this.draft.subtotal + this.draft.vatAmount) * 100) / 100;
   }
 
@@ -441,27 +480,27 @@ export class DashboardInvoicesComponent {
     if (!this.draft.customerName || !this.draft.customerEmail) { this.createError.set('Customer name and email are required.'); return; }
     if (this.draft.items.length === 0 || this.draft.items.every(i => !i.description)) { this.createError.set('Add at least one line item.'); return; }
     this.recalc();
-    createMockInvoice({
-      engineerId: this.auth.currentUser()!.engineerId!, customerName: this.draft.customerName,
+    this.invoiceSvc.create(this.eid, {
+      engineerId: this.eid, customerName: this.draft.customerName,
       customerEmail: this.draft.customerEmail, jobRef: this.draft.jobRef || null,
       items: [...this.draft.items], subtotal: this.draft.subtotal, vatAmount: this.draft.vatAmount,
       total: this.draft.total, status, issuedAt: new Date().toISOString(),
       dueAt: new Date(this.draft.dueAt).toISOString(), notes: this.draft.notes || null,
-    });
-    this._invoices.set(getMockInvoices(this.auth.currentUser()!.engineerId!));
-    this.creating.set(false);
+    }).subscribe(() => { this.reload(); this.creating.set(false); });
   }
 
   sendInvoice(id: number) {
-    updateInvoiceStatus(id, 'sent');
-    this._invoices.set(getMockInvoices(this.auth.currentUser()!.engineerId!));
-    this.viewing.set(this._invoices().find(i => i.id === id) ?? null);
+    this.invoiceSvc.setStatus(id, 'sent').subscribe(() => this.invoiceSvc.getInvoices(this.eid).subscribe(list => {
+      this._invoices.set(list);
+      this.viewing.set(list.find(i => i.id === id) ?? null);
+    }));
   }
 
   markPaid(id: number) {
-    updateInvoiceStatus(id, 'paid');
-    this._invoices.set(getMockInvoices(this.auth.currentUser()!.engineerId!));
-    if (this.viewing()?.id === id) this.viewing.set(this._invoices().find(i => i.id === id) ?? null);
+    this.invoiceSvc.setStatus(id, 'paid').subscribe(() => this.invoiceSvc.getInvoices(this.eid).subscribe(list => {
+      this._invoices.set(list);
+      if (this.viewing()?.id === id) this.viewing.set(list.find(i => i.id === id) ?? null);
+    }));
   }
 
   printInvoice() { window.print(); }

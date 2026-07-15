@@ -1,8 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { MOCK_CUSTOMER_BOOKINGS, MOCK_CUSTOMER_PLAN, MOCK_CUSTOMER_AC_SYSTEMS } from '../../core/mock/mock-data';
+import { AccountService } from '../../core/services/account.service';
 import { CustomerBooking, CustomerServicePlan, CustomerAcSystem } from '../../core/models/models';
 
 type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
@@ -10,7 +11,7 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   template: `
     <div class="page-container">
       <div class="account-layout">
@@ -227,28 +228,36 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
                   <p class="content-sub">Personal details and address</p>
                 </div>
               </div>
+
+              @if (profileSaved()) {
+                <div class="save-banner">&#10003; Profile saved successfully.</div>
+              }
+
               <div class="profile-form">
                 <div class="pf-row">
                   <div class="form-group">
                     <label>Full name</label>
-                    <input type="text" [value]="auth.currentUser()!.fullName" />
+                    <input type="text" [(ngModel)]="profileForm.fullName" name="fullName" />
                   </div>
                   <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" [value]="auth.currentUser()!.email" />
+                    <label>Email <span class="lbl-hint">Contact support to change</span></label>
+                    <input type="email" [value]="profileForm.email" disabled />
                   </div>
                 </div>
                 <div class="pf-row">
                   <div class="form-group">
                     <label>Phone</label>
-                    <input type="tel" placeholder="Add a phone number" />
+                    <input type="tel" [(ngModel)]="profileForm.phone" name="phone" placeholder="Add a phone number" />
                   </div>
                   <div class="form-group">
                     <label>Default address</label>
-                    <input type="text" placeholder="Your home address" />
+                    <input type="text" [(ngModel)]="profileForm.address" name="address" placeholder="Your home address" />
                   </div>
                 </div>
-                <button class="btn-primary btn-sm">Save changes</button>
+                <div class="pf-actions">
+                  <button class="btn-text btn-sm" (click)="resetProfile()">Discard</button>
+                  <button class="btn-primary btn-sm" (click)="saveProfile()">Save changes</button>
+                </div>
               </div>
             </div>
           }
@@ -451,11 +460,19 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
     .system-svc-btn { flex-shrink: 0; }
 
     /* Profile form */
+    .save-banner {
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+      padding: 0.55rem 1rem; font-size: 0.83rem; font-weight: 600; color: #065f46;
+      margin: 1.25rem 1.25rem 0;
+    }
     .profile-form { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
     .pf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
     .form-group label { font-size: 0.72rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
     .form-group input { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; }
+    .form-group input:disabled { background: var(--bg); color: var(--text-muted); cursor: not-allowed; }
+    .lbl-hint { font-size: 0.68rem; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 0.3rem; }
+    .pf-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
 
     @media (max-width: 720px) {
       .account-layout { flex-direction: column; padding: 1rem; gap: 1rem; }
@@ -470,10 +487,31 @@ type AccountTab = 'bookings' | 'plan' | 'systems' | 'profile';
 })
 export class AccountComponent {
   auth    = inject(AuthService);
+  private accountSvc = inject(AccountService);
+  private route = inject(ActivatedRoute);
   tab     = signal<AccountTab>('bookings');
-  bookings: CustomerBooking[]    = MOCK_CUSTOMER_BOOKINGS;
-  plan:    CustomerServicePlan | null = MOCK_CUSTOMER_PLAN;
-  systems: CustomerAcSystem[]    = MOCK_CUSTOMER_AC_SYSTEMS;
+  bookings: CustomerBooking[]    = [];
+  plan:    CustomerServicePlan | null = null;
+  systems: CustomerAcSystem[]    = [];
+
+  profileForm = { fullName: '', email: '', phone: '' as string | null, address: '' as string | null };
+  private originalProfile = { ...this.profileForm };
+  profileSaved = signal(false);
+
+  constructor() {
+    const validTabs: AccountTab[] = ['bookings', 'plan', 'systems', 'profile'];
+    const requested = this.route.snapshot.queryParamMap.get('tab') as AccountTab | null;
+    if (requested && validTabs.includes(requested)) this.tab.set(requested);
+
+    const email = this.auth.currentUser()?.email ?? '';
+    this.accountSvc.bookings(email).subscribe(b => this.bookings = b);
+    this.accountSvc.plan(email).subscribe(p => this.plan = p);
+    this.accountSvc.systems(email).subscribe(s => this.systems = s);
+    this.accountSvc.profile(email).subscribe(p => {
+      this.profileForm = { fullName: p.fullName, email: p.email, phone: p.phone, address: p.address };
+      this.originalProfile = { ...this.profileForm };
+    });
+  }
 
   statusLabel(status: string): string {
     const m: Record<string, string> = { confirmed: 'Confirmed', completed: 'Completed', pending: 'Pending', cancelled: 'Cancelled' };
@@ -509,5 +547,25 @@ export class AccountComponent {
 
   leaveReview(b: CustomerBooking): void {
     alert(`Review flow for ${b.bookingRef} - coming soon!`);
+  }
+
+  saveProfile(): void {
+    const email = this.auth.currentUser()?.email ?? '';
+    this.accountSvc.updateProfile(email, {
+      fullName: this.profileForm.fullName, phone: this.profileForm.phone, address: this.profileForm.address,
+    }).subscribe(p => {
+      this.profileForm = { fullName: p.fullName, email: p.email, phone: p.phone, address: p.address };
+      this.originalProfile = { ...this.profileForm };
+      this.auth.patchCurrentUser({
+        fullName: p.fullName,
+        avatarInitials: p.fullName.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2),
+      });
+      this.profileSaved.set(true);
+      setTimeout(() => this.profileSaved.set(false), 3000);
+    });
+  }
+
+  resetProfile(): void {
+    this.profileForm = { ...this.originalProfile };
   }
 }

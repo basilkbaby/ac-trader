@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { getSavedQuotes, updateSavedQuoteStatus } from '../../core/mock/mock-data';
+import { QuotationService } from '../../core/services/quotation.service';
 import { SavedQuote, SavedQuoteStatus } from '../../core/models/models';
 
 type Filter = 'all' | SavedQuoteStatus;
@@ -68,21 +68,35 @@ type Filter = 'all' | SavedQuoteStatus;
           </div>
         }
         @for (q of visible(); track q.id) {
-          <a [routerLink]="['/dashboard/quotes', q.id]" class="ql-row">
-            <div class="ql-row-main">
-              <div class="ql-row-top">
-                <span class="ql-ref">{{ q.ref }}</span>
-                <span class="ql-status" [class]="'qs-' + q.status">{{ q.status | titlecase }}</span>
+          <div class="ql-row">
+            <a [routerLink]="['/dashboard/quotes', q.id]" class="ql-row-link">
+              <div class="ql-row-main">
+                <div class="ql-row-top">
+                  <span class="ql-ref">{{ q.ref }}</span>
+                  <span class="ql-status" [class]="'qs-' + q.status">{{ q.status | titlecase }}</span>
+                </div>
+                <span class="ql-customer">{{ q.customerName || 'No customer name' }}</span>
+                <span class="ql-jobtitle">{{ q.summary }}</span>
               </div>
-              <span class="ql-customer">{{ q.customerName || 'No customer name' }}</span>
-              <span class="ql-jobtitle">{{ q.summary }}</span>
+              <div class="ql-row-right">
+                <span class="ql-total">£{{ q.total | number:'1.0-0' }}</span>
+                <span class="ql-date">{{ q.createdAt | date:'d MMM yyyy' }}</span>
+                <span class="ql-view">View &#8594;</span>
+              </div>
+            </a>
+            <div class="ql-row-actions">
+              @if (q.status === 'draft') {
+                <button class="ql-action" (click)="quickStatus(q, 'sent')">Mark sent</button>
+              }
+              @if (q.status === 'sent') {
+                <button class="ql-action ql-action-accept" (click)="quickStatus(q, 'accepted')">Mark accepted</button>
+                <button class="ql-action ql-action-decline" (click)="quickStatus(q, 'declined')">Mark declined</button>
+              }
+              @if (q.status === 'accepted' || q.status === 'declined') {
+                <button class="ql-action" (click)="quickStatus(q, 'draft')">Reopen</button>
+              }
             </div>
-            <div class="ql-row-right">
-              <span class="ql-total">£{{ q.total | number:'1.0-0' }}</span>
-              <span class="ql-date">{{ q.createdAt | date:'d MMM yyyy' }}</span>
-              <span class="ql-view">View &#8594;</span>
-            </div>
-          </a>
+          </div>
         }
       </div>
     </div>
@@ -119,9 +133,17 @@ type Filter = 'all' | SavedQuoteStatus;
     .ql-empty p { margin: 0 0 0.35rem; font-size: 0.92rem; color: var(--text-primary); }
     .ql-empty-sub { font-size: 0.85rem; color: var(--text-muted) !important; margin-bottom: 1.1rem !important; }
 
-    .ql-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; transition: background 0.12s; }
+    .ql-row { display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); }
     .ql-row:last-child { border-bottom: none; }
-    .ql-row:hover { background: var(--bg); text-decoration: none; }
+    .ql-row-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex: 1; min-width: 0; padding: 0.9rem 1.1rem; text-decoration: none; color: inherit; transition: background 0.12s; }
+    .ql-row-link:hover { background: var(--bg); text-decoration: none; }
+    .ql-row-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; padding-right: 1.1rem; }
+    .ql-action { font-size: 0.74rem; font-weight: 600; color: var(--text-secondary); background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.65rem; cursor: pointer; white-space: nowrap; transition: all 0.12s; }
+    .ql-action:hover { border-color: var(--brand); color: var(--brand); }
+    .ql-action-accept { color: var(--success); border-color: #a7f3d0; }
+    .ql-action-accept:hover { background: var(--success-bg); border-color: var(--success); }
+    .ql-action-decline { color: var(--danger); border-color: #fca5a5; }
+    .ql-action-decline:hover { background: var(--danger-bg); border-color: var(--danger); }
     .ql-row-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 0.15rem; }
     .ql-row-top { display: flex; align-items: center; gap: 0.6rem; }
     .ql-ref { font-size: 0.86rem; font-weight: 700; color: var(--text-primary); }
@@ -144,13 +166,18 @@ type Filter = 'all' | SavedQuoteStatus;
       .metric { min-width: 45%; }
       .ql-jobtitle { display: none; }
       .ql-view { display: none; }
+      .ql-row { flex-direction: column; align-items: stretch; }
+      .ql-row-actions { padding: 0 1.1rem 0.9rem; }
     }
   `]
 })
 export class DashboardQuotesListComponent {
   private auth = inject(AuthService);
+  private quoteSvc = inject(QuotationService);
 
-  all    = signal<SavedQuote[]>(getSavedQuotes(this.auth.currentUser()!.engineerId!));
+  all    = signal<SavedQuote[]>([]);
+
+  constructor() { this.quoteSvc.list(this.auth.currentUser()!.engineerId!).subscribe(q => this.all.set(q)); }
   search = '';
   filter = signal<Filter>('all');
 
@@ -173,4 +200,10 @@ export class DashboardQuotesListComponent {
 
   totals = computed(() => ({ value: this.all().reduce((s, q) => s + q.total, 0) }));
   statusCount(s: SavedQuoteStatus): number { return this.all().filter(q => q.status === s).length; }
+
+  quickStatus(q: SavedQuote, status: SavedQuoteStatus) {
+    this.quoteSvc.setStatus(q.id, status).subscribe(() => {
+      this.all.update(list => list.map(x => x.id === q.id ? { ...x, status } : x));
+    });
+  }
 }

@@ -1,55 +1,56 @@
-import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, InvoiceItem, SavedQuote, Client, CustomerBooking, CustomerServicePlan, CustomerAcSystem, PortfolioGroup } from '../models/models';
+import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteRequest, CreateBookingRequest, AuthUser, JobRequest, Invoice, InvoiceItem, SavedQuote, Client, CustomerBooking, CustomerServicePlan, CustomerAcSystem, CustomerProfile, UpdateCustomerProfileRequest, PortfolioGroup } from '../models/models';
 
 // ─── Toggle ──────────────────────────────────────────────────────────────────
-// Set to false once your real API is connected.
-export const USE_MOCK = true;
+// true  = run entirely on in-memory mock data (offline demo)
+// false = call the real ASP.NET Core API (environment.apiUrl)
+export const USE_MOCK = false;
 
 // ─── Engineers ───────────────────────────────────────────────────────────────
 
 export const MOCK_ENGINEERS: Engineer[] = [
   {
     id: 1,
-    fullName: 'James Mitchell',
-    companyName: 'Mitchell Air Solutions',
-    coveragePostcode: 'SW1, SW3, SW7, SW10',
-    latitude: 51.4975,
-    longitude: -0.1357,
+    fullName: 'Tinto Thomas',
+    companyName: 'Quality Tech Engineering Limited',
+    coveragePostcode: 'CM17, CM18, CM19, CM20',
+    latitude: 51.7671,
+    longitude: 0.1026,
     averageRating: 4.9,
-    jobsCompleted: 312,
+    jobsCompleted: 264,
     isAvailable: true,
     isVerified: true,
-    fGasCertNumber: 'FGC-2019-11042',
-    specialisms: 'Installation, Replacement, Emergency repair',
+    fGasCertNumber: 'FGC-2016-33107',
+    specialisms: 'Installation, Multi-split systems, Commercial, HVAC Maintenance, AHU Cleaning, Facilities Engineering',
     profileImageUrl: null,
-    hourlyRate: 75,
+    hourlyRate: 78,
     hasPublicLiability: true,
     hasDbsCheck: true,
     responseRatePercent: 98,
     avgResponseHours: 1,
-    brandsSupported: 'Daikin, Mitsubishi Electric',
-    memberSince: '2019-03-14',
+    brandsSupported: 'Fujitsu, Daikin, Mitsubishi Electric, Toshiba',
+    memberSince: '2016-06-01',
   },
   {
     id: 2,
-    fullName: 'Sarah Chen',
-    companyName: 'CoolTech London Ltd',
-    coveragePostcode: 'N1, N4, N5, N7, N16',
-    latitude: 51.5462,
-    longitude: -0.1027,
-    averageRating: 4.8,
-    jobsCompleted: 187,
+    fullName: 'Nitin Sunil',
+    companyName: 'Blue Peak Cooling',
+    coveragePostcode: 'RM11, RM12, RM3, RM14',
+    latitude: 51.5540,
+    longitude: 0.2190,
+    averageRating: 4.7,
+    jobsCompleted: 96,
     isAvailable: true,
     isVerified: true,
-    fGasCertNumber: 'FGC-2020-28834',
-    specialisms: 'Installation, Service / maintenance, Commercial',
+    fGasCertNumber: 'FGC-2019-48822',
+    specialisms: 'Installation, Residential, Commercial, Service / maintenance, Multi-split systems',
     profileImageUrl: null,
-    hourlyRate: 70,
+    hourlyRate: 68,
     hasPublicLiability: true,
     hasDbsCheck: false,
-    responseRatePercent: 96,
+    responseRatePercent: 95,
     avgResponseHours: 2,
-    brandsSupported: 'Mitsubishi Electric, Panasonic, Fujitsu',
-    memberSince: '2020-07-01',
+    brandsSupported: 'Daikin, Samsung, LG',
+    memberSince: '2019-03-01',
   },
   {
     id: 3,
@@ -190,16 +191,20 @@ export const MOCK_ENGINEERS: Engineer[] = [
 export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
   1: {
     ...MOCK_ENGINEERS[0],
-    email: 'james@mitchellair.co.uk',
-    phone: '07700 900 142',
-    bio: "I've been installing and servicing air conditioning systems across South West London for over 8 years. I specialise in Daikin and Mitsubishi Electric residential systems and take real pride in clean, tidy installations with no mess left behind. Every job gets a full written report and I'm always happy to explain what I've done in plain English.",
-    createdAt: '2019-03-14T09:00:00Z',
+    email: 'tinto@qualitytecheng.co.uk',
+    phone: '07521 244986',
+    bio: "Quality Tech Engineering Limited install and maintain air conditioning systems across Essex and East London. We specialise in Fujitsu multi-split systems, HVAC maintenance, AHU cleaning and facilities engineering for commercial and residential clients. Every job comes with a full written quotation and handover report.",
+    createdAt: '2016-06-01T09:00:00Z',
+    companyAddress: 'Unit 4, Edinburgh Avenue\nHarlow\nEssex\nCM20 2DP',
+    companyRegNumber: '11223344',
+    vatNumber: null,
+    companyLogoUrl: 'https://eventmanagementimages.blob.core.windows.net/coolhq/engineers/qualitytech.jpg',
     ratingBreakdown: { professionalism: 5.0, punctuality: 4.9, quality: 4.9, value: 4.8 },
     reviews: [
       {
         id: 101,
         rating: 5,
-        comment: "James installed a Daikin split unit in our master bedroom. Arrived exactly on time, covered the floors, ran the pipes neatly through the cavity wall and left everything spotless. Cold in 30 minutes, couldn't be happier.",
+        comment: "Tinto and the team installed a Fujitsu multi-split system across our house. Arrived exactly on time, covered the floors, ran the pipes neatly through the cavity wall and left everything spotless. Cold in 30 minutes, couldn't be happier.",
         customerName: 'Fiona H.',
         isVerified: true,
         createdAt: '2024-11-14T14:22:00Z',
@@ -208,7 +213,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 102,
         rating: 5,
-        comment: "Annual service done quickly and professionally. James found a small refrigerant leak we had no idea about - caught it early and fixed it on the same visit. Brilliant.",
+        comment: "Annual service done quickly and professionally. Quality Tech found a small refrigerant leak we had no idea about - caught it early and fixed it on the same visit. Brilliant.",
         customerName: 'Richard T.',
         isVerified: true,
         createdAt: '2024-09-03T10:15:00Z',
@@ -217,7 +222,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 103,
         rating: 5,
-        comment: "Emergency call on a Saturday - unit stopped working in the heat wave. James was there within 2 hours. Diagnosed a faulty capacitor, had the part in the van, fixed it within the hour. Absolute legend.",
+        comment: "Emergency call on a Saturday - unit stopped working in the heat wave. Tinto was there within 2 hours. Diagnosed a faulty capacitor, had the part in the van, fixed it within the hour. Absolute legend.",
         customerName: 'Olga M.',
         isVerified: true,
         createdAt: '2024-07-19T16:50:00Z',
@@ -226,7 +231,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 104,
         rating: 4,
-        comment: "Great work replacing our old unit. Took a bit longer than expected but the finish was excellent and James explained everything clearly.",
+        comment: "Great work replacing our old unit. Took a bit longer than expected but the finish was excellent and everything was explained clearly.",
         customerName: 'Ben K.',
         isVerified: true,
         createdAt: '2024-05-08T11:00:00Z',
@@ -236,16 +241,20 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
   },
   2: {
     ...MOCK_ENGINEERS[1],
-    email: 'sarah@cooltechlondon.co.uk',
-    phone: '07700 900 387',
-    bio: "I run CoolTech London from North London, covering residential and light commercial AC installation and servicing. I'm a certified Mitsubishi Electric and Panasonic specialist with a strong focus on energy efficiency - I'll always tell you honestly whether a repair or replacement makes more financial sense. No upselling, just good advice.",
-    createdAt: '2020-07-01T09:00:00Z',
+    email: 'nitin@bluepeakcooling.co.uk',
+    phone: '07700 900 321',
+    bio: "Blue Peak Cooling provides residential and commercial air conditioning installation and servicing across Hornchurch, Romford and the surrounding areas. We're known for reliable, tidy installations and honest advice - I'll always tell you whether a repair or replacement makes more financial sense. No upselling, just good advice.",
+    createdAt: '2019-03-01T09:00:00Z',
+    companyAddress: '12 High Street\nHornchurch\nEssex\nRM12 1SS',
+    companyRegNumber: null,
+    vatNumber: null,
+    companyLogoUrl: 'https://eventmanagementimages.blob.core.windows.net/coolhq/engineers/bluepeak.jpg',
     ratingBreakdown: { professionalism: 4.9, punctuality: 4.7, quality: 4.9, value: 4.8 },
     reviews: [
       {
         id: 201,
         rating: 5,
-        comment: "Sarah serviced our three-year-old Mitsubishi and found the drain line was partially blocked. Cleared it, cleaned the filters, and the system is running noticeably quieter. Very thorough.",
+        comment: "Nitin serviced our three-year-old Daikin and found the drain line was partially blocked. Cleared it, cleaned the filters, and the system is running noticeably quieter. Very thorough.",
         customerName: 'Alexei P.',
         isVerified: true,
         createdAt: '2024-10-22T13:30:00Z',
@@ -254,7 +263,7 @@ export const MOCK_ENGINEER_DETAILS: Record<number, EngineerDetail> = {
       {
         id: 202,
         rating: 5,
-        comment: "Installed a Panasonic unit in our home office. Sarah was on time, respectful of the space, and the pipework is hidden beautifully. Recommended to two neighbours already.",
+        comment: "Installed a Samsung unit in our home office. Nitin was on time, respectful of the space, and the pipework is hidden beautifully. Recommended to two neighbours already.",
         customerName: 'Nadia W.',
         isVerified: true,
         createdAt: '2024-08-05T09:45:00Z',
@@ -466,8 +475,8 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     id: 1, engineerId: 1, title: 'Installations',
     coverColor: '#1e3a5f', coverAccent: '#3b82f6',
     images: [
-      { id: 101, caption: 'Daikin 3-head multi-split install, SW7 townhouse', jobType: 'Installation', color: '#1e3a5f', accentColor: '#3b82f6', postedAt: '2025-04-12' },
-      { id: 102, caption: 'Samsung wall unit - master bedroom, Chelsea', jobType: 'Installation', color: '#1d4ed8', accentColor: '#60a5fa', postedAt: '2025-03-28' },
+      { id: 101, caption: 'Fujitsu 3-head multi-split install, Harlow townhouse', jobType: 'Installation', color: '#1e3a5f', accentColor: '#3b82f6', postedAt: '2025-04-12' },
+      { id: 102, caption: 'Daikin wall unit - master bedroom, Bishop\'s Stortford', jobType: 'Installation', color: '#1d4ed8', accentColor: '#60a5fa', postedAt: '2025-03-28' },
       { id: 103, caption: 'Mitsubishi ceiling cassette, open-plan living space', jobType: 'Installation', color: '#0f172a', accentColor: '#818cf8', postedAt: '2025-02-14' },
       { id: 104, caption: 'LG dual-zone installation, period conversion flat', jobType: 'Installation', color: '#172554', accentColor: '#93c5fd', postedAt: '2025-01-09' },
     ]
@@ -477,7 +486,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     coverColor: '#064e3b', coverAccent: '#10b981',
     images: [
       { id: 201, caption: 'Annual service + full gas recharge completed', jobType: 'Service', color: '#064e3b', accentColor: '#10b981', postedAt: '2025-05-02' },
-      { id: 202, caption: 'Refrigerant leak traced and repaired, SW3', jobType: 'Repair', color: '#065f46', accentColor: '#34d399', postedAt: '2025-04-18' },
+      { id: 202, caption: 'Refrigerant leak traced and repaired, Old Harlow', jobType: 'Repair', color: '#065f46', accentColor: '#34d399', postedAt: '2025-04-18' },
       { id: 203, caption: 'PCB board replacement - same-day turnaround', jobType: 'Repair', color: '#047857', accentColor: '#6ee7b7', postedAt: '2025-03-05' },
     ]
   },
@@ -485,7 +494,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
     id: 3, engineerId: 1, title: 'Commercial',
     coverColor: '#4c1d95', coverAccent: '#a78bfa',
     images: [
-      { id: 301, caption: '6-zone VRF system, Mayfair office building', jobType: 'Commercial', color: '#4c1d95', accentColor: '#a78bfa', postedAt: '2025-05-10' },
+      { id: 301, caption: '6-zone VRF system, Harlow office building', jobType: 'Commercial', color: '#4c1d95', accentColor: '#a78bfa', postedAt: '2025-05-10' },
       { id: 302, caption: 'Retail unit - 2 ceiling cassettes installed overnight', jobType: 'Commercial', color: '#5b21b6', accentColor: '#c4b5fd', postedAt: '2025-04-01' },
       { id: 303, caption: 'Restaurant kitchen extract + cool air system', jobType: 'Commercial', color: '#6d28d9', accentColor: '#ddd6fe', postedAt: '2025-02-20' },
     ]
@@ -497,7 +506,7 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
 export const DEMO_ACCOUNTS: Record<string, { password: string; user: AuthUser }> = {
   'engineer@demo.com': {
     password: 'demo',
-    user: { id: 1, email: 'engineer@demo.com', fullName: 'James Mitchell', role: 'engineer', engineerId: 1, avatarInitials: 'JM' }
+    user: { id: 1, email: 'engineer@demo.com', fullName: 'Tinto Thomas', role: 'engineer', engineerId: 1, avatarInitials: 'TT' }
   },
   'customer@demo.com': {
     password: 'demo',
@@ -792,13 +801,13 @@ export function daysUntil(dateIso: string | null): number | null {
 // ─── Customer portal data ─────────────────────────────────────────────────────
 
 export const MOCK_CUSTOMER_BOOKINGS: CustomerBooking[] = [
-  { id: 4001, bookingRef: '#ACT-4001', jobType: 'Installation', address: '12 Maple Avenue, London', preferredDate: '2026-06-15', engineerName: 'James Mitchell', quoteRange: '£1,440 – £2,520', status: 'confirmed', createdAt: '2026-05-20T10:30:00Z' },
-  { id: 4002, bookingRef: '#ACT-4002', jobType: 'Service / maintenance', address: '12 Maple Avenue, London', preferredDate: '2025-08-10', engineerName: 'James Mitchell', quoteRange: '£96 – £144', status: 'completed', createdAt: '2025-07-28T09:00:00Z' },
+  { id: 4001, bookingRef: '#ACT-4001', jobType: 'Installation', address: '12 Maple Avenue, London', preferredDate: '2026-06-15', engineerName: 'Tinto Thomas', quoteRange: '£1,440 – £2,520', status: 'confirmed', createdAt: '2026-05-20T10:30:00Z' },
+  { id: 4002, bookingRef: '#ACT-4002', jobType: 'Service / maintenance', address: '12 Maple Avenue, London', preferredDate: '2025-08-10', engineerName: 'Tinto Thomas', quoteRange: '£96 – £144', status: 'completed', createdAt: '2025-07-28T09:00:00Z' },
 ];
 
 export const MOCK_CUSTOMER_PLAN: CustomerServicePlan = {
   tier: 'premium', tierName: 'Premium', startDate: '2026-01-15',
-  nextServiceDate: '2027-01-15', engineerName: 'James Mitchell', status: 'active',
+  nextServiceDate: '2027-01-15', engineerName: 'Tinto Thomas', status: 'active',
 };
 
 export const MOCK_CUSTOMER_AC_SYSTEMS: CustomerAcSystem[] = [
@@ -827,6 +836,20 @@ export const MOCK_CUSTOMER_AC_SYSTEMS: CustomerAcSystem[] = [
     serviceStatus: 'due-soon',
   },
 ];
+
+let mockCustomerProfile: CustomerProfile = {
+  fullName: 'Alex Thompson', email: 'customer@demo.com',
+  phone: '07700 900 555', address: '12 Maple Avenue, London, SW4 7AB',
+};
+
+export function getMockCustomerProfile(): CustomerProfile {
+  return { ...mockCustomerProfile };
+}
+
+export function updateMockCustomerProfile(update: UpdateCustomerProfileRequest): CustomerProfile {
+  mockCustomerProfile = { ...mockCustomerProfile, fullName: update.fullName, phone: update.phone, address: update.address };
+  return { ...mockCustomerProfile };
+}
 
 export const MOCK_MONTHLY_EARNINGS: { month: string; amount: number }[] = [
   { month: 'Dec', amount: 2840 },
@@ -1022,6 +1045,25 @@ function getBtu(m2: number): string {
   return '24,000 BTU';
 }
 
+// ─── Shared property / construction taxonomies ───────────────────────────────
+// Used by both the Quote Builder and the Heat Load Calculator so the two tools
+// speak the same language (and a heat-load result can hand off cleanly).
+
+export const PROPERTY_TYPES: { value: string; label: string }[] = [
+  { value: 'flat', label: 'Flat / apartment' },
+  { value: 'terr', label: 'Terraced house' },
+  { value: 'semi', label: 'Semi-detached' },
+  { value: 'det',  label: 'Detached house' },
+  { value: 'comm', label: 'Commercial / office' },
+];
+
+export const WALL_TYPES: { value: string; label: string; factor: number }[] = [
+  { value: 'solid',     label: 'Solid wall (older, less insulated)', factor: 1.15 },
+  { value: 'cavity',    label: 'Cavity wall (standard)',             factor: 1.0 },
+  { value: 'insulated', label: 'Insulated / new-build',              factor: 0.9 },
+  { value: 'glazed',    label: 'Glass partition / large glazing',    factor: 1.25 },
+];
+
 // ─── Engineer quote generator ─────────────────────────────────────────────────
 // Produces itemised, editable line items with point prices (mid-band), using the
 // same cost tables as the customer estimate so quotes stay consistent.
@@ -1033,6 +1075,7 @@ export interface QuoteGenParams {
   propertyType: string;     // flat | terr | semi | det | comm
   brandTier: string;        // budget | mid | premium
   serviceJobType?: string;  // annual | strip | repair
+  wallType?: string;        // solid | cavity | insulated | glazed — affects pipework/drilling cost
   recommendedBtu?: number;  // optional override from the heat-load calculator
 }
 
@@ -1091,7 +1134,12 @@ export function generateQuoteItems(p: QuoteGenParams): QuoteGenResult {
     const labH = labourFirst[1] + (units - 1) * labourExtra[1];
     items.push({ description: `Installation labour, mounting & bracketry`, quantity: 1, unitPrice: mid(labL, labH) });
     const [pL, pH] = pipeByProp[p.propertyType] ?? [100, 180];
-    items.push({ description: `Pipework, cabling & fittings`, quantity: units, unitPrice: mid(pL, pH) });
+    const wallType = p.wallType ?? 'cavity';
+    const wallFactor = WALL_TYPES.find(w => w.value === wallType)?.factor ?? 1.0;
+    const pipeDesc = wallType === 'solid'
+      ? `Pipework, cabling & fittings (solid wall - additional drilling & making good)`
+      : `Pipework, cabling & fittings`;
+    items.push({ description: pipeDesc, quantity: units, unitPrice: Math.round(mid(pL, pH) * wallFactor / 5) * 5 });
     items.push({ description: `Commissioning, F-Gas sign-off & handover`, quantity: 1, unitPrice: 80 });
     items.push({ description: `Waste removal & consumables`, quantity: 1, unitPrice: 45 });
     duration = units === 1 ? '1 day' : units <= 2 ? '1–2 days' : '2–3 days';

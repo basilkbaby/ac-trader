@@ -7,7 +7,9 @@ export interface SizingRecommendation {
   recommendedKw: number;
   roomAreaM2: number;
   multiUnit: boolean;
-  label: string;        // e.g. "Café / commercial kitchen"
+  label: string;         // e.g. "Semi-detached"
+  propertyType: string;  // flat | terr | semi | det | comm
+  postcode: string;
 }
 
 /** Carries a heat-load result from the calculator to the Quote Builder. */

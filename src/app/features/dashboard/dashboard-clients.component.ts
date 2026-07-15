@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { getClients, updateClientNotes, daysUntil } from '../../core/mock/mock-data';
+import { ClientService } from '../../core/services/client.service';
+import { daysUntil } from '../../core/mock/mock-data';
 import { Client } from '../../core/models/models';
 
 type Filter = 'all' | 'due' | 'plan' | 'leads';
@@ -202,12 +203,16 @@ type Filter = 'all' | 'due' | 'plan' | 'leads';
 })
 export class DashboardClientsComponent {
   private auth = inject(AuthService);
+  private clientSvc = inject(ClientService);
+  private eid = this.auth.currentUser()!.engineerId!;
 
-  all      = signal<Client[]>(getClients(this.auth.currentUser()!.engineerId!));
+  all      = signal<Client[]>([]);
   search   = '';
   filter   = signal<Filter>('all');
   expanded = signal<number | null>(null);
   noteDraft = '';
+
+  constructor() { this.clientSvc.list(this.eid).subscribe(cs => this.all.set(cs)); }
 
   filters: { key: Filter; label: string }[] = [
     { key: 'all', label: 'All' },
@@ -247,8 +252,7 @@ export class DashboardClientsComponent {
   }
 
   saveNotes(c: Client) {
-    updateClientNotes(c.id, this.noteDraft);
-    this.all.set(getClients(this.auth.currentUser()!.engineerId!));
+    this.clientSvc.setNotes(c.id, this.noteDraft).subscribe(() => this.clientSvc.list(this.eid).subscribe(cs => this.all.set(cs)));
   }
 
   serviceReminderMailto(c: Client): string {

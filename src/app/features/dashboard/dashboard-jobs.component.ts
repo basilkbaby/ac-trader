@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { getMockJobRequests, updateJobStatus } from '../../core/mock/mock-data';
+import { JobService } from '../../core/services/job.service';
 import { JobRequest, JobStatus } from '../../core/models/models';
 
 type JobTab = 'pending' | 'active' | 'completed';
@@ -275,10 +275,15 @@ type JobTab = 'pending' | 'active' | 'completed';
 })
 export class DashboardJobsComponent {
   auth     = inject(AuthService);
+  private jobSvc = inject(JobService);
+  private eid = this.auth.currentUser()!.engineerId!;
   tab      = signal<JobTab>('pending');
   expanded = signal<number | null>(null);
 
-  private _jobs = signal<JobRequest[]>(getMockJobRequests(this.auth.currentUser()!.engineerId!));
+  private _jobs = signal<JobRequest[]>([]);
+
+  constructor() { this.reload(); }
+  private reload() { this.jobSvc.getJobs(this.eid).subscribe(j => this._jobs.set(j)); }
 
   visibleJobs = computed(() => {
     const t = this.tab();
@@ -304,8 +309,7 @@ export class DashboardJobsComponent {
   contactCustomer(job: JobRequest) { window.open(`tel:${job.customerPhone}`); }
 
   private mutate(id: number, status: JobStatus) {
-    updateJobStatus(id, status);
-    this._jobs.set(getMockJobRequests(this.auth.currentUser()!.engineerId!));
+    this.jobSvc.setStatus(id, status).subscribe(() => this.reload());
   }
 
   statusLabel(status: string): string {

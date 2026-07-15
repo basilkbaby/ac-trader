@@ -77,4 +77,19 @@ export class EngineerService {
       map(r => r.data!)
     );
   }
+
+  updateProfile(id: number, profile: {
+    fullName: string; companyName: string; email: string; phone: string; bio: string;
+    coveragePostcode: string; hourlyRate: number; specialisms: string; brandsSupported: string;
+    companyAddress?: string | null; companyRegNumber?: string | null;
+    vatNumber?: string | null; companyLogoUrl?: string | null;
+  }): Observable<void> {
+    if (USE_MOCK) return of(void 0).pipe(delay(300));
+    return this.http.put<void>(`api/engineers/${id}`, profile);
+  }
+
+  setAvailability(id: number, isAvailable: boolean): Observable<void> {
+    if (USE_MOCK) return of(void 0).pipe(delay(150));
+    return this.http.patch<void>(`api/engineers/${id}/availability`, isAvailable);
+  }
 }

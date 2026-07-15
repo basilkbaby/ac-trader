@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { AvailabilityService } from '../../core/services/availability.service';
-import { MOCK_ENGINEER_DETAILS, MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
+import { EngineerService } from '../../core/services/engineer.service';
+import { MOCK_PORTFOLIO_GROUPS } from '../../core/mock/mock-data';
 import { PortfolioGroup, PortfolioImage } from '../../core/models/models';
 
 interface UploadedCert {
@@ -62,10 +63,55 @@ const MOCK_CERTS: UploadedCert[] = [
         <!-- ── LEFT column ── -->
         <div class="profile-col">
 
-          <!-- Personal & company -->
+          <!-- Company details -->
           <div class="profile-card">
             <div class="card-header">
-              <h3>Personal &amp; company</h3>
+              <h3>Company details</h3>
+              <span class="card-header-hint">Shown on your public profile, quotes &amp; invoices</span>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Company name</label>
+                <input type="text" [(ngModel)]="form.companyName" name="companyName" />
+              </div>
+              <div class="form-group">
+                <label>Registered / trading address</label>
+                <textarea [(ngModel)]="form.companyAddress" name="companyAddress" rows="2"
+                  placeholder="14 Battersea Rise&#10;London&#10;SW11 1EE"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Companies House number <span class="lbl-hint">If limited</span></label>
+                  <input type="text" [(ngModel)]="form.companyRegNumber" name="companyRegNumber" placeholder="e.g. 09876543" />
+                </div>
+                <div class="form-group">
+                  <label>VAT registration number <span class="lbl-hint">If VAT-registered</span></label>
+                  <input type="text" [(ngModel)]="form.vatNumber" name="vatNumber" placeholder="e.g. GB 234 5678 90" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Company logo <span class="lbl-hint">Appears on your profile, quotes &amp; invoices</span></label>
+                @if (form.companyLogoUrl) {
+                  <div class="logo-preview-row">
+                    <img [src]="form.companyLogoUrl" alt="Company logo" class="logo-preview" />
+                    <button type="button" class="btn-text btn-sm" (click)="removeLogo()">Remove</button>
+                  </div>
+                } @else {
+                  <div class="file-drop" (click)="logoInput.click()">
+                    <span>Click to choose a logo</span>
+                    <span class="file-hint">PNG, JPG or SVG - max 500KB</span>
+                  </div>
+                }
+                <input #logoInput type="file" accept="image/png,image/jpeg,image/svg+xml" style="display:none" (change)="onLogoChosen($event)" />
+                @if (logoError()) { <div class="upload-error">{{ logoError() }}</div> }
+              </div>
+            </div>
+          </div>
+
+          <!-- Your details -->
+          <div class="profile-card">
+            <div class="card-header">
+              <h3>Your details</h3>
             </div>
             <div class="card-body">
               <div class="form-row">
@@ -74,19 +120,13 @@ const MOCK_CERTS: UploadedCert[] = [
                   <input type="text" [(ngModel)]="form.fullName" name="fullName" />
                 </div>
                 <div class="form-group">
-                  <label>Company name</label>
-                  <input type="text" [(ngModel)]="form.companyName" name="companyName" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
                   <label>Email</label>
                   <input type="email" [(ngModel)]="form.email" name="email" />
                 </div>
-                <div class="form-group">
-                  <label>Phone</label>
-                  <input type="tel" [(ngModel)]="form.phone" name="phone" />
-                </div>
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" [(ngModel)]="form.phone" name="phone" />
               </div>
               <div class="form-group">
                 <label>Bio <span class="lbl-hint">Shown on your public profile</span></label>
@@ -505,6 +545,8 @@ const MOCK_CERTS: UploadedCert[] = [
     .file-chosen { color: #065f46; font-weight: 600; }
     .file-hint { font-size: 0.72rem; }
     .upload-error { font-size: 0.78rem; color: #dc2626; }
+    .logo-preview-row { display: flex; align-items: center; gap: 0.85rem; }
+    .logo-preview { width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 8px; background: white; padding: 0.35rem; }
 
     .cert-list { display: flex; flex-direction: column; }
     .cert-row {
@@ -585,6 +627,8 @@ const MOCK_CERTS: UploadedCert[] = [
 export class DashboardProfileComponent implements OnInit {
   auth       = inject(AuthService);
   avail      = inject(AvailabilityService);
+  private engineerSvc = inject(EngineerService);
+  private eid = this.auth.currentUser()!.engineerId!;
   saved      = signal(false);
   brandList  = BRAND_LIST;
   certTypes  = CERT_TYPES;
@@ -665,26 +709,47 @@ export class DashboardProfileComponent implements OnInit {
     );
   }
 
+  logoError = signal<string | null>(null);
+
   form = {
     fullName: '', companyName: '', email: '', phone: '',
     bio: '', coveragePostcode: '', hourlyRate: 65,
     specialisms: '', fGasCertNumber: '', hasPublicLiability: false, isAvailable: true,
+    companyAddress: '', companyRegNumber: '', vatNumber: '', companyLogoUrl: '' as string | null,
   };
 
   ngOnInit() {
-    const eng = MOCK_ENGINEER_DETAILS[this.auth.currentUser()!.engineerId!];
-    if (eng) {
-      this.form = {
-        fullName: eng.fullName, companyName: eng.companyName,
-        email: eng.email, phone: eng.phone,
-        bio: eng.bio ?? '', coveragePostcode: eng.coveragePostcode,
-        hourlyRate: eng.hourlyRate, specialisms: eng.specialisms,
-        fGasCertNumber: eng.fGasCertNumber,
-        hasPublicLiability: eng.hasPublicLiability, isAvailable: eng.isAvailable,
-      };
-      this._selectedBrands = (eng.brandsSupported || '').split(',').map(s => s.trim()).filter(Boolean);
-    }
-    this.original = { ...this.form };
+    this.engineerSvc.getById(this.eid).subscribe(eng => {
+      if (eng) {
+        this.form = {
+          fullName: eng.fullName, companyName: eng.companyName,
+          email: eng.email, phone: eng.phone,
+          bio: eng.bio ?? '', coveragePostcode: eng.coveragePostcode,
+          hourlyRate: eng.hourlyRate, specialisms: eng.specialisms,
+          fGasCertNumber: eng.fGasCertNumber,
+          hasPublicLiability: eng.hasPublicLiability, isAvailable: eng.isAvailable,
+          companyAddress: eng.companyAddress ?? '', companyRegNumber: eng.companyRegNumber ?? '',
+          vatNumber: eng.vatNumber ?? '', companyLogoUrl: eng.companyLogoUrl ?? '',
+        };
+        this._selectedBrands = (eng.brandsSupported || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+      }
+      this.original = { ...this.form };
+    });
+  }
+
+  onLogoChosen(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (!file) return;
+    this.logoError.set(null);
+    if (file.size > 500_000) { this.logoError.set('Logo must be under 500KB.'); return; }
+    const reader = new FileReader();
+    reader.onload = () => { this.form.companyLogoUrl = reader.result as string; };
+    reader.readAsDataURL(file);
+  }
+
+  removeLogo() {
+    this.form.companyLogoUrl = '';
+    this.logoError.set(null);
   }
 
   isBrandSelected(brand: string): boolean { return this._selectedBrands.includes(brand); }
@@ -696,7 +761,16 @@ export class DashboardProfileComponent implements OnInit {
       : [...this._selectedBrands, brand];
   }
 
-  save()  { this.saved.set(true); setTimeout(() => this.saved.set(false), 3000); }
+  save() {
+    this.engineerSvc.updateProfile(this.eid, {
+      fullName: this.form.fullName, companyName: this.form.companyName, email: this.form.email,
+      phone: this.form.phone, bio: this.form.bio, coveragePostcode: this.form.coveragePostcode,
+      hourlyRate: this.form.hourlyRate, specialisms: this.form.specialisms,
+      brandsSupported: this._selectedBrands.join(', '),
+      companyAddress: this.form.companyAddress || null, companyRegNumber: this.form.companyRegNumber || null,
+      vatNumber: this.form.vatNumber || null, companyLogoUrl: this.form.companyLogoUrl || null,
+    }).subscribe(() => { this.original = { ...this.form }; this.saved.set(true); setTimeout(() => this.saved.set(false), 3000); });
+  }
   reset() { this.form = { ...this.original }; }
 
   toggleUpload() {

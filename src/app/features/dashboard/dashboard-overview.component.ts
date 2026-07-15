@@ -1,10 +1,15 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../core/services/auth.service';
-import { getMockJobRequests, getMockInvoices, getSavedQuotes, getClients, daysUntil,
-         MOCK_MONTHLY_EARNINGS, MOCK_ENGINEER_DETAILS } from '../../core/mock/mock-data';
+import { JobService } from '../../core/services/job.service';
+import { InvoiceService } from '../../core/services/invoice.service';
+import { QuotationService } from '../../core/services/quotation.service';
+import { ClientService } from '../../core/services/client.service';
+import { EngineerService } from '../../core/services/engineer.service';
+import { JobRequest, Invoice, SavedQuote, Client, EngineerDetail } from '../../core/models/models';
+import { daysUntil, MOCK_MONTHLY_EARNINGS } from '../../core/mock/mock-data';
 
 interface Attention { key: string; icon: string; text: string; link: string; tone: 'warn' | 'info' | 'danger'; }
 interface Tool { icon: string; title: string; desc: string; link: string; }
@@ -192,10 +197,29 @@ interface Tool { icon: string; title: string; desc: string; link: string; }
 })
 export class DashboardOverviewComponent {
   auth     = inject(AuthService);
+  private jobSvc = inject(JobService);
+  private invoiceSvc = inject(InvoiceService);
+  private quotationSvc = inject(QuotationService);
+  private clientSvc = inject(ClientService);
+  private engineerSvc = inject(EngineerService);
   today    = new Date();
   earnings = MOCK_MONTHLY_EARNINGS;
 
   private eid = this.auth.currentUser()!.engineerId!;
+
+  private jobs   = signal<JobRequest[]>([]);
+  private invoicesData = signal<Invoice[]>([]);
+  private quotes = signal<SavedQuote[]>([]);
+  private clients = signal<Client[]>([]);
+  private engineer = signal<EngineerDetail | null>(null);
+
+  constructor() {
+    this.jobSvc.getJobs(this.eid).subscribe(j => this.jobs.set(j));
+    this.invoiceSvc.getInvoices(this.eid).subscribe(i => this.invoicesData.set(i));
+    this.quotationSvc.list(this.eid).subscribe(q => this.quotes.set(q));
+    this.clientSvc.list(this.eid).subscribe(c => this.clients.set(c));
+    this.engineerSvc.getById(this.eid).subscribe(e => this.engineer.set(e));
+  }
 
   tools: Tool[] = [
     { icon: 'quote',   title: 'Quotations',   desc: 'Create & manage quotes', link: '/dashboard/quotes' },
@@ -209,24 +233,22 @@ export class DashboardOverviewComponent {
   greeting() { const h = new Date().getHours(); return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'; }
   firstName() { return this.auth.currentUser()?.fullName.split(' ')[0] ?? ''; }
 
-  private allJobs = computed(() => getMockJobRequests(this.eid));
-  pendingJobs  = computed(() => this.allJobs().filter(j => j.status === 'pending'));
-  upcomingJobs = computed(() => this.allJobs().filter(j => ['accepted', 'active', 'pending'].includes(j.status)).slice(0, 5));
+  pendingJobs  = computed(() => this.jobs().filter(j => j.status === 'pending'));
+  upcomingJobs = computed(() => this.jobs().filter(j => ['accepted', 'active', 'pending'].includes(j.status)).slice(0, 5));
 
-  private invoices = computed(() => getMockInvoices(this.eid));
   outstanding = computed(() => {
-    const list = this.invoices().filter(i => i.status === 'sent' || i.status === 'overdue');
+    const list = this.invoicesData().filter(i => i.status === 'sent' || i.status === 'overdue');
     return { amount: Math.round(list.reduce((s, i) => s + i.total, 0)), count: list.length };
   });
-  private overdueInvoices = computed(() => this.invoices().filter(i => i.status === 'sent' && new Date(i.dueAt) < new Date()));
+  private overdueInvoices = computed(() => this.invoicesData().filter(i => i.status === 'sent' && new Date(i.dueAt) < new Date()));
 
-  quotesSent = computed(() => getSavedQuotes(this.eid).filter(q => q.status === 'sent').length);
-  private servicesDue = computed(() => getClients(this.eid).filter(c => { const d = daysUntil(c.nextServiceDue); return d !== null && d <= 45; }).length);
+  quotesSent = computed(() => this.quotes().filter(q => q.status === 'sent').length);
+  private servicesDue = computed(() => this.clients().filter(c => { const d = daysUntil(c.nextServiceDue); return d !== null && d <= 45; }).length);
 
   currentMonthEarnings = computed(() => MOCK_MONTHLY_EARNINGS[MOCK_MONTHLY_EARNINGS.length - 1].amount);
   totalEarnings        = computed(() => MOCK_MONTHLY_EARNINGS.reduce((s, e) => s + e.amount, 0));
-  rating      = computed(() => MOCK_ENGINEER_DETAILS[this.eid]?.averageRating ?? 4.9);
-  reviewCount = computed(() => MOCK_ENGINEER_DETAILS[this.eid]?.reviews.length ?? 0);
+  rating      = computed(() => this.engineer()?.averageRating ?? 4.9);
+  reviewCount = computed(() => this.engineer()?.reviews.length ?? 0);
 
   attention = computed<Attention[]>(() => {
     const out: Attention[] = [];

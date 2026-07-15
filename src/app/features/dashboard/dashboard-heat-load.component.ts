@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SizingService } from '../../core/services/sizing.service';
+import { PROPERTY_TYPES, WALL_TYPES } from '../../core/mock/mock-data';
 
 interface EquipItem { name: string; qty: number; btu: number; }
+interface RoomInput { id: number; name: string; lengthM: number; widthM: number; heightM: number; wallType: string; }
 
 // Typical sensible heat output per appliance (BTU/hr) - editable per job.
 const EQUIP_PRESETS: { group: string; items: { name: string; btu: number }[] }[] = [
@@ -58,7 +60,7 @@ const AC_SIZES = [
       <div class="hl-titlerow">
         <div>
           <h1>Heat load calculator</h1>
-          <p class="hl-sub">Add up every heat source in the space for an accurate unit size. Fill in what applies — leave anything that doesn't at zero. The result updates as you type.</p>
+          <p class="hl-sub">Start with the property, then break it down room by room. Add people, windows, lighting &amp; equipment for an accurate unit size.</p>
         </div>
       </div>
 
@@ -73,22 +75,49 @@ const AC_SIZES = [
             <div class="hl-group">
               <div class="hl-group-head">
                 <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
-                <div><h4>Room size</h4><span class="hl-group-hint">The area you're cooling.</span></div>
+                <div><h4>Property</h4><span class="hl-group-hint">Sets the base heat-gain factor.</span></div>
               </div>
               <div class="hl-fields">
-                <div class="hl-field"><label>Floor area <span class="hl-opt">m²</span></label><input type="number" [(ngModel)]="areaM2" name="area" min="1" /></div>
-                <div class="hl-field"><label>Ceiling height <span class="hl-opt">m</span></label><input type="number" [(ngModel)]="heightM" name="height" min="2" step="0.1" /></div>
-                <div class="hl-field hl-field-wide">
-                  <label>Space type</label>
-                  <select [(ngModel)]="spaceLabel" name="space">
-                    <option value="Residential room">Residential room (130)</option>
-                    <option value="Office">Office (135)</option>
-                    <option value="Retail unit">Retail unit (138)</option>
-                    <option value="Café / commercial kitchen">Café / kitchen (141)</option>
-                    <option value="Server / comms room">Server room (145)</option>
+                <div class="hl-field">
+                  <label>Property type</label>
+                  <select [(ngModel)]="propertyType" name="propType">
+                    @for (pt of propertyTypes; track pt.value) { <option [value]="pt.value">{{ pt.label }}</option> }
                   </select>
                 </div>
+                <div class="hl-field">
+                  <label>Postcode <span class="hl-opt">optional</span></label>
+                  <input type="text" [(ngModel)]="postcode" name="postcode" placeholder="e.g. SW1A 1AA" />
+                </div>
               </div>
+            </div>
+
+            <div class="hl-group">
+              <div class="hl-group-head">
+                <span class="hl-group-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+                <div><h4>Rooms</h4><span class="hl-group-hint">Add every room being cooled — length, width &amp; wall type.</span></div>
+              </div>
+
+              <div class="hl-room-head">
+                <span>Room</span><span>L (m)</span><span>W (m)</span><span>H (m)</span><span>Wall type</span><span></span>
+              </div>
+              @for (room of rooms(); track room.id; let i = $index) {
+                <div class="hl-room-row">
+                  <input type="text" class="rm-name" [(ngModel)]="room.name" [name]="'rn'+i" />
+                  <input type="number" class="rm-len" [(ngModel)]="room.lengthM" [name]="'rl'+i" min="0.5" step="0.1" />
+                  <input type="number" class="rm-wid" [(ngModel)]="room.widthM" [name]="'rw'+i" min="0.5" step="0.1" />
+                  <input type="number" class="rm-hgt" [(ngModel)]="room.heightM" [name]="'rh'+i" min="1.8" step="0.1" />
+                  <select class="rm-wall" [(ngModel)]="room.wallType" [name]="'rt'+i">
+                    @for (wt of wallTypes; track wt.value) { <option [value]="wt.value">{{ wt.label }}</option> }
+                  </select>
+                  <button class="hl-del rm-del" type="button" (click)="removeRoom(room.id)" [disabled]="rooms().length <= 1" aria-label="Remove room">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                  </button>
+                </div>
+                <div class="hl-room-hint">{{ roomArea(room) | number:'1.0-1' }} m² · ≈ {{ roomBtu(room) | number }} BTU/hr</div>
+              }
+              <button class="hl-add-room" type="button" (click)="addRoom()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Add room
+              </button>
             </div>
 
             <div class="hl-group">
@@ -191,7 +220,7 @@ const AC_SIZES = [
 
             <ul class="hl-breakdown">
               <li>
-                <span class="b-label">Room / volume<span class="b-calc">{{ areaM2 }}m² × {{ heightM }}m × {{ baseFactor() }}</span></span>
+                <span class="b-label">Rooms<span class="b-calc">{{ rooms().length }} room{{ rooms().length !== 1 ? 's' : '' }} · {{ totalAreaM2() | number:'1.0-1' }}m² · factor {{ baseFactor() }}</span></span>
                 <strong>{{ roomLoad() | number }}</strong>
               </li>
               <li>
@@ -280,6 +309,17 @@ const AC_SIZES = [
     .hl-group-hint { font-size: 0.72rem; color: var(--text-muted); }
     .hl-equip-head-row { margin-bottom: 0.85rem; }
 
+    /* Rooms */
+    .hl-room-head, .hl-room-row { display: grid; grid-template-columns: 1.3fr 55px 55px 55px 1.5fr 28px; gap: 0.4rem; align-items: center; }
+    .hl-room-head { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
+    .hl-room-row { margin-bottom: 0.15rem; }
+    .hl-room-row input, .hl-room-row select { padding: 0.45rem 0.5rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.8rem; width: 100%; box-sizing: border-box; }
+    .rm-name { font-weight: 600; }
+    .hl-room-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.1rem 0 0.75rem; padding-left: 0.15rem; }
+    .hl-add-room { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); color: var(--brand); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.75rem; cursor: pointer; }
+    .hl-add-room:hover { border-color: var(--brand); background: var(--brand-light); }
+    .hl-add-room svg { width: 14px; height: 14px; }
+
     /* Equipment */
     .hl-equip-add { display: flex; gap: 0.5rem; margin-bottom: 0.85rem; }
     .hl-equip-add select { flex: 1; padding: 0.55rem 0.7rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.88rem; background: var(--surface); }
@@ -294,6 +334,7 @@ const AC_SIZES = [
     .hl-del { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text-muted); cursor: pointer; padding: 0.3rem; display: inline-flex; align-items: center; justify-content: center; }
     .hl-del svg { width: 14px; height: 14px; }
     .hl-del:hover { color: var(--danger); border-color: #fca5a5; }
+    .hl-del:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* Results */
     .hl-breakdown { list-style: none; padding: 0; margin: 0 0 0.9rem; }
@@ -330,6 +371,23 @@ const AC_SIZES = [
     @media (max-width: 560px) {
       .hl-card { padding: 1rem; }
       .hl-total { flex-wrap: wrap; }
+
+      /* Rooms: name on its own row, dimensions + wall type below */
+      .hl-room-head { display: none; }
+      .hl-room-row {
+        grid-template-columns: repeat(3, 1fr) 32px;
+        grid-template-areas: 'name name name name' 'len wid hgt del' 'wall wall wall wall';
+        row-gap: 0.4rem; align-items: center; margin-top: 0.65rem;
+        padding-top: 0.65rem; padding-bottom: 0.3rem; border-top: 1px solid var(--border);
+      }
+      .hl-room-row:first-of-type { border-top: none; margin-top: 0.4rem; }
+      .rm-name { grid-area: name; }
+      .rm-len { grid-area: len; }
+      .rm-wid { grid-area: wid; }
+      .rm-hgt { grid-area: hgt; }
+      .rm-wall { grid-area: wall; }
+      .rm-del { grid-area: del; }
+
       /* Equipment: name on its own row, controls below */
       .hl-equip-head { display: none; }
       .hl-equip-row {
@@ -355,19 +413,22 @@ export class DashboardHeatLoadComponent {
   private sizing  = inject(SizingService);
 
   presets = EQUIP_PRESETS;
+  propertyTypes = PROPERTY_TYPES;
+  wallTypes = WALL_TYPES;
 
-  // Room
-  areaM2   = 18;
-  heightM  = 2.7;
-  spaceLabel = 'Residential room';
-  // Base fabric/ambient gain per m³ — varies with glazing ratio & occupancy density by space type.
-  private spaceFactors: Record<string, number> = {
-    'Residential room': 130,
-    'Office': 135,
-    'Retail unit': 138,
-    'Café / commercial kitchen': 141,
-    'Server / comms room': 145,
+  // Property
+  propertyType = 'flat';
+  postcode = '';
+  // Base fabric/ambient gain per m³ — varies with glazing ratio & occupancy density by property type.
+  private propertyFactors: Record<string, number> = {
+    flat: 130, terr: 133, semi: 136, det: 140, comm: 145,
   };
+
+  // Rooms
+  rooms = signal<RoomInput[]>([
+    { id: 1, name: 'Room 1', lengthM: 6, widthM: 3, heightM: 2.7, wallType: 'cavity' },
+  ]);
+
   // People
   people    = 2;
   personBtu = 500;
@@ -391,8 +452,9 @@ export class DashboardHeatLoadComponent {
   copied = signal(false);
 
   // ── Loads (BTU/hr) ──────────────────────────────────────────────────────────
-  baseFactor    = computed(() => this.spaceFactors[this.spaceLabel] ?? 141);
-  roomLoad      = computed(() => Math.round((Number(this.areaM2) || 0) * (Number(this.heightM) || 0) * this.baseFactor()));
+  baseFactor    = computed(() => this.propertyFactors[this.propertyType] ?? 133);
+  totalAreaM2   = computed(() => this.rooms().reduce((s, r) => s + this.roomArea(r), 0));
+  roomLoad      = computed(() => this.rooms().reduce((s, r) => s + this.roomBtu(r), 0));
   peopleLoad    = computed(() => (Number(this.people) || 0) * (Number(this.personBtu) || 0));
   equipmentLoad = computed(() => this.equipment().reduce((s, e) => s + (Number(e.qty) || 0) * (Number(e.btu) || 0), 0));
   windowLoad    = computed(() => Math.round((Number(this.windowAreaM2) || 0) * (Number(this.windowFactor) || 0)));
@@ -411,6 +473,19 @@ export class DashboardHeatLoadComponent {
     return { recommendedBtu: largest.btu, recommendedKw: largest.kw, multiUnit: true, units };
   });
 
+  roomArea(r: RoomInput): number { return (Number(r.lengthM) || 0) * (Number(r.widthM) || 0); }
+  private wallFactor(type: string): number { return this.wallTypes.find(w => w.value === type)?.factor ?? 1.0; }
+  roomBtu(r: RoomInput): number { return Math.round(this.roomArea(r) * (Number(r.heightM) || 0) * this.baseFactor() * this.wallFactor(r.wallType)); }
+
+  addRoom() {
+    const n = this.rooms().length + 1;
+    this.rooms.update(list => [...list, { id: Date.now(), name: `Room ${n}`, lengthM: 4, widthM: 3, heightM: 2.7, wallType: 'cavity' }]);
+  }
+  removeRoom(id: number) {
+    if (this.rooms().length <= 1) return;
+    this.rooms.update(list => list.filter(r => r.id !== id));
+  }
+
   addPreset() {
     if (!this.presetPick) return;
     const [name, btu] = this.presetPick.split('|');
@@ -421,22 +496,31 @@ export class DashboardHeatLoadComponent {
 
   useInQuote() {
     const r = this.reco();
+    const propLabel = this.propertyTypes.find(p => p.value === this.propertyType)?.label ?? 'property';
     this.sizing.set({
       totalBtu: this.totalBtu(),
       kw: Math.round(this.kw() * 10) / 10,
       recommendedBtu: r.recommendedBtu,
       recommendedKw: r.recommendedKw,
-      roomAreaM2: Number(this.areaM2) || 0,
+      roomAreaM2: this.totalAreaM2(),
       multiUnit: r.multiUnit,
-      label: this.spaceLabel,
+      label: propLabel,
+      propertyType: this.propertyType,
+      postcode: this.postcode,
     });
     this.router.navigate(['/dashboard/quotes/new']);
   }
 
   copy() {
+    const propLabel = this.propertyTypes.find(p => p.value === this.propertyType)?.label ?? '';
+    const roomLines = this.rooms().map(r =>
+      `  ${r.name}: ${this.roomArea(r).toFixed(1)}m² × ${r.heightM}m × ${this.baseFactor()} × ${this.wallFactor(r.wallType)} = ${this.roomBtu(r).toLocaleString()} BTU/hr`
+    );
     const lines = [
-      `Heat load - ${this.spaceLabel} (${this.areaM2}m² × ${this.heightM}m)`,
-      `Room/volume:  ${this.roomLoad().toLocaleString()} BTU/hr`,
+      `Heat load - ${propLabel}${this.postcode ? ' (' + this.postcode.toUpperCase() + ')' : ''}`,
+      `Rooms (${this.rooms().length}):`,
+      ...roomLines,
+      `Room/volume subtotal: ${this.roomLoad().toLocaleString()} BTU/hr`,
       `People:       ${this.peopleLoad().toLocaleString()} BTU/hr`,
       `Equipment:    ${this.equipmentLoad().toLocaleString()} BTU/hr`,
       `Windows:      ${this.windowLoad().toLocaleString()} BTU/hr`,
