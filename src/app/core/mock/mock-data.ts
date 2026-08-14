@@ -499,6 +499,25 @@ export const MOCK_PORTFOLIO_GROUPS: PortfolioGroup[] = [
       { id: 303, caption: 'Restaurant kitchen extract + cool air system', jobType: 'Commercial', color: '#6d28d9', accentColor: '#ddd6fe', postedAt: '2025-02-20' },
     ]
   },
+
+  // Nitin Sunil / Blue Peak Cooling (engineer id 2)
+  {
+    id: 4, engineerId: 2, title: 'Installations',
+    coverColor: '#0c4a6e', coverAccent: '#38bdf8',
+    images: [
+      { id: 401, caption: 'LG dual-zone install, Hornchurch extension', jobType: 'Installation', color: '#0c4a6e', accentColor: '#38bdf8', postedAt: '2025-05-16' },
+      { id: 402, caption: 'Daikin multi-split, Hornchurch semi-detached', jobType: 'Installation', color: '#075985', accentColor: '#7dd3fc', postedAt: '2025-04-02' },
+      { id: 403, caption: 'Samsung wall unit - home office, Emerson Park', jobType: 'Installation', color: '#0e7490', accentColor: '#67e8f9', postedAt: '2025-02-27' },
+    ]
+  },
+  {
+    id: 5, engineerId: 2, title: 'Service & Repair',
+    coverColor: '#78350f', coverAccent: '#f59e0b',
+    images: [
+      { id: 501, caption: 'Annual service + filter clean, Upminster Road', jobType: 'Service', color: '#78350f', accentColor: '#f59e0b', postedAt: '2025-05-06' },
+      { id: 502, caption: 'Breaker fault traced and fixed, Station Lane', jobType: 'Repair', color: '#92400e', accentColor: '#fbbf24', postedAt: '2025-05-24' },
+    ]
+  },
 ];
 
 // ─── Demo auth accounts ───────────────────────────────────────────────────────
@@ -521,15 +540,24 @@ export const DEMO_ACCOUNTS: Record<string, { password: string; user: AuthUser }>
 // ─── Engineer job requests (demo engineer id 1) ───────────────────────────────
 
 let _jobRequests: JobRequest[] = [
-  { id: 5001, bookingRef: '#ACT-5001', customerName: 'Sophie Walker', customerPhone: '07700 902 111', address: '14 Eaton Square, London', postcode: 'SW1W 9BE', jobType: 'Installation', propertyType: 'flat', roomSizeM2: 28, preferredDate: '2026-06-10', notes: 'Fourth floor flat, lift available.', quoteRange: '£1,440 – £2,520', status: 'pending', createdAt: '2026-05-24T09:15:00Z' },
-  { id: 5002, bookingRef: '#ACT-5002', customerName: 'Gareth Evans', customerPhone: '07700 902 222', address: '87 Chelsea Embankment, London', postcode: 'SW3 4LW', jobType: 'Replacement', propertyType: 'terr', roomSizeM2: 35, preferredDate: '2026-06-12', notes: 'Existing Mitsubishi from 2014. Happy to go Daikin.', quoteRange: '£1,320 – £2,280', status: 'pending', createdAt: '2026-05-25T14:30:00Z' },
-  { id: 5003, bookingRef: '#ACT-5003', customerName: 'Nina Patel', customerPhone: '07700 902 333', address: '22 Sloane Gardens, London', postcode: 'SW1W 8DP', jobType: 'Service / maintenance', propertyType: 'flat', roomSizeM2: 20, preferredDate: '2026-06-08', notes: null, quoteRange: '£96 – £144', status: 'accepted', createdAt: '2026-05-20T11:00:00Z' },
-  { id: 5004, bookingRef: '#ACT-5004', customerName: 'Thomas Hardy', customerPhone: '07700 902 444', address: '5 Cadogan Square, London', postcode: 'SW1X 0HT', jobType: 'Emergency repair', propertyType: 'semi', roomSizeM2: 40, preferredDate: '2026-05-23', notes: 'Unit making loud grinding noise and not cooling properly.', quoteRange: '£144 – £264', status: 'active', createdAt: '2026-05-22T16:45:00Z' },
-  { id: 5005, bookingRef: '#ACT-5005', customerName: 'Fiona Harrison', customerPhone: '07700 902 555', address: "38 King's Road, London", postcode: 'SW3 5UR', jobType: 'Installation', propertyType: 'terr', roomSizeM2: 25, preferredDate: '2026-05-15', notes: 'New build kitchen extension.', quoteRange: '£1,284 – £2,220', status: 'completed', createdAt: '2026-05-10T08:30:00Z' },
-  { id: 5006, bookingRef: '#ACT-5006', customerName: 'Marco Rossi', customerPhone: '07700 902 666', address: '11 Pont Street, London', postcode: 'SW1X 9EH', jobType: 'Service / maintenance', propertyType: 'flat', roomSizeM2: 30, preferredDate: '2026-05-08', notes: null, quoteRange: '£96 – £144', status: 'completed', createdAt: '2026-05-04T10:00:00Z' },
+  { id: 5001, engineerId: 1, bookingRef: '#ACT-5001', customerName: 'Sophie Walker', customerPhone: '07700 902 111', address: '14 Eaton Square, London', postcode: 'SW1W 9BE', jobType: 'Installation', propertyType: 'flat', roomSizeM2: 28, preferredDate: '2026-06-10', notes: 'Fourth floor flat, lift available.', quoteRange: '£1,440 – £2,520', status: 'pending', createdAt: '2026-05-24T09:15:00Z' },
+  { id: 5002, engineerId: 1, bookingRef: '#ACT-5002', customerName: 'Gareth Evans', customerPhone: '07700 902 222', address: '87 Chelsea Embankment, London', postcode: 'SW3 4LW', jobType: 'Replacement', propertyType: 'terr', roomSizeM2: 35, preferredDate: '2026-06-12', notes: 'Existing Mitsubishi from 2014. Happy to go Daikin.', quoteRange: '£1,320 – £2,280', status: 'pending', createdAt: '2026-05-25T14:30:00Z' },
+  { id: 5003, engineerId: 1, bookingRef: '#ACT-5003', customerName: 'Nina Patel', customerPhone: '07700 902 333', address: '22 Sloane Gardens, London', postcode: 'SW1W 8DP', jobType: 'Service / maintenance', propertyType: 'flat', roomSizeM2: 20, preferredDate: '2026-06-08', notes: null, quoteRange: '£96 – £144', status: 'accepted', createdAt: '2026-05-20T11:00:00Z' },
+  { id: 5004, engineerId: 1, bookingRef: '#ACT-5004', customerName: 'Thomas Hardy', customerPhone: '07700 902 444', address: '5 Cadogan Square, London', postcode: 'SW1X 0HT', jobType: 'Emergency repair', propertyType: 'semi', roomSizeM2: 40, preferredDate: '2026-05-23', notes: 'Unit making loud grinding noise and not cooling properly.', quoteRange: '£144 – £264', status: 'active', createdAt: '2026-05-22T16:45:00Z' },
+  { id: 5005, engineerId: 1, bookingRef: '#ACT-5005', customerName: 'Fiona Harrison', customerPhone: '07700 902 555', address: "38 King's Road, London", postcode: 'SW3 5UR', jobType: 'Installation', propertyType: 'terr', roomSizeM2: 25, preferredDate: '2026-05-15', notes: 'New build kitchen extension.', quoteRange: '£1,284 – £2,220', status: 'completed', createdAt: '2026-05-10T08:30:00Z' },
+  { id: 5006, engineerId: 1, bookingRef: '#ACT-5006', customerName: 'Marco Rossi', customerPhone: '07700 902 666', address: '11 Pont Street, London', postcode: 'SW1X 9EH', jobType: 'Service / maintenance', propertyType: 'flat', roomSizeM2: 30, preferredDate: '2026-05-08', notes: null, quoteRange: '£96 – £144', status: 'completed', createdAt: '2026-05-04T10:00:00Z' },
+
+  // Nitin Sunil / Blue Peak Cooling (engineer id 2) — Hornchurch / Romford
+  { id: 5101, engineerId: 2, bookingRef: '#ACT-5101', customerName: 'Sanjay Kapoor', customerPhone: '07700 903 111', address: '9 Hylands Road, Hornchurch', postcode: 'RM11 2SL', jobType: 'Installation', propertyType: 'semi', roomSizeM2: 26, preferredDate: '2026-06-14', notes: 'Wants a Daikin multi-split, 2 rooms.', quoteRange: '£1,980 – £3,120', status: 'pending', createdAt: '2026-05-26T09:40:00Z' },
+  { id: 5102, engineerId: 2, bookingRef: '#ACT-5102', customerName: 'Louise Baxter', customerPhone: '07700 903 222', address: '46 Butts Green Road, Hornchurch', postcode: 'RM11 2JT', jobType: 'Service / maintenance', propertyType: 'detached', roomSizeM2: 32, preferredDate: '2026-06-09', notes: null, quoteRange: '£96 – £144', status: 'accepted', createdAt: '2026-05-21T13:10:00Z' },
+  { id: 5103, engineerId: 2, bookingRef: '#ACT-5103', customerName: 'Robert Kelly', customerPhone: '07700 903 333', address: '3 Station Lane, Hornchurch', postcode: 'RM12 6JL', jobType: 'Emergency repair', propertyType: 'flat', roomSizeM2: 22, preferredDate: '2026-05-24', notes: 'Samsung unit tripping the breaker.', quoteRange: '£144 – £264', status: 'active', createdAt: '2026-05-23T15:20:00Z' },
+  { id: 5104, engineerId: 2, bookingRef: '#ACT-5104', customerName: 'Priya Chandra', customerPhone: '07700 903 444', address: '21 Wingletye Lane, Hornchurch', postcode: 'RM11 3AY', jobType: 'Installation', propertyType: 'detached', roomSizeM2: 40, preferredDate: '2026-05-16', notes: 'New extension, wants LG throughout.', quoteRange: '£2,340 – £3,780', status: 'completed', createdAt: '2026-05-11T09:00:00Z' },
+  { id: 5105, engineerId: 2, bookingRef: '#ACT-5105', customerName: 'Colin Marsh', customerPhone: '07700 903 555', address: '58 Upminster Road, Hornchurch', postcode: 'RM12 4AA', jobType: 'Service / maintenance', propertyType: 'semi', roomSizeM2: 24, preferredDate: '2026-05-06', notes: null, quoteRange: '£96 – £144', status: 'completed', createdAt: '2026-05-02T11:30:00Z' },
 ];
 
-export function getMockJobRequests(_engineerId: number): JobRequest[] { return _jobRequests; }
+export function getMockJobRequests(engineerId: number): JobRequest[] {
+  return _jobRequests.filter(j => j.engineerId === engineerId);
+}
 
 export function updateJobStatus(jobId: number, status: JobRequest['status']): void {
   _jobRequests = _jobRequests.map(j => j.id === jobId ? { ...j, status } : j);
@@ -571,6 +599,39 @@ let _invoices: Invoice[] = [
     ],
     subtotal: 250, vatAmount: 50, total: 300,
     status: 'sent', issuedAt: '2026-05-23T18:30:00Z', dueAt: '2026-06-06T18:30:00Z', notes: 'Payment due within 14 days. BACS preferred.',
+  },
+
+  // Nitin Sunil / Blue Peak Cooling (engineer id 2)
+  {
+    id: 7101, invoiceNumber: 'INV-2001', engineerId: 2,
+    customerName: 'Priya Chandra', customerEmail: 'priya.chandra@email.com', jobRef: '#ACT-5104',
+    items: [
+      { description: 'LG dual-zone system - supply & installation', quantity: 1, unitPrice: 2650 },
+      { description: 'Pipework & fittings (8m run)', quantity: 1, unitPrice: 260 },
+      { description: 'Commissioning & test', quantity: 1, unitPrice: 90 },
+    ],
+    subtotal: 3000, vatAmount: 0, total: 3000,
+    status: 'paid', issuedAt: '2026-05-16T16:00:00Z', dueAt: '2026-05-30T16:00:00Z', notes: 'Thank you for your business.',
+  },
+  {
+    id: 7102, invoiceNumber: 'INV-2002', engineerId: 2,
+    customerName: 'Colin Marsh', customerEmail: 'colin.marsh@email.com', jobRef: '#ACT-5105',
+    items: [
+      { description: 'Annual AC service - Daikin FTXF25D', quantity: 1, unitPrice: 100 },
+      { description: 'Filter replacement (set of 2)', quantity: 1, unitPrice: 16 },
+    ],
+    subtotal: 116, vatAmount: 0, total: 116,
+    status: 'paid', issuedAt: '2026-05-06T15:30:00Z', dueAt: '2026-05-20T15:30:00Z', notes: null,
+  },
+  {
+    id: 7103, invoiceNumber: 'INV-2003', engineerId: 2,
+    customerName: 'Robert Kelly', customerEmail: 'robert.kelly@email.com', jobRef: '#ACT-5103',
+    items: [
+      { description: 'Emergency call-out fee', quantity: 1, unitPrice: 110 },
+      { description: 'Breaker/RCD diagnostic & fault fix', quantity: 1, unitPrice: 70 },
+    ],
+    subtotal: 180, vatAmount: 0, total: 180,
+    status: 'sent', issuedAt: '2026-05-24T17:45:00Z', dueAt: '2026-06-07T17:45:00Z', notes: 'Payment due within 14 days. Bank transfer preferred.',
   },
 ];
 
@@ -696,6 +757,87 @@ let _savedQuotes: SavedQuote[] = [
     addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
     subtotal: 129, vatAmount: 0, total: 129,
   },
+
+  // Nitin Sunil / Blue Peak Cooling (engineer id 2)
+  {
+    id: 8101, engineerId: 2, ref: 'QTE-BP-114/2026', createdAt: '2026-06-27T11:20:00Z', status: 'sent',
+    customerName: 'Sanjay Kapoor', customerEmail: 'sanjay.kapoor@email.com',
+    customerAddress: '9 Hylands Road\nHornchurch RM11 2SL',
+    title: 'Quotation – Supply & Installation of Air Conditioning System',
+    summary: 'New installation · 2 units · mid-range · semi-detached', recommendedBtu: '18,000 BTU', estimatedDuration: '1–2 days',
+    scopeText: [
+      'Supply and installation of mid-range multi-split air conditioning system',
+      'Installation of 2 indoor wall-mounted units',
+      'Installation of 1 outdoor condenser unit mounted on external wall brackets',
+      'Installation of refrigerant pipework with insulation (lagging)',
+      'Full system testing, commissioning and client handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [
+      { qty: 1, model: 'AOE71K2', description: 'Multi-split outdoor condenser (2:1)' },
+      { qty: 2, model: '', description: 'Wall-mounted indoor unit - 9,000 BTU' },
+    ],
+    items: [
+      { description: 'Mid-range wall-mounted AC unit - 9,000 BTU', quantity: 2, unitPrice: 780 },
+      { description: 'Multi-split outdoor condenser (2 zones)', quantity: 1, unitPrice: 520 },
+      { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 480 },
+      { description: 'Pipework, cabling & fittings', quantity: 2, unitPrice: 130 },
+      { description: 'Commissioning, F-Gas sign-off & handover', quantity: 1, unitPrice: 80 },
+    ],
+    addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
+    subtotal: 2790, vatAmount: 0, total: 2790,
+  },
+  {
+    id: 8102, engineerId: 2, ref: 'QTE-BP-109/2026', createdAt: '2026-06-20T09:50:00Z', status: 'accepted',
+    customerName: 'Priya Chandra', customerEmail: 'priya.chandra@email.com',
+    customerAddress: '21 Wingletye Lane\nHornchurch RM11 3AY',
+    title: 'Quotation – Supply & Installation of Air Conditioning System',
+    summary: 'New installation · 2 units · premium · detached extension', recommendedBtu: '20,000 BTU', estimatedDuration: '2 days',
+    scopeText: [
+      'Supply and installation of premium dual-zone air conditioning system',
+      'Installation of 2 indoor wall-mounted units',
+      'Installation of 1 outdoor condenser unit mounted on external wall brackets',
+      'Installation of refrigerant pipework with insulation (lagging)',
+      'Installation of condensate drainage system',
+      'Full system testing, commissioning and client handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [
+      { qty: 1, model: 'MU2R17', description: 'Dual-split outdoor condenser' },
+      { qty: 2, model: '', description: 'Wall-mounted indoor unit - 12,000 BTU' },
+    ],
+    items: [
+      { description: 'Premium wall-mounted AC unit - 12,000 BTU', quantity: 2, unitPrice: 1050 },
+      { description: 'Dual-split outdoor condenser', quantity: 1, unitPrice: 550 },
+      { description: 'Installation labour, mounting & bracketry', quantity: 1, unitPrice: 500 },
+      { description: 'Pipework, cabling & fittings', quantity: 2, unitPrice: 140 },
+      { description: 'Commissioning, F-Gas sign-off & handover', quantity: 1, unitPrice: 90 },
+    ],
+    addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
+    subtotal: 3520, vatAmount: 0, total: 3520,
+  },
+  {
+    id: 8103, engineerId: 2, ref: 'QTE-BP-102/2026', createdAt: '2026-06-15T14:05:00Z', status: 'draft',
+    customerName: 'Louise Baxter', customerEmail: 'louise.baxter@email.com',
+    customerAddress: '46 Butts Green Road\nHornchurch RM11 2JT',
+    title: 'Quotation – Air Conditioning Service',
+    summary: 'Service · detached house', recommendedBtu: '', estimatedDuration: '2–3 hours',
+    scopeText: [
+      'Full service and performance check of the existing system',
+      'Filter clean and condensate drainage check',
+      'Refrigerant pressure and level check',
+      'Electrical safety check',
+      'Written service report and handover',
+    ].join('\n'),
+    exclusionsText: _DEF_EXCL, notesText: _DEF_NOTES,
+    equipment: [],
+    items: [
+      { description: 'Annual service & performance check', quantity: 1, unitPrice: 100 },
+      { description: 'Filters, consumables & refrigerant check', quantity: 1, unitPrice: 22 },
+    ],
+    addWorks: false, addWorksDesc: '', addWorksCost: 0, vat: false,
+    subtotal: 122, vatAmount: 0, total: 122,
+  },
 ];
 
 export function getSavedQuotes(engineerId: number): SavedQuote[] {
@@ -779,6 +921,51 @@ let _clients: Client[] = [
       { brand: 'LG', model: 'Standard Plus', installedDate: '2021-06-01', lastServicedDate: '2026-05-23', nextServiceDue: null },
     ],
     notes: 'Emergency repair only so far — offer a service plan.', tags: ['New lead'],
+  },
+
+  // Nitin Sunil / Blue Peak Cooling (engineer id 2)
+  {
+    id: 6101, engineerId: 2, name: 'Priya Chandra', email: 'priya.chandra@email.com', phone: '07700 903 444',
+    address: '21 Wingletye Lane', postcode: 'RM11 3AY', since: '2026-05-11',
+    jobsCount: 1, totalSpent: 3000, lastJobDate: '2026-05-16', nextServiceDue: '2027-05-16', onServicePlan: true,
+    systems: [
+      { brand: 'LG', model: 'Dual-zone 12,000 BTU x2', installedDate: '2026-05-16', lastServicedDate: null, nextServiceDue: '2027-05-16' },
+    ],
+    notes: 'New extension build — very happy with the finish.', tags: ['Repeat', 'Service plan'],
+  },
+  {
+    id: 6102, engineerId: 2, name: 'Colin Marsh', email: 'colin.marsh@email.com', phone: '07700 903 555',
+    address: '58 Upminster Road', postcode: 'RM12 4AA', since: '2024-05-06',
+    jobsCount: 3, totalSpent: 2540, lastJobDate: '2026-05-06', nextServiceDue: '2027-05-06', onServicePlan: true,
+    systems: [
+      { brand: 'Daikin', model: 'FTXF25D', installedDate: '2024-05-06', lastServicedDate: '2026-05-06', nextServiceDue: '2027-05-06' },
+    ],
+    notes: 'Long-standing customer, always books the annual service on time.', tags: ['Repeat', 'Service plan'],
+  },
+  {
+    id: 6103, engineerId: 2, name: 'Robert Kelly', email: 'robert.kelly@email.com', phone: '07700 903 333',
+    address: '3 Station Lane', postcode: 'RM12 6JL', since: '2026-05-23',
+    jobsCount: 1, totalSpent: 180, lastJobDate: '2026-05-24', nextServiceDue: null, onServicePlan: false,
+    systems: [
+      { brand: 'Samsung', model: 'AR09', installedDate: '2023-03-10', lastServicedDate: '2026-05-24', nextServiceDue: null },
+    ],
+    notes: 'Emergency repair (tripping breaker) — offer a service plan next visit.', tags: ['New lead'],
+  },
+  {
+    id: 6104, engineerId: 2, name: 'Louise Baxter', email: 'louise.baxter@email.com', phone: '07700 903 222',
+    address: '46 Butts Green Road', postcode: 'RM11 2JT', since: '2025-06-09',
+    jobsCount: 1, totalSpent: 0, lastJobDate: null, nextServiceDue: '2026-06-09', onServicePlan: false,
+    systems: [
+      { brand: 'Daikin', model: 'FTXF20D', installedDate: '2022-06-09', lastServicedDate: '2025-06-09', nextServiceDue: '2026-06-09' },
+    ],
+    notes: 'Service quote QTE-BP-102 in draft, awaiting confirmation.', tags: ['Repeat'],
+  },
+  {
+    id: 6105, engineerId: 2, name: 'Sanjay Kapoor', email: 'sanjay.kapoor@email.com', phone: '07700 903 111',
+    address: '9 Hylands Road', postcode: 'RM11 2SL', since: '2026-05-26',
+    jobsCount: 0, totalSpent: 0, lastJobDate: null, nextServiceDue: null, onServicePlan: false,
+    systems: [],
+    notes: 'Quote QTE-BP-114 sent, awaiting decision.', tags: ['New lead'],
   },
 ];
 

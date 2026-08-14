@@ -178,6 +178,7 @@ export type JobStatus = 'pending' | 'accepted' | 'active' | 'completed' | 'decli
 
 export interface JobRequest {
   id: number;
+  engineerId: number;
   bookingRef: string;
   customerName: string;
   customerPhone: string;
