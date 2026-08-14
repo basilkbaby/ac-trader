@@ -3,7 +3,7 @@ import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteReques
 // ─── Toggle ──────────────────────────────────────────────────────────────────
 // true  = run entirely on in-memory mock data (offline demo)
 // false = call the real ASP.NET Core API (environment.apiUrl)
-export const USE_MOCK = true;
+export const USE_MOCK = false;
 
 // ─── Engineers ───────────────────────────────────────────────────────────────
 
@@ -507,6 +507,10 @@ export const DEMO_ACCOUNTS: Record<string, { password: string; user: AuthUser }>
   'engineer@demo.com': {
     password: 'demo',
     user: { id: 1, email: 'engineer@demo.com', fullName: 'Tinto Thomas', role: 'engineer', engineerId: 1, avatarInitials: 'TT' }
+  },
+  'nitin@demo.com': {
+    password: 'demo',
+    user: { id: 2, email: 'nitin@demo.com', fullName: 'Nitin Sunil', role: 'engineer', engineerId: 2, avatarInitials: 'NS' }
   },
   'customer@demo.com': {
     password: 'demo',
