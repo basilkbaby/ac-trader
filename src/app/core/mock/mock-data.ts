@@ -3,7 +3,7 @@ import { Engineer, EngineerDetail, QuoteResult, BookingResult, CreateQuoteReques
 // ─── Toggle ──────────────────────────────────────────────────────────────────
 // true  = run entirely on in-memory mock data (offline demo)
 // false = call the real ASP.NET Core API (environment.apiUrl)
-export const USE_MOCK = false;
+export const USE_MOCK = true;
 
 // ─── Engineers ───────────────────────────────────────────────────────────────
 
