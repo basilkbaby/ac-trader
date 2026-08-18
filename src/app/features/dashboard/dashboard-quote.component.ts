@@ -351,15 +351,20 @@ import { InvoiceItem, EquipRow, SavedQuoteStatus } from '../../core/models/model
               <!-- Equipment schedule -->
               <div class="qb-block">
                 <div class="qb-block-title">Equipment schedule</div>
-                <div class="qb-eq-head"><span>Qty</span><span>Model</span><span>Description</span><span></span></div>
-                @for (e of equipment(); track $index; let i = $index) {
-                  <div class="qb-eq-row">
-                    <input type="number" [(ngModel)]="e.qty" [name]="'eqq'+i" min="1" />
-                    <input type="text" [(ngModel)]="e.model" [name]="'eqm'+i" placeholder="Model no." />
-                    <input type="text" [(ngModel)]="e.description" [name]="'eqd'+i" placeholder="Description" />
-                    <button class="qb-del" (click)="removeEquip(i)" type="button" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
-                  </div>
-                }
+                <div class="qb-eq-list">
+                  @for (e of equipment(); track $index; let i = $index) {
+                    <div class="qb-eq-card">
+                      <div class="qb-eq-card-top">
+                        <input type="text" [(ngModel)]="e.description" [name]="'eqd'+i" placeholder="Description" class="qb-eq-desc" />
+                        <button class="qb-del" (click)="removeEquip(i)" type="button" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+                      </div>
+                      <div class="qb-fields">
+                        <div class="qb-field"><label>Qty</label><input type="number" inputmode="numeric" [(ngModel)]="e.qty" [name]="'eqq'+i" min="1" /></div>
+                        <div class="qb-field"><label>Model no. <span class="qb-opt">optional</span></label><input type="text" [(ngModel)]="e.model" [name]="'eqm'+i" placeholder="Model no." /></div>
+                      </div>
+                    </div>
+                  }
+                </div>
                 <button class="qb-add" (click)="addEquip()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Add equipment</button>
               </div>
 
@@ -374,16 +379,21 @@ import { InvoiceItem, EquipRow, SavedQuoteStatus } from '../../core/models/model
                   }
                 </div>
 
-                <div class="qb-items-head"><span class="c-desc">Description</span><span class="c-qty">Qty</span><span class="c-price">Unit £</span><span class="c-total">Total</span><span class="c-x"></span></div>
-                @for (item of items(); track $index; let i = $index) {
-                  <div class="qb-item-row" [class.qb-item-negative]="lineTotal(item) < 0">
-                    <input class="c-desc" type="text" [(ngModel)]="item.description" [name]="'d'+i" placeholder="Description" aria-label="Description" />
-                    <input class="c-qty" type="number" [(ngModel)]="item.quantity" [name]="'q'+i" min="1" placeholder="Qty" aria-label="Quantity" />
-                    <input class="c-price" type="number" [(ngModel)]="item.unitPrice" [name]="'p'+i" step="1" placeholder="Unit £" aria-label="Unit price" />
-                    <span class="c-total">£{{ lineTotal(item) | number:'1.2-2' }}</span>
-                    <button class="c-x qb-del" (click)="removeItem(i)" type="button" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
-                  </div>
-                }
+                <div class="qb-item-list">
+                  @for (item of items(); track $index; let i = $index) {
+                    <div class="qb-item-card" [class.qb-item-negative]="lineTotal(item) < 0">
+                      <div class="qb-item-card-top">
+                        <input type="text" [(ngModel)]="item.description" [name]="'d'+i" placeholder="Description" aria-label="Description" class="qb-item-desc" />
+                        <button class="qb-del" (click)="removeItem(i)" type="button" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+                      </div>
+                      <div class="qb-fields">
+                        <div class="qb-field"><label>Qty</label><input type="number" inputmode="numeric" [(ngModel)]="item.quantity" [name]="'q'+i" min="1" placeholder="Qty" aria-label="Quantity" /></div>
+                        <div class="qb-field"><label>Unit price <span class="qb-opt">£</span></label><input type="number" inputmode="decimal" [(ngModel)]="item.unitPrice" [name]="'p'+i" step="1" placeholder="0.00" aria-label="Unit price" /></div>
+                        <div class="qb-field"><label>Line total</label><span class="qb-item-total-display">£{{ lineTotal(item) | number:'1.2-2' }}</span></div>
+                      </div>
+                    </div>
+                  }
+                </div>
                 <div class="qb-cost-actions">
                   <button class="qb-add" (click)="addItem()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Add line</button>
                   <button class="qb-add qb-adjust-toggle" (click)="toggleAdjust()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 6h10M4 18h10"/></svg> Add discount / surcharge</button>
@@ -522,21 +532,19 @@ import { InvoiceItem, EquipRow, SavedQuoteStatus } from '../../core/models/model
     .qb-aw { margin-top: 0.7rem; grid-template-columns: 1fr 120px; }
     .qb-aw-desc textarea { font-family: inherit; }
 
-    /* Equipment rows */
-    .qb-eq-head, .qb-eq-row { display: grid; grid-template-columns: 50px 1fr 1.4fr 30px; gap: 0.4rem; align-items: center; }
-    .qb-eq-head { font-size: 0.66rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: 0.4rem; }
-    .qb-eq-row { margin-bottom: 0.45rem; }
-    .qb-eq-row input { padding: 0.45rem 0.55rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.83rem; width: 100%; box-sizing: border-box; }
-
-    /* Cost items */
-    .qb-items-head, .qb-item-row { display: grid; grid-template-columns: 1fr 52px 78px 80px 30px; gap: 0.4rem; align-items: center; }
-    .qb-items-head { font-size: 0.66rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: 0.45rem; border-bottom: 1px solid var(--border); }
-    .qb-item-row { margin-top: 0.45rem; }
-    .qb-item-row input { width: 100%; padding: 0.5rem 0.6rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.84rem; box-sizing: border-box; }
-    .c-qty, .c-price { text-align: right; }
-    .c-total { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); text-align: right; }
-    .qb-items-head .c-qty, .qb-items-head .c-price, .qb-items-head .c-total { text-align: right; }
-    .qb-del { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text-muted); cursor: pointer; padding: 0.32rem; display: inline-flex; align-items: center; justify-content: center; }
+    /* Equipment schedule & Cost breakdown — self-contained labeled cards rather than a dense
+       narrow-column table. The old fixed-width columns (down to 30-52px) couldn't fit their
+       numbers once padding/border were accounted for, especially at mobile-safe font sizes —
+       the value was rendering but effectively invisible/clipped. Cards guarantee real width. */
+    .qb-eq-list, .qb-item-list { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 0.5rem; }
+    .qb-eq-card, .qb-item-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 0.8rem; }
+    .qb-eq-card-top, .qb-item-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .qb-eq-desc, .qb-item-desc { font-weight: 600; flex: 1; min-width: 0; padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.85rem; box-sizing: border-box; font-family: inherit; }
+    .qb-eq-card .qb-fields, .qb-item-card .qb-fields { margin-bottom: 0; }
+    .qb-eq-card .qb-fields input, .qb-item-card .qb-fields input { padding: 0.5rem 0.6rem; border-radius: 7px; font-size: 0.85rem; }
+    .qb-item-total-display { display: flex; align-items: center; padding: 0.5rem 0; font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+    .qb-item-negative .qb-item-total-display { color: var(--danger); }
+    .qb-del { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text-muted); cursor: pointer; padding: 0.32rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .qb-del svg { width: 14px; height: 14px; }
     .qb-del:hover { color: var(--danger); border-color: #fca5a5; }
     .qb-add { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.6rem; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); color: var(--brand); font-size: 0.82rem; font-weight: 600; padding: 0.45rem 0.8rem; cursor: pointer; }
@@ -585,7 +593,6 @@ import { InvoiceItem, EquipRow, SavedQuoteStatus } from '../../core/models/model
     .qb-extra-chip { font-size: 0.78rem; font-weight: 500; color: var(--brand); background: var(--brand-light); border: 1px solid #bfdbfe; border-radius: 999px; padding: 0.3rem 0.7rem; cursor: pointer; transition: all 0.12s; }
     .qb-extra-chip:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
 
-    .qb-item-negative .c-total { color: var(--danger); }
     .qb-cost-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
     /* Manual adjustment */
@@ -646,39 +653,22 @@ import { InvoiceItem, EquipRow, SavedQuoteStatus } from '../../core/models/model
       .qb-out-head { flex-direction: column; gap: 0.5rem; }
       .qb-titlerow { flex-wrap: wrap; }
 
+      /* ≥16px inputs (prevents iOS Safari auto-zoom-on-focus, easier to read what's typed)
+         and bigger tap targets — same treatment as the heat load calculator. */
+      .qb-field input, .qb-field select, .qb-field textarea,
+      .qb-eq-desc, .qb-item-desc,
+      .qb-eq-card .qb-fields input, .qb-item-card .qb-fields input {
+        font-size: 1rem;
+      }
+      .qb-del { min-width: 40px; min-height: 40px; }
+      .qb-del svg { width: 16px; height: 16px; }
+      .qb-add { min-height: 44px; }
+
       /* Preview bar → full-width actions */
       .qb-preview-bar { flex-wrap: wrap; }
       .qb-preview-actions { width: 100%; }
       .qb-preview-actions .btn-secondary, .qb-preview-actions .btn-primary { flex: 1; text-align: center; }
       .qb-actions .btn-primary, .qb-actions .btn-secondary { flex: 1 1 45%; text-align: center; }
-
-      /* Cost items: description on its own row, controls below */
-      .qb-items-head { display: none; }
-      .qb-item-row {
-        grid-template-columns: 1fr 1fr auto 34px;
-        grid-template-areas: 'desc desc desc desc' 'qty price total del';
-        gap: 0.45rem; align-items: center; margin-top: 0.7rem;
-        padding-top: 0.7rem; border-top: 1px solid var(--border);
-      }
-      .qb-item-row:first-of-type { border-top: none; margin-top: 0.5rem; }
-      .qb-item-row .c-desc { grid-area: desc; }
-      .qb-item-row .c-qty { grid-area: qty; text-align: left; }
-      .qb-item-row .c-price { grid-area: price; text-align: left; }
-      .qb-item-row .c-total { grid-area: total; }
-      .qb-item-row .qb-del { grid-area: del; }
-
-      /* Equipment: qty + model + delete on top, description underneath */
-      .qb-eq-head { display: none; }
-      .qb-eq-row {
-        grid-template-columns: 60px 1fr 34px;
-        grid-template-areas: 'qty model del' 'desc desc desc';
-        gap: 0.45rem; margin-bottom: 0.7rem; padding-bottom: 0.7rem;
-        border-bottom: 1px solid var(--border);
-      }
-      .qb-eq-row > input:nth-child(1) { grid-area: qty; }
-      .qb-eq-row > input:nth-child(2) { grid-area: model; }
-      .qb-eq-row > input:nth-child(3) { grid-area: desc; }
-      .qb-eq-row > .qb-del { grid-area: del; }
 
       /* Document */
       .qb-doc { padding: 1.5rem 1.25rem; }

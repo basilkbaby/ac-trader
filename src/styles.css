@@ -34,6 +34,10 @@
   --grad-hero: radial-gradient(120% 120% at 85% 0%, #15407E 0%, #0B2245 45%, #08182F 100%);
   --grad-accent: linear-gradient(135deg, #19C0D6 0%, #0B5CFF 100%);
   font-family: 'DM Sans', system-ui, sans-serif;
+  /* Light-themed UI only — stops Android/Chrome auto-dark-mode from repainting form fields
+     with mismatched (often invisible) text/background colors. Reinforces the <meta color-scheme>
+     tag in index.html, since some browsers only honour the CSS property. */
+  color-scheme: light;
 }
 
 /* ── Reset ───────────────────────────────────────────────────────────────────── */
@@ -299,6 +303,7 @@ input[type=text], input[type=email], input[type=tel], input[type=number], input[
   border-radius: var(--radius-sm); font-size: 1rem; background: var(--surface);
   color: var(--text-primary); font-family: inherit; transition: border-color 0.15s;
   -webkit-appearance: none; appearance: none;
+  color-scheme: light;
 }
 input:focus, textarea:focus { outline: none; border-color: var(--brand); }
 input[type=range] { accent-color: var(--brand); width: 100%; }

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,7 +6,12 @@ import { SizingService } from '../../core/services/sizing.service';
 import { PROPERTY_TYPES, WALL_TYPES } from '../../core/mock/mock-data';
 
 interface EquipItem { name: string; qty: number; btu: number; }
-interface RoomInput { id: number; name: string; lengthM: number; widthM: number; heightM: number; wallType: string; }
+type RoomMode = 'volume' | 'dims';
+interface RoomInput { id: number; name: string; mode: RoomMode; volumeM3: number; lengthM: number; widthM: number; heightM: number; wallType: string; }
+
+// Used only to back out an equivalent floor area (for the Quote Builder handoff) when a room
+// was entered directly as a volume rather than length × width × height.
+const STANDARD_CEILING_M = 2.4;
 
 // Typical sensible heat output per appliance (BTU/hr) - editable per job.
 const EQUIP_PRESETS: { group: string; items: { name: string; btu: number }[] }[] = [
@@ -86,7 +91,7 @@ const AC_SIZES = [
                 </div>
                 <div class="hl-field">
                   <label>Postcode <span class="hl-opt">optional</span></label>
-                  <input type="text" [(ngModel)]="postcode" name="postcode" placeholder="e.g. SW1A 1AA" />
+                  <input type="text" [(ngModel)]="postcode" name="postcode" placeholder="e.g. SW1A 1AA" autocapitalize="characters" />
                 </div>
               </div>
             </div>
@@ -97,23 +102,58 @@ const AC_SIZES = [
                 <div><h4>Rooms</h4><span class="hl-group-hint">Add every room being cooled — length, width &amp; wall type.</span></div>
               </div>
 
-              <div class="hl-room-head">
-                <span>Room</span><span>L (m)</span><span>W (m)</span><span>H (m)</span><span>Wall type</span><span></span>
-              </div>
               @for (room of rooms(); track room.id; let i = $index) {
-                <div class="hl-room-row">
-                  <input type="text" class="rm-name" [(ngModel)]="room.name" [name]="'rn'+i" />
-                  <input type="number" class="rm-len" [(ngModel)]="room.lengthM" [name]="'rl'+i" min="0.5" step="0.1" />
-                  <input type="number" class="rm-wid" [(ngModel)]="room.widthM" [name]="'rw'+i" min="0.5" step="0.1" />
-                  <input type="number" class="rm-hgt" [(ngModel)]="room.heightM" [name]="'rh'+i" min="1.8" step="0.1" />
-                  <select class="rm-wall" [(ngModel)]="room.wallType" [name]="'rt'+i">
-                    @for (wt of wallTypes; track wt.value) { <option [value]="wt.value">{{ wt.label }}</option> }
-                  </select>
-                  <button class="hl-del rm-del" type="button" (click)="removeRoom(room.id)" [disabled]="rooms().length <= 1" aria-label="Remove room">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-                  </button>
+                <div class="hl-room-card">
+                  <div class="hl-room-card-top">
+                    <input type="text" class="rm-name" [(ngModel)]="room.name" [name]="'rn'+i" placeholder="Room name" />
+                    <button class="hl-del rm-del" type="button" (click)="removeRoom(room.id)" [disabled]="rooms().length <= 1" aria-label="Remove room">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="hl-mode-toggle" role="tablist" [attr.aria-label]="'Room size entry for ' + room.name">
+                    <button type="button" role="tab" [attr.aria-selected]="room.mode === 'volume'" [class.active]="room.mode === 'volume'" (click)="setRoomMode(room, 'volume')">Volume</button>
+                    <button type="button" role="tab" [attr.aria-selected]="room.mode === 'dims'" [class.active]="room.mode === 'dims'" (click)="setRoomMode(room, 'dims')">L × W × H</button>
+                  </div>
+
+                  @if (room.mode === 'volume') {
+                    <div class="hl-fields">
+                      <div class="hl-field">
+                        <label>Volume <span class="hl-opt">m³</span></label>
+                        <input type="number" inputmode="decimal" [(ngModel)]="room.volumeM3" [name]="'rv'+i" min="1" step="0.5" />
+                      </div>
+                      <div class="hl-field">
+                        <label>Wall type</label>
+                        <select [(ngModel)]="room.wallType" [name]="'rt'+i">
+                          @for (wt of wallTypes; track wt.value) { <option [value]="wt.value">{{ wt.label }}</option> }
+                        </select>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="hl-fields">
+                      <div class="hl-field">
+                        <label>Length <span class="hl-opt">m</span></label>
+                        <input type="number" inputmode="decimal" [(ngModel)]="room.lengthM" [name]="'rl'+i" min="0.5" step="0.1" />
+                      </div>
+                      <div class="hl-field">
+                        <label>Width <span class="hl-opt">m</span></label>
+                        <input type="number" inputmode="decimal" [(ngModel)]="room.widthM" [name]="'rw'+i" min="0.5" step="0.1" />
+                      </div>
+                      <div class="hl-field">
+                        <label>Height <span class="hl-opt">m</span></label>
+                        <input type="number" inputmode="decimal" [(ngModel)]="room.heightM" [name]="'rh'+i" min="1.8" step="0.1" />
+                      </div>
+                      <div class="hl-field">
+                        <label>Wall type</label>
+                        <select [(ngModel)]="room.wallType" [name]="'rt'+i">
+                          @for (wt of wallTypes; track wt.value) { <option [value]="wt.value">{{ wt.label }}</option> }
+                        </select>
+                      </div>
+                    </div>
+                  }
+
+                  <div class="hl-room-hint">{{ roomVolume(room) | number:'1.0-1' }} m³ · ≈ {{ roomBtu(room) | number }} BTU/hr</div>
                 </div>
-                <div class="hl-room-hint">{{ roomArea(room) | number:'1.0-1' }} m² · ≈ {{ roomBtu(room) | number }} BTU/hr</div>
               }
               <button class="hl-add-room" type="button" (click)="addRoom()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Add room
@@ -126,7 +166,7 @@ const AC_SIZES = [
                 <div><h4>People</h4><span class="hl-group-hint">Body heat — 400–600 BTU each.</span></div>
               </div>
               <div class="hl-fields">
-                <div class="hl-field"><label>Number of people</label><input type="number" [(ngModel)]="people" name="people" min="0" /></div>
+                <div class="hl-field"><label>Number of people</label><input type="number" inputmode="numeric" [(ngModel)]="people" name="people" min="0" /></div>
                 <div class="hl-field">
                   <label>Activity level</label>
                   <select [(ngModel)]="personBtu" name="activity">
@@ -144,7 +184,7 @@ const AC_SIZES = [
                 <div><h4>Windows &amp; sunlight</h4><span class="hl-group-hint">Solar heat through the glass.</span></div>
               </div>
               <div class="hl-fields">
-                <div class="hl-field"><label>Window area <span class="hl-opt">m²</span></label><input type="number" [(ngModel)]="windowAreaM2" name="win" min="0" step="0.1" /></div>
+                <div class="hl-field"><label>Window area <span class="hl-opt">m²</span></label><input type="number" inputmode="decimal" [(ngModel)]="windowAreaM2" name="win" min="0" step="0.1" /></div>
                 <div class="hl-field">
                   <label>Sun exposure</label>
                   <select [(ngModel)]="windowFactor" name="sun">
@@ -162,7 +202,7 @@ const AC_SIZES = [
                 <div><h4>Lighting</h4><span class="hl-group-hint">Lights give off heat — ≈ 3.4 BTU per watt.</span></div>
               </div>
               <div class="hl-fields">
-                <div class="hl-field"><label>Total lighting <span class="hl-opt">watts</span></label><input type="number" [(ngModel)]="lightWatts" name="lights" min="0" /></div>
+                <div class="hl-field"><label>Total lighting <span class="hl-opt">watts</span></label><input type="number" inputmode="numeric" [(ngModel)]="lightWatts" name="lights" min="0" /></div>
               </div>
             </div>
 
@@ -191,23 +231,33 @@ const AC_SIZES = [
 
             @if (equipment().length) {
               <div class="hl-equip-list">
-                <div class="hl-equip-head">
-                  <span class="e-name">Item</span><span class="e-qty">Qty</span><span class="e-btu">BTU ea.</span><span class="e-sub">Total</span><span class="e-x"></span>
-                </div>
                 @for (item of equipment(); track $index; let i = $index) {
-                  <div class="hl-equip-row">
-                    <input class="e-name" type="text" [(ngModel)]="item.name" [name]="'en'+i" />
-                    <input class="e-qty" type="number" [(ngModel)]="item.qty" [name]="'eq'+i" min="1" />
-                    <input class="e-btu" type="number" [(ngModel)]="item.btu" [name]="'eb'+i" min="0" step="50" />
-                    <span class="e-sub">{{ (item.qty * item.btu) | number }}</span>
-                    <button class="e-x hl-del" (click)="removeEquip(i)" type="button" aria-label="Remove">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-                    </button>
+                  <div class="hl-equip-card">
+                    <div class="hl-equip-card-top">
+                      <input class="e-name" type="text" [(ngModel)]="item.name" [name]="'en'+i" placeholder="Item name" />
+                      <button class="hl-del e-x" (click)="removeEquip(i)" type="button" aria-label="Remove">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                      </button>
+                    </div>
+                    <div class="hl-fields">
+                      <div class="hl-field">
+                        <label>Quantity</label>
+                        <input type="number" inputmode="numeric" [(ngModel)]="item.qty" [name]="'eq'+i" min="1" />
+                      </div>
+                      <div class="hl-field">
+                        <label>BTU <span class="hl-opt">each</span></label>
+                        <input type="number" inputmode="numeric" [(ngModel)]="item.btu" [name]="'eb'+i" min="0" step="50" />
+                      </div>
+                      <div class="hl-field">
+                        <label>Total</label>
+                        <span class="e-sub-display">{{ (item.qty * item.btu) | number }} BTU/hr</span>
+                      </div>
+                    </div>
                   </div>
                 }
               </div>
             } @else {
-              <p class="hl-equip-empty">No equipment added. Use the dropdown to add kitchen or office appliances.</p>
+              <p class="hl-equip-empty">None added — most rooms don't need any. Use the dropdown above if this job has kitchen or office equipment running.</p>
             }
           </div>
 
@@ -220,7 +270,7 @@ const AC_SIZES = [
 
             <ul class="hl-breakdown">
               <li>
-                <span class="b-label">Rooms<span class="b-calc">{{ rooms().length }} room{{ rooms().length !== 1 ? 's' : '' }} · {{ totalAreaM2() | number:'1.0-1' }}m² · factor {{ baseFactor() }}</span></span>
+                <span class="b-label">Rooms<span class="b-calc">{{ rooms().length }} room{{ rooms().length !== 1 ? 's' : '' }} · {{ totalVolumeM3() | number:'1.0-1' }}m³ · factor {{ baseFactor() }}</span></span>
                 <strong>{{ roomLoad() | number }}</strong>
               </li>
               <li>
@@ -309,28 +359,36 @@ const AC_SIZES = [
     .hl-group-hint { font-size: 0.72rem; color: var(--text-muted); }
     .hl-equip-head-row { margin-bottom: 0.85rem; }
 
-    /* Rooms */
-    .hl-room-head, .hl-room-row { display: grid; grid-template-columns: 1.3fr 55px 55px 55px 1.5fr 28px; gap: 0.4rem; align-items: center; }
-    .hl-room-head { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
-    .hl-room-row { margin-bottom: 0.15rem; }
-    .hl-room-row input, .hl-room-row select { padding: 0.45rem 0.5rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.8rem; width: 100%; box-sizing: border-box; }
-    .rm-name { font-weight: 600; }
-    .hl-room-hint { font-size: 0.7rem; color: var(--text-muted); margin: 0.1rem 0 0.75rem; padding-left: 0.15rem; }
-    .hl-add-room { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.4rem; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); color: var(--brand); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.75rem; cursor: pointer; }
+    /* Rooms — one self-contained card per room, stacks naturally at any width */
+    .hl-room-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 0.7rem; }
+    .hl-room-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .rm-name { font-weight: 600; flex: 1; min-width: 0; padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.85rem; box-sizing: border-box; }
+
+    .hl-mode-toggle { display: inline-flex; padding: 0.2rem; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; margin-bottom: 0.7rem; width: 100%; }
+    .hl-mode-toggle button {
+      flex: 1; background: none; border: none; border-radius: 999px; cursor: pointer;
+      font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); padding: 0.5rem 0.6rem;
+      min-height: 38px; transition: background 0.12s, color 0.12s;
+    }
+    .hl-mode-toggle button.active { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-sm); }
+
+    .hl-room-card .hl-fields input, .hl-room-card .hl-fields select { padding: 0.5rem 0.6rem; border-radius: 7px; font-size: 0.85rem; }
+    .hl-room-hint { font-size: 0.72rem; color: var(--text-muted); margin: 0.6rem 0 0; padding-left: 0.1rem; }
+    .hl-add-room { display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; margin-top: 0.2rem; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); color: var(--brand); font-size: 0.85rem; font-weight: 600; padding: 0.65rem 0.75rem; min-height: 44px; width: 100%; cursor: pointer; }
     .hl-add-room:hover { border-color: var(--brand); background: var(--brand-light); }
     .hl-add-room svg { width: 14px; height: 14px; }
 
-    /* Equipment */
+    /* Equipment — same self-contained, labeled card pattern as Rooms: guarantees every field
+       has real width to show its value, and a visible label so it's clear what's being edited. */
     .hl-equip-add { display: flex; gap: 0.5rem; margin-bottom: 0.85rem; }
     .hl-equip-add select { flex: 1; padding: 0.55rem 0.7rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.88rem; background: var(--surface); }
     .hl-equip-empty { font-size: 0.83rem; color: var(--text-muted); margin: 0; }
-    .hl-equip-head, .hl-equip-row { display: grid; grid-template-columns: 1fr 48px 78px 68px 30px; gap: 0.4rem; align-items: center; }
-    .hl-equip-head { font-size: 0.64rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
-    .hl-equip-row { margin-top: 0.45rem; }
-    .hl-equip-row input { width: 100%; padding: 0.45rem 0.55rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.83rem; box-sizing: border-box; }
-    .e-qty, .e-btu { text-align: right; }
-    .hl-equip-head .e-qty, .hl-equip-head .e-btu, .hl-equip-head .e-sub { text-align: right; }
-    .e-sub { font-size: 0.82rem; font-weight: 700; text-align: right; color: var(--text-primary); }
+    .hl-equip-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .hl-equip-card { border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; }
+    .hl-equip-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .hl-equip-card .e-name { font-weight: 600; flex: 1; min-width: 0; padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.85rem; box-sizing: border-box; }
+    .hl-equip-card .hl-fields input { padding: 0.5rem 0.6rem; border-radius: 7px; font-size: 0.85rem; }
+    .e-sub-display { display: flex; align-items: center; padding: 0.5rem 0; font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
     .hl-del { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text-muted); cursor: pointer; padding: 0.3rem; display: inline-flex; align-items: center; justify-content: center; }
     .hl-del svg { width: 14px; height: 14px; }
     .hl-del:hover { color: var(--danger); border-color: #fca5a5; }
@@ -339,9 +397,9 @@ const AC_SIZES = [
     /* Results */
     .hl-breakdown { list-style: none; padding: 0; margin: 0 0 0.9rem; }
     .hl-breakdown li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
-    .b-label { display: flex; flex-direction: column; font-size: 0.86rem; color: var(--text-primary); font-weight: 500; }
+    .b-label { display: flex; flex: 1; min-width: 0; flex-direction: column; font-size: 0.86rem; color: var(--text-primary); font-weight: 500; }
     .b-calc { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; margin-top: 0.1rem; }
-    .hl-breakdown strong { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+    .hl-breakdown strong { font-size: 0.9rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
 
     .hl-total { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--grad-hero); color: #fff; border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1rem; }
     .hl-total-btu span { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); margin-bottom: 0.2rem; }
@@ -368,40 +426,44 @@ const AC_SIZES = [
       .hl-grid { grid-template-columns: 1fr 380px; }
       .hl-results { position: sticky; top: 80px; }
     }
+
+    /* Mobile: bigger tap targets and ≥16px inputs (prevents iOS Safari auto-zoom-on-focus, and
+       just plain easier to read what you're typing). Applies to every text box on this page —
+       room cards, equipment cards, and the property/people/window/lighting fields alike. */
+    @media (max-width: 700px) {
+      .hl-field input, .hl-field select,
+      .hl-room-card .hl-fields input, .hl-room-card .hl-fields select,
+      .hl-equip-card .hl-fields input,
+      .rm-name, .hl-equip-card .e-name, .hl-equip-add select {
+        font-size: 1rem;
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+      }
+      .hl-del { min-width: 40px; min-height: 40px; }
+      .hl-del svg { width: 16px; height: 16px; }
+      .hl-mode-toggle button { min-height: 44px; font-size: 0.82rem; }
+      .hl-add-room { min-height: 48px; font-size: 0.9rem; }
+      .hl-use, .hl-copy { min-height: 48px; }
+      .hl-equip-add { flex-direction: column; }
+      .hl-equip-add select, .hl-equip-add button { width: 100%; min-height: 44px; }
+
+      /* Labels and grouped-section hints — a touch bigger for comfortable reading on a phone */
+      .hl-field label { font-size: 0.74rem; }
+      .hl-group-hint, .hl-sub { font-size: 0.76rem; }
+      .hl-group-head h4 { font-size: 0.92rem; }
+      .b-calc { font-size: 0.74rem; }
+    }
+
     @media (max-width: 560px) {
-      .hl-card { padding: 1rem; }
-      .hl-total { flex-wrap: wrap; }
+      .hl-card { padding: 1rem 0.85rem; }
+      .hl-page { gap: 0.85rem; }
 
-      /* Rooms: name on its own row, dimensions + wall type below */
-      .hl-room-head { display: none; }
-      .hl-room-row {
-        grid-template-columns: repeat(3, 1fr) 32px;
-        grid-template-areas: 'name name name name' 'len wid hgt del' 'wall wall wall wall';
-        row-gap: 0.4rem; align-items: center; margin-top: 0.65rem;
-        padding-top: 0.65rem; padding-bottom: 0.3rem; border-top: 1px solid var(--border);
-      }
-      .hl-room-row:first-of-type { border-top: none; margin-top: 0.4rem; }
-      .rm-name { grid-area: name; }
-      .rm-len { grid-area: len; }
-      .rm-wid { grid-area: wid; }
-      .rm-hgt { grid-area: hgt; }
-      .rm-wall { grid-area: wall; }
-      .rm-del { grid-area: del; }
+      /* Total banner — stack and centre both stats so it reads as one balanced block instead
+         of a left/right split with nothing to anchor it */
+      .hl-total { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; padding: 1.1rem 1.25rem; }
+      .hl-total-kw { align-self: center; }
 
-      /* Equipment: name on its own row, controls below */
-      .hl-equip-head { display: none; }
-      .hl-equip-row {
-        grid-template-columns: 1fr auto auto 32px;
-        grid-template-areas: 'name name name name' 'qty btu sub del';
-        gap: 0.45rem; align-items: center; margin-top: 0.65rem;
-        padding-top: 0.65rem; border-top: 1px solid var(--border);
-      }
-      .hl-equip-row:first-of-type { border-top: none; margin-top: 0.4rem; }
-      .hl-equip-row .e-name { grid-area: name; }
-      .hl-equip-row .e-qty { grid-area: qty; text-align: left; }
-      .hl-equip-row .e-btu { grid-area: btu; text-align: left; }
-      .hl-equip-row .e-sub { grid-area: sub; }
-      .hl-equip-row .hl-del { grid-area: del; }
+      .hl-reco-head { flex-wrap: wrap; }
     }
     @media (max-width: 400px) {
       .hl-fields { grid-template-columns: 1fr; }
@@ -424,9 +486,9 @@ export class DashboardHeatLoadComponent {
     flat: 130, terr: 133, semi: 136, det: 140, comm: 145,
   };
 
-  // Rooms
+  // Rooms — default to direct volume entry (quicker on mobile than three separate dimensions)
   rooms = signal<RoomInput[]>([
-    { id: 1, name: 'Room 1', lengthM: 6, widthM: 3, heightM: 2.7, wallType: 'cavity' },
+    { id: 1, name: 'Room 1', mode: 'volume', volumeM3: 49, lengthM: 6, widthM: 3, heightM: 2.7, wallType: 'cavity' },
   ]);
 
   // People
@@ -438,31 +500,30 @@ export class DashboardHeatLoadComponent {
   // Lighting
   lightWatts = 400;
   // Equipment (pre-loaded example set)
-  equipment = signal<EquipItem[]>([
-    { name: 'Dishwasher', qty: 1, btu: 1200 },
-    { name: 'Ice machine', qty: 1, btu: 800 },
-    { name: 'Refrigerator (commercial)', qty: 1, btu: 600 },
-    { name: 'Hot water / boiler tap', qty: 1, btu: 1000 },
-    { name: 'Milk boiler', qty: 1, btu: 800 },
-    { name: 'Coffee machine', qty: 1, btu: 1000 },
-    { name: 'Hot oven', qty: 1, btu: 2000 },
-    { name: 'Small fridge / undercounter', qty: 1, btu: 400 },
-  ]);
+  // Empty by default — most jobs (living rooms, bedrooms, offices) have no extra heat-generating
+  // equipment. Add kitchen/office items from the dropdown only when the job actually needs them.
+  equipment = signal<EquipItem[]>([]);
   presetPick = '';
   copied = signal(false);
 
   // ── Loads (BTU/hr) ──────────────────────────────────────────────────────────
-  baseFactor    = computed(() => this.propertyFactors[this.propertyType] ?? 133);
-  totalAreaM2   = computed(() => this.rooms().reduce((s, r) => s + this.roomArea(r), 0));
-  roomLoad      = computed(() => this.rooms().reduce((s, r) => s + this.roomBtu(r), 0));
-  peopleLoad    = computed(() => (Number(this.people) || 0) * (Number(this.personBtu) || 0));
-  equipmentLoad = computed(() => this.equipment().reduce((s, e) => s + (Number(e.qty) || 0) * (Number(e.btu) || 0), 0));
-  windowLoad    = computed(() => Math.round((Number(this.windowAreaM2) || 0) * (Number(this.windowFactor) || 0)));
-  lightsLoad    = computed(() => Math.round((Number(this.lightWatts) || 0) * 3.41));
-  totalBtu      = computed(() => this.roomLoad() + this.peopleLoad() + this.equipmentLoad() + this.windowLoad() + this.lightsLoad());
-  kw            = computed(() => this.totalBtu() / 3412);
+  // Plain methods, not computed() signals: these depend on plain (non-signal) form fields like
+  // `people`/`propertyType`, and on room/equipment objects that ngModel mutates in place rather
+  // than replacing via rooms.set()/update() — so a computed() here would never see a dependency
+  // change and would stay stuck at its first-rendered value. Plain methods just re-run on every
+  // change-detection pass, which ngModel already triggers on every edit, so they stay live.
+  baseFactor(): number { return this.propertyFactors[this.propertyType] ?? 133; }
+  totalAreaM2(): number { return this.rooms().reduce((s, r) => s + this.roomArea(r), 0); }
+  totalVolumeM3(): number { return this.rooms().reduce((s, r) => s + this.roomVolume(r), 0); }
+  roomLoad(): number { return this.rooms().reduce((s, r) => s + this.roomBtu(r), 0); }
+  peopleLoad(): number { return (Number(this.people) || 0) * (Number(this.personBtu) || 0); }
+  equipmentLoad(): number { return this.equipment().reduce((s, e) => s + (Number(e.qty) || 0) * (Number(e.btu) || 0), 0); }
+  windowLoad(): number { return Math.round((Number(this.windowAreaM2) || 0) * (Number(this.windowFactor) || 0)); }
+  lightsLoad(): number { return Math.round((Number(this.lightWatts) || 0) * 3.41); }
+  totalBtu(): number { return this.roomLoad() + this.peopleLoad() + this.equipmentLoad() + this.windowLoad() + this.lightsLoad(); }
+  kw(): number { return this.totalBtu() / 3412; }
 
-  reco = computed(() => {
+  reco(): { recommendedBtu: number; recommendedKw: number; multiUnit: boolean; units: number } {
     const target = this.totalBtu() * 1.1;               // ~10% headroom
     const single = AC_SIZES.find(s => s.btu >= target);
     if (single) {
@@ -471,15 +532,28 @@ export class DashboardHeatLoadComponent {
     const largest = AC_SIZES[AC_SIZES.length - 1];
     const units = Math.ceil(target / largest.btu);
     return { recommendedBtu: largest.btu, recommendedKw: largest.kw, multiUnit: true, units };
-  });
+  }
 
-  roomArea(r: RoomInput): number { return (Number(r.lengthM) || 0) * (Number(r.widthM) || 0); }
+  /** Room volume in m³ — entered directly, or derived from L × W × H in dimensions mode. */
+  roomVolume(r: RoomInput): number {
+    return r.mode === 'volume'
+      ? (Number(r.volumeM3) || 0)
+      : (Number(r.lengthM) || 0) * (Number(r.widthM) || 0) * (Number(r.heightM) || 0);
+  }
+  /** Floor area — only meaningful for the Quote Builder's square-room handoff; in volume mode
+   *  it's backed out using a standard ceiling height since no dimensions were given. */
+  roomArea(r: RoomInput): number {
+    if (r.mode === 'volume') return (Number(r.volumeM3) || 0) / STANDARD_CEILING_M;
+    return (Number(r.lengthM) || 0) * (Number(r.widthM) || 0);
+  }
   private wallFactor(type: string): number { return this.wallTypes.find(w => w.value === type)?.factor ?? 1.0; }
-  roomBtu(r: RoomInput): number { return Math.round(this.roomArea(r) * (Number(r.heightM) || 0) * this.baseFactor() * this.wallFactor(r.wallType)); }
+  roomBtu(r: RoomInput): number { return Math.round(this.roomVolume(r) * this.baseFactor() * this.wallFactor(r.wallType)); }
+
+  setRoomMode(r: RoomInput, mode: RoomMode) { r.mode = mode; }
 
   addRoom() {
     const n = this.rooms().length + 1;
-    this.rooms.update(list => [...list, { id: Date.now(), name: `Room ${n}`, lengthM: 4, widthM: 3, heightM: 2.7, wallType: 'cavity' }]);
+    this.rooms.update(list => [...list, { id: Date.now(), name: `Room ${n}`, mode: 'volume', volumeM3: 30, lengthM: 4, widthM: 3, heightM: 2.7, wallType: 'cavity' }]);
   }
   removeRoom(id: number) {
     if (this.rooms().length <= 1) return;
@@ -514,7 +588,7 @@ export class DashboardHeatLoadComponent {
   copy() {
     const propLabel = this.propertyTypes.find(p => p.value === this.propertyType)?.label ?? '';
     const roomLines = this.rooms().map(r =>
-      `  ${r.name}: ${this.roomArea(r).toFixed(1)}m² × ${r.heightM}m × ${this.baseFactor()} × ${this.wallFactor(r.wallType)} = ${this.roomBtu(r).toLocaleString()} BTU/hr`
+      `  ${r.name}: ${this.roomVolume(r).toFixed(1)}m³ × ${this.baseFactor()} × ${this.wallFactor(r.wallType)} = ${this.roomBtu(r).toLocaleString()} BTU/hr`
     );
     const lines = [
       `Heat load - ${propLabel}${this.postcode ? ' (' + this.postcode.toUpperCase() + ')' : ''}`,
